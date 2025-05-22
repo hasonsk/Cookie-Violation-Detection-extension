@@ -1,0 +1,48 @@
+{
+  "specific": [
+    {
+      "name": "_ga",
+      "attribute": "retention",
+      "value": "session"
+    },
+    {
+      "name": "_ga",
+      "attribute": "purpose",
+      "value": "Analytical"
+    },
+    {
+      "name": "_ga",
+      "attribute": "third_party",
+      "value": ["Google Analytics"]
+    },
+    {
+      "name": "_ga",
+      "attribute": "behavior",
+      "value": ["This cookie is installed by Google Analytics. The cookie is used to calculate visitor, session, campaign data and keep track of site usage for the site's analytics report. The cookie stores information anonymously and assigns a randomly generated number to identify unique visitors."]
+    },
+    {
+      "name": "JSESSIONID",
+      "attribute": "purpose",
+      "value": "Strictly Necessary"
+    }
+  ],
+  "general": [
+    {
+      "name": "analytics cookies",
+      "attribute": "purpose",
+      "value": "help us understand how our website is used"
+    },
+    {
+      "name": "youtube cookies",
+      "attribute": "purpose",
+      "value": "help us understand how our website is used"
+    }
+  ],
+  "undefined": [
+    {
+      "name": "tracking cookies",
+      "attribute": "retention",
+      "value": ""
+    }
+  ]
+}
