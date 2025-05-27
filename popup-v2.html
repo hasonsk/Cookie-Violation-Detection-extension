@@ -69,38 +69,55 @@
 
     /* Navigation */
     .navigation {
-      background-color: white;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      /* position: fixed; */
-      justify-content: space-around;
-      padding: 0.5rem;
-    }
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-    .nav-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.25rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
+        .nav-button {
+            flex: 1;
+            padding: 0.75rem 0.5rem;
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
 
-    .nav-button.active {
-      color: #2563eb;
-    }
+        .nav-button.active {
+            background: #f1f5f9;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
 
-    .nav-button:not(.active) {
-      color: #6b7280;
-    }
+        .nav-button:hover {
+            background: #f8fafc;
+        }
 
-    .nav-button span {
-      font-size: 0.75rem;
-      margin-top: 0.25rem;
-    }
+        .current-tab {
+            background: white;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            display: none;
+        }
 
-    /* Dashboard cards */
+        .url-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        #current-url {
+            color: #1e293b;
+            word-break: break-all;
+        }
+
+      /* Dashboard cards */
     .summary-cards {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -377,123 +394,8 @@
       color: #b91c1c;
     }
 
-    /* Rules screen */
-    .add-button {
-      background-color: #2563eb;
-      color: white;
-      padding: 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
-      border: none;
-      cursor: pointer;
-    }
+    /* Domains screen */
 
-    .add-button svg {
-      margin-right: 0.25rem;
-    }
-
-    .rule-tag {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      border-radius: 0.25rem;
-    }
-
-    .rule-tag.specific {
-      background-color: #dbeafe;
-      color: #1e40af;
-    }
-
-    .rule-tag.general {
-      background-color: #f3e8ff;
-      color: #6b21a8;
-    }
-
-    .rule-tag.undefined {
-      background-color: #f3f4f6;
-      color: #1f2937;
-    }
-
-    .toggle-switch {
-      width: 2.5rem;
-      height: 1.25rem;
-      border-radius: 9999px;
-      position: relative;
-      margin-right: 0.5rem;
-    }
-
-    .toggle-switch.on {
-      background-color: #4ade80;
-    }
-
-    .toggle-switch.off {
-      background-color: #d1d5db;
-    }
-
-    .toggle-handle {
-      width: 1rem;
-      height: 1rem;
-      background-color: white;
-      border-radius: 9999px;
-      position: absolute;
-      top: 0.125rem;
-      transition: all 0.2s;
-    }
-
-    .toggle-switch.on .toggle-handle {
-      right: 0.125rem;
-    }
-
-    .toggle-switch.off .toggle-handle {
-      left: 0.125rem;
-    }
-
-    .rule-content {
-      line-clamp: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .rule-details {
-      padding: 0.75rem;
-      background-color: #f9fafb;
-      font-size: 0.875rem;
-      border-top: 1px solid #f3f4f6;
-    }
-
-    .rule-description {
-      margin-bottom: 0.5rem;
-    }
-
-    .actions {
-      margin-top: 0.75rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-    }
-
-    .edit-button {
-      padding: 0.25rem 0.75rem;
-      background-color: #2563eb;
-      color: white;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      border: none;
-      cursor: pointer;
-    }
-
-    .disable-button {
-      padding: 0.25rem 0.75rem;
-      background-color: #e5e7eb;
-      color: #4b5563;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      border: none;
-      cursor: pointer;
-    }
 
     /* Settings screen */
     .setting-item {
@@ -574,7 +476,7 @@
 
     /* Hide all screens except dashboard initially */
     #cookies-screen,
-    #rules-screen,
+    #domain-screen,
     #settings-screen {
       display: none;
     }
@@ -584,6 +486,25 @@
     .rule-details {
       display: none;
     }
+    .header .refresh-btn {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .header .refresh-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-50%) rotate(180deg);
+    }
+
   </style>
 </head>
 
@@ -607,9 +528,9 @@
       <i data-lucide="database" size="20"></i>
       <span> 🍪 Cookies</span>
     </button>
-    <button class="nav-button" id="nav-rules">
+    <button class="nav-button" id="nav-domains">
       <i data-lucide="file-text" size="20"></i>
-      <span>🛡️Rules</span>
+      <span>🛡️Domains</span>
     </button>
     <button class="nav-button" id="nav-settings">
       <i data-lucide="settings" size="20"></i>
@@ -953,280 +874,29 @@
     </div>
 
     <!-- Rules Screen -->
-    <div id="rules-screen">
-      <div class="screen-header">
-        <h2 class="screen-title">Compliance Rules</h2>
-        <button class="add-button">
-          <i data-lucide="plus" size="14"></i>
-          Read about rules
-        </button>
+    <div id="domain-screen" class="tab-content">
+      <h3>Chặn cookie từ domain</h3>
+      <div class="blocked-domains">
+        <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)">
+        <button id="add-block-domain">Thêm</button>
       </div>
-
-      <!-- Rule Categories -->
-      <div class="filters">
-        <button class="filter-button active">All</button>
-        <button class="filter-button">Specific</button>
-        <button class="filter-button">General</button>
-        <button class="filter-button">Undefined</button>
-      </div>
-
-      <!-- Rules List -->
-      <div class="panel">
-        <div class="list-divider">
-          <div class="cookie-item" data-id="rule1">
-            <div class="icon">
-              <div class="rule-tag specific">Specific</div>
-            </div>
-            <div class="content">
-              <div class="title">Rule #1: Retention</div>
-              <div class="subtitle rule-content">
-                Cookie is declared as a 'session' cookie but persists longer
-                than 24 hours after browser close.
-              </div>
-            </div>
-            <div style="display: flex; align-items: center">
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-          </div>
-          <div class="rule-details" id="rule1-details">
-            <div class="rule-description">
-              <div class="detail-label">Full Description</div>
-              <div style="margin-top: 0.25rem">
-                Cookie is declared as a 'session' cookie but persists longer
-                than 24 hours after browser close.
-              </div>
-            </div>
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">ID</div>
-                <div>1</div>
-              </div>
-              <div>
-                <div class="detail-label">Level</div>
-                <div>Specific</div>
-              </div>
-              <div>
-                <div class="detail-label">Attribute</div>
-                <div>Retention</div>
-              </div>
-              <div>
-                <div class="detail-label">Status</div>
-                <div>Active</div>
-              </div>
-            </div>
-            <div class="actions">
-              <!-- <button class="edit-button">Edit</button> -->
-              <button class="disable-button">Disable</button>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="rule2">
-            <div class="icon">
-              <div class="rule-tag specific">Specific</div>
-            </div>
-            <div class="content">
-              <div class="title">Rule #2: Retention</div>
-              <div class="subtitle rule-content">
-                Actual expiration exceeds declared duration by more than 30%.
-              </div>
-            </div>
-            <div style="display: flex; align-items: center">
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-          </div>
-          <div class="rule-details" id="rule2-details">
-            <div class="rule-description">
-              <div class="detail-label">Full Description</div>
-              <div style="margin-top: 0.25rem">
-                Actual expiration exceeds declared duration by more than 30%.
-              </div>
-            </div>
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">ID</div>
-                <div>2</div>
-              </div>
-              <div>
-                <div class="detail-label">Level</div>
-                <div>Specific</div>
-              </div>
-              <div>
-                <div class="detail-label">Attribute</div>
-                <div>Retention</div>
-              </div>
-              <div>
-                <div class="detail-label">Status</div>
-                <div>Active</div>
-              </div>
-            </div>
-            <div class="actions">
-              <!-- <button class="edit-button">Edit</button> -->
-              <button class="disable-button">Disable</button>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="rule3">
-            <div class="icon">
-              <div class="rule-tag specific">Specific</div>
-            </div>
-            <div class="content">
-              <div class="title">Rule #4: Third-party</div>
-              <div class="subtitle rule-content">
-                Cookie is sent to a third-party domain not listed in the
-                third_party attribute.
-              </div>
-            </div>
-            <div style="display: flex; align-items: center">
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-          </div>
-          <div class="rule-details" id="rule3-details">
-            <div class="rule-description">
-              <div class="detail-label">Full Description</div>
-              <div style="margin-top: 0.25rem">
-                Cookie is sent to a third-party domain not listed in the
-                third_party attribute.
-              </div>
-            </div>
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">ID</div>
-                <div>4</div>
-              </div>
-              <div>
-                <div class="detail-label">Level</div>
-                <div>Specific</div>
-              </div>
-              <div>
-                <div class="detail-label">Attribute</div>
-                <div>Third-party</div>
-              </div>
-              <div>
-                <div class="detail-label">Status</div>
-                <div>Active</div>
-              </div>
-            </div>
-            <div class="actions">
-              <!-- <button class="edit-button">Edit</button> -->
-              <button class="disable-button">Disable</button>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="rule4">
-            <div class="icon">
-              <div class="rule-tag specific">Specific</div>
-            </div>
-            <div class="content">
-              <div class="title">Rule #6: Purpose</div>
-              <div class="subtitle rule-content">
-                Cookie is declared as 'strictly necessary' but used for
-                advertising or cross-site tracking.
-              </div>
-            </div>
-            <div style="display: flex; align-items: center">
-              <div class="toggle-switch off">
-                <div class="toggle-handle"></div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-          </div>
-          <div class="rule-details" id="rule4-details">
-            <div class="rule-description">
-              <div class="detail-label">Full Description</div>
-              <div style="margin-top: 0.25rem">
-                Cookie is declared as 'strictly necessary' but used for
-                advertising or cross-site tracking.
-              </div>
-            </div>
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">ID</div>
-                <div>6</div>
-              </div>
-              <div>
-                <div class="detail-label">Level</div>
-                <div>Specific</div>
-              </div>
-              <div>
-                <div class="detail-label">Attribute</div>
-                <div>Purpose</div>
-              </div>
-              <div>
-                <div class="detail-label">Status</div>
-                <div>Inactive</div>
-              </div>
-            </div>
-            <div class="actions">
-              <!-- <button class="edit-button">Edit</button> -->
-              <button class="disable-button">Enable</button>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="rule5">
-            <div class="icon">
-              <div class="rule-tag general">General</div>
-            </div>
-            <div class="content">
-              <div class="title">Rule #8: Purpose</div>
-              <div class="subtitle rule-content">
-                Observed cookie name shows no semantic similarity with any
-                general-purpose label declared in the policy.
-              </div>
-            </div>
-            <div style="display: flex; align-items: center">
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-          </div>
-          <div class="rule-details" id="rule5-details">
-            <div class="rule-description">
-              <div class="detail-label">Full Description</div>
-              <div style="margin-top: 0.25rem">
-                Observed cookie name shows no semantic similarity with any
-                general-purpose label declared in the policy.
-              </div>
-            </div>
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">ID</div>
-                <div>8</div>
-              </div>
-              <div>
-                <div class="detail-label">Level</div>
-                <div>General</div>
-              </div>
-              <div>
-                <div class="detail-label">Attribute</div>
-                <div>Purpose</div>
-              </div>
-              <div>
-                <div class="detail-label">Status</div>
-                <div>Active</div>
-              </div>
-            </div>
-            <div class="actions">
-              <!-- <button class="edit-button">Edit</button> -->
-              <button class="disable-button">Disable</button>
-            </div>
+      <h4>Danh sách domain đang bị chặn:</h4>
+      <ul id="blocked-domains-list">
+        <!-- Danh sách sẽ được điền bởi JavaScript -->
+      </ul>
+      <div id="stats-tab" class="tab-content">
+        <h3>Thống kê chi tiết</h3>
+        <div id="stats-content">
+          <div id="domain-stats">
+            <h4>Top domains đặt cookie:</h4>
+            <ul id="top-domains">
+              <!-- Sẽ được điền bởi JavaScript -->
+            </ul>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- Settings Screen -->
     <div id="settings-screen">
@@ -1306,24 +976,6 @@
     </div>
   </div>
 
-  <!-- <div class="navigation">
-    <button class="nav-button active" id="nav-dashboard">
-      <i data-lucide="bar-chart" size="20"></i>
-      <span>Dashboard</span>
-    </button>
-    <button class="nav-button" id="nav-cookies">
-      <i data-lucide="database" size="20"></i>
-      <span>Cookies</span>
-    </button>
-    <button class="nav-button" id="nav-rules">
-      <i data-lucide="file-text" size="20"></i>
-      <span>Rules</span>
-    </button>
-    <button class="nav-button" id="nav-settings">
-      <i data-lucide="settings" size="20"></i>
-      <span>Settings</span>
-    </button>
-  </div> -->
   <script src="popup-v2.js"></script>
 </body>
 
