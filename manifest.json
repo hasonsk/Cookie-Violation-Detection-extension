@@ -3,7 +3,7 @@
   "name": "Cookie Session Validator",
   "version": "1.0",
   "description": "Validates if session cookies actually expire after browser close",
-  "permissions": ["cookies", "storage", "tabs", "activeTab"],
+  "permissions": ["cookies", "storage", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup-v2.html",
@@ -14,7 +14,7 @@
     }
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background-v2.js"
   },
   "content_scripts": [
     {
