@@ -393,23 +393,6 @@ class BlockingManager {
       return false;
     }
   }
-
-  async updateBlockingRules(domains) {
-    const rules = domains.map((domain, index) => ({
-      id: index + 1,
-      priority: 1,
-      action: { type: 'block' },
-      condition: {
-        urlFilter: `*://*.${domain}/*`,
-        resourceTypes: ['main_frame', 'sub_frame']
-      }
-    }));
-
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: rules.map(r => r.id),
-      addRules: rules
-    });
-  }
 }
 
 // =====================================================

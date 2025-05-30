@@ -873,28 +873,53 @@
       </div>
     </div>
 
-    <!-- Rules Screen -->
-    <div id="domain-screen" class="tab-content">
-      <h3>Chặn cookie từ domain</h3>
-      <div class="blocked-domains">
-        <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)">
-        <button id="add-block-domain">Thêm</button>
-      </div>
-      <h4>Danh sách domain đang bị chặn:</h4>
-      <ul id="blocked-domains-list">
-        <!-- Danh sách sẽ được điền bởi JavaScript -->
-      </ul>
-      <div id="stats-tab" class="tab-content">
-        <h3>Thống kê chi tiết</h3>
-        <div id="stats-content">
-          <div id="domain-stats">
-            <h4>Top domains đặt cookie:</h4>
-            <ul id="top-domains">
-              <!-- Sẽ được điền bởi JavaScript -->
-            </ul>
+      <!-- Domains Screen -->
+      <!-- <div id="domain-screen" class="tab-content">
+        <h3>Chặn cookie từ domain</h3>
+        <div class="blocked-domains">
+          <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)">
+          <button id="add-block-domain">Thêm</button>
+        </div>
+        <h4>Danh sách domain đang bị chặn:</h4>
+        <ul id="blocked-domains-list">
+        </ul>
+        <div id="stats-tab" class="tab-content">
+          <h3>Thống kê chi tiết</h3>
+          <div id="stats-content">
+            <div id="domain-stats">
+              <h4>Top domains đặt cookie:</h4>
+              <ul id="top-domains">
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      </div> -->
+
+      <div id="domain-screen" class="tab-content">
+        <h3>Chặn cookie từ domain</h3>
+        <div class="blocked-domains">
+            <div class="input-container">
+                <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)" autocomplete="off">
+                <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
+            </div>
+            <div class="input-hint">Gõ để xem gợi ý từ danh sách domains hiện có</div>
+            <button id="add-block-domain">Thêm Domain</button>
+        </div>
+        <h4>Danh sách domain đang bị chặn:</h4>
+        <ul id="blocked-domains-list">
+            <!-- Danh sách sẽ được điền bởi JavaScript -->
+        </ul>
+        <div id="stats-tab" class="tab-content">
+            <h3>Thống kê chi tiết</h3>
+            <div id="stats-content">
+                <div id="domain-stats">
+                    <h4>Top domains đặt cookie:</h4>
+                    <ul id="top-domains">
+                        <!-- Sẽ được điền bởi JavaScript -->
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
 
