@@ -455,9 +455,10 @@ class ExtensionController {
 
           const cookies = await getAllCookiesFromActiveTab(tabId);
           console.log("Cookies for domain: ", cookies);
-          const providerParty = await categorizeDomainsByParty(tabId);
-          console.log("Categorized domains:", providerParty);
-          return { success: true, data: cookies, cookiesCount: cookies.length, violationCount: 0, firstPartyCount: providerParty.firstParty.length, thirdPartyCount: providerParty.thirdParty.length };
+          // const providerParty = await categorizeDomainsByParty(tabId);
+          // console.log("Categorized domains:", providerParty);
+          return { success: true, data: cookies };
+          // return { success: true, data: cookies, cookiesCount: cookies.length, violationCount: 0, firstPartyCount: providerParty.firstParty.length, thirdPartyCount: providerParty.thirdParty.length };
 
         case 'UPDATE_SETTINGS':
           await StorageManager.updateSettings(request.settings);
@@ -580,7 +581,6 @@ chrome.webRequest.onHeadersReceived.addListener(
     // if (!details.tabId || details.tabId < 0) {
     //   return; // Bỏ qua request không thuộc về tab nào
     // }
-
     // Tìm kiếm tất cả các header Set-Cookie
     const setCookieHeaders = details.responseHeaders?.filter(
       header => header.name.toLowerCase() === "set-cookie"
@@ -597,6 +597,7 @@ chrome.webRequest.onHeadersReceived.addListener(
         if (!tab) return;
 
         const tabUrl = new URL(tab.url);
+        console.log("I am here", tabUrl)
         const tabDomain = tabUrl.hostname;
         const isThirdParty = !Utils.isDomainOrSubdomain(domain, tabDomain);
 

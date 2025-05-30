@@ -505,6 +505,245 @@
         transform: translateY(-50%) rotate(180deg);
     }
 
+    /* Domains */
+        /* Input Section */
+        .blocked-domains {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        #domain-to-block {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+        }
+
+        #domain-to-block:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        #domain-to-block::placeholder {
+            color: #a0aec0;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f7fafc;
+        }
+
+        .suggestion-item:hover {
+            background-color: #edf2f7;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        #add-block-domain {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #add-block-domain:hover {
+            background-color: #3182ce;
+        }
+
+        #add-block-domain:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        /* Blocked Domains List */
+        #blocked-domains-list {
+            list-style: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            background: white;
+        }
+
+        #blocked-domains-list:empty::after {
+            content: "Không có domain nào bị chặn";
+            display: block;
+            padding: 16px;
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+        }
+
+        #blocked-domains-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        #blocked-domains-list li:last-child {
+            border-bottom: none;
+        }
+
+        .domain-name {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background-color: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .remove-domain {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .remove-domain:hover {
+            background-color: #c53030;
+        }
+
+        /* Stats Section */
+        #stats-tab {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+        }
+
+        #top-domains {
+            list-style: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        #top-domains:empty::after {
+            content: "Chưa có dữ liệu cookie";
+            display: block;
+            padding: 16px;
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+        }
+
+        #top-domains li {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f7fafc;
+            font-size: 14px;
+        }
+
+        #top-domains li:last-child {
+            border-bottom: none;
+        }
+
+        #top-domains li strong {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #2d3748;
+            background-color: #f7fafc;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 13px;
+        }
+
+        .cookie-count {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 12px 16px;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            z-index: 10000;
+            max-width: 300px;
+        }
+
+        .notification.success {
+            background-color: #38a169;
+        }
+
+        .notification.error {
+            background-color: #e53e3e;
+        }
+
+        /* Loading state */
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 16px;
+            }
+
+            #blocked-domains-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .remove-domain {
+                align-self: flex-end;
+            }
+        }
+
   </style>
 </head>
 
@@ -622,26 +861,6 @@
                 <div class="subtitle">_ga - Specific - Retention</div>
               </div>
               <div class="time">5 mins ago</div>
-            </div>
-            <div class="violation-item list-divider">
-              <div class="icon red">
-                <i data-lucide="alert-triangle" size="16"></i>
-              </div>
-              <div class="content">
-                <div class="title">google.com</div>
-                <div class="subtitle">__gads - Specific - Third-party</div>
-              </div>
-              <div class="time">1 hour ago</div>
-            </div>
-            <div class="violation-item list-divider">
-              <div class="icon red">
-                <i data-lucide="alert-triangle" size="16"></i>
-              </div>
-              <div class="content">
-                <div class="title">c.bing.com</div>
-                <div class="subtitle">SRM_B - General - Purpose</div>
-              </div>
-              <div class="time">3 hours ago</div>
             </div>
           </div>
           <div class="panel-footer">
@@ -897,25 +1116,39 @@
 
       <div id="domain-screen" class="tab-content">
         <h3>Chặn cookie từ domain</h3>
+
         <div class="blocked-domains">
             <div class="input-container">
                 <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)" autocomplete="off">
                 <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
             </div>
-            <div class="input-hint">Gõ để xem gợi ý từ danh sách domains hiện có</div>
-            <button id="add-block-domain">Thêm Domain</button>
+            <button id="add-block-domain">
+                <span>Thêm Domain</span>
+            </button>
         </div>
+
         <h4>Danh sách domain đang bị chặn:</h4>
         <ul id="blocked-domains-list">
-            <!-- Danh sách sẽ được điền bởi JavaScript -->
+            <li>
+                <span class="domain-name">analytics.google.com</span>
+                <button class="remove-domain" data-domain="analytics.google.com">Xóa</button>
+            </li>
+            <li>
+                <span class="domain-name">facebook.com</span>
+                <button class="remove-domain" data-domain="facebook.com">Xóa</button>
+            </li>
+            <li>
+                <span class="domain-name">doubleclick.net</span>
+                <button class="remove-domain" data-domain="doubleclick.net">Xóa</button>
+            </li>
         </ul>
+
         <div id="stats-tab" class="tab-content">
             <h3>Thống kê chi tiết</h3>
             <div id="stats-content">
                 <div id="domain-stats">
-                    <h4>Top domains đặt cookie:</h4>
+                    <h4>Danh sách domains đặt cookie tại trang web này</h4>
                     <ul id="top-domains">
-                        <!-- Sẽ được điền bởi JavaScript -->
                     </ul>
                 </div>
             </div>
@@ -1001,7 +1234,8 @@
     </div>
   </div>
 
-  <script src="popup-v2.js"></script>
+  <!-- <script src="popup-v2.js"></script> -->
+  <script src="main.js" type="module"></script>
 </body>
 
 </html>
