@@ -1,0 +1,866 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+body {
+  width: 450px;
+  max-height: 650px;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  background-color: #2563eb;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header .title {
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+.header .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.header .actions button {
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.header .actions button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Main content */
+.main-content {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.screen-title {
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Navigation */
+.navigation {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.nav-button {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-button.active {
+  background: #f1f5f9;
+  border-bottom-color: #667eea;
+  color: #667eea;
+}
+
+.nav-button:hover {
+  background: #f8fafc;
+}
+
+.current-tab {
+  background: white;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.url-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+#current-url {
+  color: #1e293b;
+  word-break: break-all;
+}
+
+/* Dashboard cards */
+
+.screen-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+.card .label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.card .value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.card .value.alert {
+  color: #e74c3c;
+}
+
+.card .value.warning {
+  color: #f39c12;
+}
+
+.card .value.success {
+  color: #27ae60;
+}
+
+/* Cookie Policy Section */
+.policy-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.policy-header {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2c3e50;
+}
+
+.policy-link {
+  color: #3498db;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.policy-link:hover {
+  text-decoration: underline;
+}
+
+.policy-warning {
+  color: #e67e22;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Panel Styles */
+.panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.panel-header {
+  background: #f8f9fa;
+  padding: 16px 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.panel-content {
+  padding: 20px;
+}
+
+.panel-footer {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+}
+
+/* Charts */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* Violations List */
+.violation-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.violation-item:last-child {
+  border-bottom: none;
+}
+
+.violation-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 14px;
+  color: white;
+}
+
+.violation-icon.high {
+  background: #e74c3c;
+}
+
+.violation-icon.medium {
+  background: #f39c12;
+}
+
+.violation-icon.low {
+  background: #f1c40f;
+}
+
+.violation-content {
+  flex: 1;
+}
+
+.violation-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.violation-subtitle {
+  font-size: 13px;
+  color: #666;
+}
+
+.violation-severity {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.violation-severity.high {
+  background: #fee;
+  color: #e74c3c;
+}
+
+.violation-severity.medium {
+  background: #fff3e0;
+  color: #f39c12;
+}
+
+/* Actions */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.action-btn {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-size: 14px;
+  color: #495057;
+}
+
+.action-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.action-btn.primary {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.action-btn.primary:hover {
+  background: #2980b9;
+}
+
+.action-btn.danger {
+  background: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
+}
+
+.action-btn.danger:hover {
+  background: #c0392b;
+}
+
+/* Loading States */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  color: #666;
+}
+
+.loading::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+/* Cookie screen */
+.screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  padding-left: 2rem;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  color: #9ca3af;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.filter-button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-button.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+.filter-button:not(.active) {
+  background-color: #e5e7eb;
+}
+
+/* Cookie items */
+.cookie-item {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cookie-item:hover {
+  background-color: #f9fafb;
+}
+
+.cookie-item.violation {
+  background-color: #fef2f2;
+}
+
+.icon.green {
+  color: #16a34a;
+}
+
+.chevron {
+  transform: rotate(0deg);
+  transition: transform 0.2s;
+  color: #9ca3af;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.cookie-details {
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  font-size: 0.875rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.current-tab {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  word-break: break-all;
+  display: none;
+  font-size: 12px;
+}
+
+.url-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.violation-alert {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border-radius: 0.25rem;
+  border: 1px solid #fee2e2;
+  font-size: 0.75rem;
+}
+
+.violation-alert .title {
+  font-weight: 500;
+  color: #991b1b;
+}
+
+.violation-list {
+  margin-top: 0.25rem;
+  list-style-type: disc;
+  list-style-position: inside;
+  color: #b91c1c;
+}
+
+/* Domains screen */
+
+/* Settings screen */
+.setting-item {
+  margin-bottom: 1rem;
+}
+
+.setting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.setting-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.setting-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+}
+
+textarea {
+  height: 6rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+}
+
+.button-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.button-container button {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-button {
+  background-color: #2563eb;
+  color: white;
+}
+
+.secondary-button {
+  background-color: #e5e7eb;
+}
+
+.danger-button {
+  width: 100%;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.version {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Hide all screens except dashboard initially */
+#cookies-screen,
+#domain-screen,
+#settings-screen {
+  display: none;
+}
+
+/* Hidden state for details sections */
+.cookie-details,
+.rule-details {
+  display: none;
+}
+.header .refresh-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header .refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Domains */
+/* Input Section */
+.blocked-domains {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+#domain-to-block {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+  outline: none;
+}
+
+#domain-to-block:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+#domain-to-block::placeholder {
+  color: #a0aec0;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #cbd5e0;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.suggestion-item:hover {
+  background-color: #edf2f7;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+#add-block-domain {
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#add-block-domain:hover {
+  background-color: #3182ce;
+}
+
+#add-block-domain:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* Blocked Domains List */
+#blocked-domains-list {
+  list-style: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  background: white;
+}
+
+#blocked-domains-list:empty::after {
+  content: "Không có domain nào bị chặn";
+  display: block;
+  padding: 16px;
+  text-align: center;
+  color: #718096;
+  font-style: italic;
+}
+
+#blocked-domains-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+#blocked-domains-list li:last-child {
+  border-bottom: none;
+}
+
+.domain-name {
+  font-family: "Monaco", "Menlo", monospace;
+  background-color: #f7fafc;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.remove-domain {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-domain:hover {
+  background-color: #c53030;
+}
+
+/* Stats Section */
+#stats-tab {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+}
+
+#top-domains {
+  list-style: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+}
+
+#top-domains:empty::after {
+  content: "Chưa có dữ liệu cookie";
+  display: block;
+  padding: 16px;
+  text-align: center;
+  color: #718096;
+  font-style: italic;
+}
+
+#top-domains li {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f7fafc;
+  font-size: 14px;
+}
+
+#top-domains li:last-child {
+  border-bottom: none;
+}
+
+#top-domains li strong {
+  font-family: "Monaco", "Menlo", monospace;
+  color: #2d3748;
+  background-color: #f7fafc;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 13px;
+}
+
+.cookie-count {
+  color: #718096;
+  font-size: 13px;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  z-index: 10000;
+  max-width: 300px;
+}
+
+.notification.success {
+  background-color: #38a169;
+}
+
+.notification.error {
+  background-color: #e53e3e;
+}
+
+/* Loading state */
+.loading {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    margin: 10px;
+    padding: 16px;
+  }
+
+  #blocked-domains-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .remove-domain {
+    align-self: flex-end;
+  }
+}

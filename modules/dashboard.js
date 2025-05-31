@@ -1,184 +1,424 @@
 // modules/dashboard.js
 export class Dashboard {
   constructor() {
-    this.statsElements = {
-      cookiesMonitored: document.querySelector('.summary-cards .card:nth-child(1) .value'),
-      violationsDetected: document.querySelector('.summary-cards .card:nth-child(2) .value'),
-      thirdParty: document.querySelector('.summary-cards .card:nth-child(3) .value'),
-      firstParty: document.querySelector('.summary-cards .card:nth-child(4) .value')
-    };
+    this.data = null;
+    this.charts = {};
+    this.init();
+    this.viewAllViolations();
+    this.viewCookieDetails();
+    this.blockDomain();
+    this.clearAllCookies();
+    this.exportReport();
+    this.viewPolicy();
+    this.refreshCheck();
   }
 
   init() {
-    this.updateStats();
+    // Simulate loading data
+    setTimeout(() => {
+      this.loadSampleData();
+      this.updateDashboard();
+    }, 1000);
   }
 
-  async updateStats() {
-    try {
-      const { TabManager } = await import('./tab-manager.js');
-      const tabManager = new TabManager();
-      const tabId = await tabManager.getCurrentTabId();
+  loadSampleData() {
+    // Sample data based on the provided JSON
+    this.data = {
+      website_url:
+        "https://docs.google.com/spreadsheets/d/1SCBkfJOuFw8e9UMlMHjt8t8Sg5CbUlhuJS0xP5PgFHI/edit?gid=0#gid=0",
+      total_issues: 22,
+      compliance_score: 0,
+      statistics: {
+        by_severity: {
+          Critical: 0,
+          High: 6,
+          Medium: 16,
+          Low: 0,
+        },
+        by_category: {
+          Specific: 0,
+          General: 16,
+          Undefined: 6,
+        },
+        by_type: {
+          Purpose: 22,
+        },
+      },
+      summary: {
+        critical_issues: 0,
+        high_issues: 6,
+        undeclared_cookies: [
+          "COMPASS",
+          "SID",
+          "__Secure-1PSID",
+          "__Secure-3PSID",
+          "HSID",
+          "SSID",
+          "APISID",
+          "SAPISID",
+          "__Secure-1PAPISID",
+          "__Secure-3PAPISID",
+          "OSID",
+          "__Secure-OSID",
+          "SEARCH_SAMESITE",
+          "OTZ",
+          "AEC",
+          "__Secure-ENID",
+          "NID",
+          "__Secure-1PSIDTS",
+          "__Secure-3PSIDTS",
+          "SIDCC",
+          "__Secure-1PSIDCC",
+          "__Secure-3PSIDCC",
+        ],
+        declared_cookies: [],
+        third_party_cookies: [],
+        long_term_cookies: [
+          "SID",
+          "__Secure-1PSID",
+          "__Secure-3PSID",
+          "HSID",
+          "SSID",
+          "APISID",
+          "SAPISID",
+          "__Secure-1PAPISID",
+          "__Secure-3PAPISID",
+          "OSID",
+          "__Secure-OSID",
+          "__Secure-ENID",
+        ],
+      },
+      policy_cookies_count: 0,
+      actual_cookies_count: 28,
+      issues: [
+        {
+          cookie_name: "OSID",
+          severity: "High",
+          description:
+            "Undeclared cookie collects user data and persists or transmits to third-party",
+          category: "Undefined",
+          details: {
+            retention_days: 390,
+            inferred_purpose: "Authentication/Session Management",
+          },
+        },
+        {
+          cookie_name: "SID",
+          severity: "High",
+          description:
+            "Undeclared cookie collects user data and persists or transmits to third-party",
+          category: "Undefined",
+          details: {
+            retention_days: 388,
+            inferred_purpose: "Long-term Tracking/Profiling",
+          },
+        },
+        {
+          cookie_name: "__Secure-ENID",
+          severity: "High",
+          description:
+            "Undeclared cookie collects user data and persists or transmits to third-party",
+          category: "Undefined",
+          details: {
+            retention_days: 394,
+            inferred_purpose: "Analytics/Tracking",
+          },
+        },
+        {
+          cookie_name: "AEC",
+          severity: "Medium",
+          description:
+            "Cookie purpose shows no clear alignment with declared policy purposes",
+          category: "General",
+          details: {
+            inferred_purpose: "Long-term Tracking/Profiling",
+          },
+        },
+        {
+          cookie_name: "APISID",
+          severity: "Medium",
+          description:
+            "Cookie purpose shows no clear alignment with declared policy purposes",
+          category: "General",
+          details: {
+            inferred_purpose: "Long-term Tracking/Profiling",
+          },
+        },
+      ],
+    };
+  }
 
-      if (tabId) {
-        this.loadStatsForTab(tabId);
-      }
-    } catch (error) {
-      console.error('Error updating dashboard stats:', error);
+  updateDashboard() {
+    this.updateSummaryCards();
+    this.updatePolicyStatus();
+    this.updateCookieStatistics();
+    this.createCharts();
+    this.updateViolationsList();
+  }
+
+  updateSummaryCards() {
+    const totalCookies = this.data.actual_cookies_count;
+    const totalViolations = this.data.total_issues;
+    const thirdPartyCount = this.data.summary.third_party_cookies.length;
+    const firstPartyCount = totalCookies - thirdPartyCount;
+
+    this.updateElement("cookies-monitored", totalCookies);
+    this.updateElement("violations-detected", totalViolations);
+    this.updateElement("third-party", thirdPartyCount);
+    this.updateElement("first-party", firstPartyCount);
+  }
+
+  updatePolicyStatus() {
+    const policyElement = document.getElementById("policy-status");
+
+    if (this.data.website_url && this.data.policy_cookies_count > 0) {
+      policyElement.innerHTML = `
+              <a href="${this.data.website_url}" class="policy-link" target="_blank">
+                  📄 Cookie Policy Found - Click to View
+              </a>
+          `;
+    } else {
+      policyElement.innerHTML = `
+              <div class="policy-warning">
+                  ⚠️ Không tìm thấy chính sách cookie được khai báo
+              </div>
+          `;
     }
   }
 
-  loadStatsForTab(tabId) {
-    chrome.runtime.sendMessage({ action: 'GET_COOKIES' }, (response) => {
+  updateCookieStatistics() {
+    this.updateElement("declared-cookies", this.data.policy_cookies_count);
+    this.updateElement("actual-cookies", this.data.actual_cookies_count);
+    this.updateElement("compliance-score", `${this.data.compliance_score}%`);
+  }
 
-      if (response && response.success) {
-      const data = {
-        cookiesByTab: {
-        [tabId]: response.data
+  createCharts() {
+    this.destroyExistingCharts();
+    this.createSeverityChart();
+    this.createTypeChart();
+  }
+
+  destroyExistingCharts() {
+    // Destroy existing charts if they exist
+    if (this.charts.severity) {
+      this.charts.severity.destroy();
+      this.charts.severity = null;
+    }
+    if (this.charts.type) {
+      this.charts.type.destroy();
+      this.charts.type = null;
+    }
+  }
+
+  createSeverityChart() {
+    const ctx = document.getElementById("severityChart").getContext("2d");
+    const data = this.data.statistics.by_severity;
+
+    document.getElementById("severity-chart-loading").classList.add("hidden");
+    document.getElementById("severityChart").classList.remove("hidden");
+
+    this.charts.severity = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: Object.keys(data),
+        datasets: [
+          {
+            label: "Violations",
+            data: Object.values(data),
+            backgroundColor: [
+              "#e74c3c", // Critical - Red
+              "#f39c12", // High - Orange
+              "#f1c40f", // Medium - Yellow
+              "#27ae60", // Low - Green
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  createTypeChart() {
+    const ctx = document.getElementById("typeChart").getContext("2d");
+    const data = this.data.statistics.by_category;
+
+    document.getElementById("type-chart-loading").classList.add("hidden");
+    document.getElementById("typeChart").classList.remove("hidden");
+
+    this.charts.type = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: Object.keys(data),
+        datasets: [
+          {
+            label: "Violations",
+            data: Object.values(data),
+            backgroundColor: [
+              "#3498db", // Specific - Blue
+              "#9b59b6", // General - Purple
+              "#e67e22", // Undefined - Orange
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  updateViolationsList() {
+    const listElement = document.getElementById("violations-list");
+    const topViolations = this.data.issues.slice(0, 5);
+
+    const html = topViolations
+      .map(
+        (violation) => `
+          <div class="violation-item">
+              <div class="violation-icon ${violation.severity.toLowerCase()}">
+                  !
+              </div>
+              <div class="violation-content">
+                  <div class="violation-title">${violation.cookie_name}</div>
+                  <div class="violation-subtitle">${violation.description}</div>
+              </div>
+              <div class="violation-severity ${violation.severity.toLowerCase()}">
+                  ${violation.severity}
+              </div>
+          </div>
+      `
+      )
+      .join("");
+
+    listElement.innerHTML = html;
+  }
+
+  updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = value;
+    }
+  }
+
+  // Action Methods
+  viewAllViolations() {
+    const viewAllBtn = document.getElementById("view-all-violations-btn");
+    if (viewAllBtn) {
+      viewAllBtn.addEventListener("click", function () {
+        alert("Navigating to detailed violations view...");
+      });
+    }
+    // Implement navigation to detailed violations page
+  }
+
+  viewCookieDetails() {
+    const viewCookieDetailsBtn = document.getElementById(
+      "view-cookie-details-btn"
+    );
+    if (viewCookieDetailsBtn) {
+      viewCookieDetailsBtn.addEventListener("click", function () {
+        alert("Opening cookie details...");
+      });
+    }
+  }
+
+  blockDomain() {
+    const blockDomainBtn = document.getElementById("block-domain-btn");
+    if (blockDomainBtn) {
+      blockDomainBtn.addEventListener("click", function () {
+        const domain = new URL(this.data.website_url).hostname;
+        if (confirm(`Block domain ${domain}?`)) {
+          alert(`Domain ${domain} has been blocked.`);
         }
-      };
+      });
+    }
+  }
 
-      // Initialize stats
-      let totalCookies = 0;
-      let firstPartyCount = 0;
-      let thirdPartyCount = 0;
-      let violationsCount = 0;
+  clearAllCookies() {
+    const clearAllCookiesBtn = document.getElementById("clear-all-cookies-btn");
+    if (clearAllCookiesBtn) {
+      clearAllCookiesBtn.addEventListener("click", function () {
+        if (
+          confirm(
+            "Are you sure you want to clear all cookies? This action cannot be undone."
+          )
+        ) {
+          alert("All cookies have been cleared.");
+        }
+      });
+    }
+  }
 
-      if (data.cookiesByTab && data.cookiesByTab[tabId] && data.cookiesByTab[tabId].length > 0) {
-        const tabCookies = data.cookiesByTab[tabId];
+  exportReport() {
+    const exportReportBtn = document.getElementById("export-report-btn");
+    if (exportReportBtn) {
+      exportReportBtn.addEventListener("click", function () {
+        alert("Exporting compliance report...");
+        // Implement report export functionality
+      });
+    }
+  }
 
-        // Calculate statistics
-        const uniqueDomains = new Set();
+  viewPolicy() {
+    const viewPolicyBtn = document.getElementById("view-policy-btn");
+    if (viewPolicyBtn) {
+      viewPolicyBtn.addEventListener("click", function () {
+        if (this.data.website_url) {
+          window.open(this.data.website_url, "_blank");
+        } else {
+          alert("No cookie policy found for this website.");
+        }
+      });
+    }
+  }
 
-        tabCookies.forEach(cookie => {
-          totalCookies++;
-          uniqueDomains.add(cookie.domain);
-
-          if (cookie.isThirdParty) {
-            thirdPartyCount++;
-          } else {
-            firstPartyCount++;
-          }
-
-          // Check for violations
-          // if (this.checkCookieViolations(cookie)) {
-          //   violationsCount++;
-          // }
+  refreshCheck() {
+    const refreshCheckBtn = document.getElementById("refresh-check-btn");
+    if (refreshCheckBtn) {
+      refreshCheckBtn.addEventListener("click", function () {
+        alert("Refreshing compliance check...");
+        // Reset loading states
+        document.querySelectorAll(".value").forEach((el) => {
+          el.innerHTML = '<div class="loading">Loading</div>';
         });
 
-        // Update domain stats
-        this.updateDomainStats(tabCookies);
-      }
-
-      // Update dashboard stats
-      this.updateStatsDisplay({
-        totalCookies,
-        violationsCount,
-        thirdPartyCount,
-        firstPartyCount
-      });
-      };
-    });
-  }
-
-  updateStatsDisplay(stats) {
-    if (this.statsElements.cookiesMonitored) {
-      this.statsElements.cookiesMonitored.textContent = stats.totalCookies;
-    }
-    if (this.statsElements.violationsDetected) {
-      this.statsElements.violationsDetected.textContent = stats.violationsCount;
-    }
-    if (this.statsElements.thirdParty) {
-      this.statsElements.thirdParty.textContent = stats.thirdPartyCount;
-    }
-    if (this.statsElements.firstParty) {
-      this.statsElements.firstParty.textContent = stats.firstPartyCount;
-    }
-  }
-
-  updateDomainStats(cookies) {
-    const domainCounts = {};
-
-    // Count cookies from each domain
-    cookies.forEach(cookie => {
-      const domain = cookie.domain;
-      if (!domainCounts[domain]) {
-        domainCounts[domain] = {
-          total: 0,
-          firstParty: 0,
-          thirdParty: 0
-        };
-      }
-
-      domainCounts[domain].total++;
-      if (cookie.isThirdParty) {
-        domainCounts[domain].thirdParty++;
-      } else {
-        domainCounts[domain].firstParty++;
-      }
-    });
-
-    // Convert to array and sort by total count
-    const domainArray = Object.entries(domainCounts)
-      .map(([domain, counts]) => ({ domain, ...counts }))
-      .sort((a, b) => b.total - a.total);
-
-    // Update top domains list
-    const topDomainsList = document.getElementById('top-domains');
-    if (topDomainsList) {
-      topDomainsList.innerHTML = '';
-
-      const topDomains = domainArray.slice(0, 10);
-      topDomains.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${item.domain}</strong>: ${item.total} cookies (${item.firstParty} first-party, ${item.thirdParty} third-party)`;
-        topDomainsList.appendChild(li);
+        // Simulate refresh
+        setTimeout(() => {
+          this.updateDashboard();
+        }, 2000);
       });
     }
-  }
-
-  checkCookieViolations(cookie) {
-    // Simple violation checks
-    const violations = [];
-
-    // Check for session cookies that persist too long
-    if (!cookie.expires) {
-      if (cookie.cookieName.includes('_ga') || cookie.cookieName.includes('_gid')) {
-        violations.push('Analytics cookie without proper expiration');
-      }
-    } else {
-      const expiryDate = new Date(cookie.expires);
-      const now = new Date();
-      const diffYears = (expiryDate - now) / (1000 * 60 * 60 * 24 * 365);
-
-      if (diffYears > 2) {
-        violations.push('Cookie expires more than 2 years in the future');
-      }
-    }
-
-    // Check for third-party tracking cookies
-    if (cookie.isThirdParty && (
-      cookie.cookieName.includes('_ga') ||
-      cookie.cookieName.includes('_gid') ||
-      cookie.cookieName.includes('__gads') ||
-      cookie.cookieName.includes('_fbp')
-    )) {
-      violations.push('Third-party tracking cookie detected');
-    }
-
-    // Check for insecure cookies
-    if (!cookie.secure && cookie.domain.includes('https')) {
-      violations.push('Cookie should be marked as Secure');
-    }
-
-    return violations.length > 0;
-  }
-
-  resetStats() {
-    this.updateStatsDisplay({
-      totalCookies: 0,
-      violationsCount: 0,
-      thirdPartyCount: 0,
-      firstPartyCount: 0
-    });
   }
 }

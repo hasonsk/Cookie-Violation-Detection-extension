@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       await cookieManager.loadCookieDataForTab(tabId);
       await domainBlocking.loadBlockedDomains();
       await tabManager.updateCurrentTabInfo(tabId);
-      dashboard.updateStats();
+      // dashboard.updateStats();
     } else {
       tabManager.showNoTabMessage();
     }

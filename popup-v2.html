@@ -1,1241 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cookie Compliance Monitor</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Compliance Monitor</title>
+    <link rel="stylesheet" href="popup-v2.css">
+  </head>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      width: 450px;
-      max-height: 650px;
-      padding: 15px;
-      font-family: Arial, sans-serif;
-    }
-
-    /* Header */
-    .header {
-      background-color: #2563eb;
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header .title {
-      font-weight: bold;
-      font-size: 1.125rem;
-    }
-
-    .header .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .header .actions button {
-      padding: 0.25rem;
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 0.25rem;
-    }
-
-    .header .actions button:hover {
-      background-color: #1d4ed8;
-    }
-
-    /* Main content */
-    .main-content {
-      flex-grow: 1;
-      overflow: auto;
-      padding: 1rem;
-    }
-
-    .screen-title {
-      font-size: 1.125rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-
-    /* Navigation */
-    .navigation {
-            display: flex;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .nav-button {
-            flex: 1;
-            padding: 0.75rem 0.5rem;
-            background: none;
-            border: none;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 3px solid transparent;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .nav-button.active {
-            background: #f1f5f9;
-            border-bottom-color: #667eea;
-            color: #667eea;
-        }
-
-        .nav-button:hover {
-            background: #f8fafc;
-        }
-
-        .current-tab {
-            background: white;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.85rem;
-            display: none;
-        }
-
-        .url-label {
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        #current-url {
-            color: #1e293b;
-            word-break: break-all;
-        }
-
-      /* Dashboard cards */
-    .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .card {
-      background-color: white;
-      padding: 1rem;
-      border-radius: 0.25rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .card .label {
-      font-size: 0.875rem;
-      color: #6b7280;
-    }
-
-    .card .value {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    .card .value.alert {
-      color: #dc2626;
-    }
-
-    /* Lists and panels */
-    .panel {
-      background-color: white;
-      border-radius: 0.25rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      margin-bottom: 1rem;
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 0.75rem;
-      border-bottom: 1px solid #e5e7eb;
-      font-weight: 500;
-    }
-
-    .panel-footer {
-      padding: 0.5rem;
-      border-top: 1px solid #e5e7eb;
-      text-align: center;
-    }
-
-    .panel-footer button {
-      color: #2563eb;
-      font-size: 0.875rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    /* Violation items */
-    .list-divider {
-      border-bottom: 1px solid #f3f4f6;
-    }
-
-    .list-divider:last-child {
-      border-bottom: none;
-    }
-
-    .violation-item {
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-    }
-
-    .icon {
-      margin-right: 0.75rem;
-    }
-
-    .icon.red {
-      background-color: #fef2f2;
-      color: #dc2626;
-      padding: 0.25rem;
-      border-radius: 9999px;
-    }
-
-    .content {
-      flex: 1;
-    }
-
-    .content .title {
-      font-weight: 500;
-      font-size: 0.875rem;
-    }
-
-    .content .subtitle {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    .time {
-      font-size: 0.75rem;
-      color: #9ca3af;
-    }
-
-    /* Progress bars */
-    .progress-item {
-      margin-bottom: 0.75rem;
-    }
-
-    .progress-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.25rem;
-    }
-
-    .progress-header span {
-      font-size: 0.875rem;
-    }
-
-    .progress-header .value {
-      font-weight: 500;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 0.5rem;
-      background-color: #e5e7eb;
-      border-radius: 9999px;
-    }
-
-    .progress-bar .fill {
-      height: 0.5rem;
-      background-color: #2563eb;
-      border-radius: 9999px;
-    }
-
-    /* Cookie screen */
-    .screen-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .search-box {
-      position: relative;
-    }
-
-    .search-box input {
-      padding-left: 2rem;
-      padding-right: 0.5rem;
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-    }
-
-    .search-box .search-icon {
-      position: absolute;
-      left: 0.5rem;
-      top: 0.5rem;
-      color: #9ca3af;
-    }
-
-    .filters {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      overflow-x: auto;
-    }
-
-    .filter-button {
-      padding: 0.25rem 0.75rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      border: none;
-      cursor: pointer;
-    }
-
-    .filter-button.active {
-      background-color: #2563eb;
-      color: white;
-    }
-
-    .filter-button:not(.active) {
-      background-color: #e5e7eb;
-    }
-
-    /* Cookie items */
-    .cookie-item {
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .cookie-item:hover {
-      background-color: #f9fafb;
-    }
-
-    .cookie-item.violation {
-      background-color: #fef2f2;
-    }
-
-    .icon.green {
-      color: #16a34a;
-    }
-
-    .chevron {
-      transform: rotate(0deg);
-      transition: transform 0.2s;
-      color: #9ca3af;
-    }
-
-    .chevron.expanded {
-      transform: rotate(90deg);
-    }
-
-    .cookie-details {
-      padding: 0.75rem;
-      background-color: #f9fafb;
-      font-size: 0.875rem;
-      border-top: 1px solid #f3f4f6;
-    }
-
-    .details-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .detail-label {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    .current-tab {
-      background-color: #f5f5f5;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      word-break: break-all;
-      display: none;
-      font-size: 12px;
-    }
-
-    .url-label {
-      font-weight: bold;
-      margin-right: 5px;
-    }
-
-    .violation-alert {
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      background-color: #fef2f2;
-      border-radius: 0.25rem;
-      border: 1px solid #fee2e2;
-      font-size: 0.75rem;
-    }
-
-    .violation-alert .title {
-      font-weight: 500;
-      color: #991b1b;
-    }
-
-    .violation-list {
-      margin-top: 0.25rem;
-      list-style-type: disc;
-      list-style-position: inside;
-      color: #b91c1c;
-    }
-
-    /* Domains screen */
-
-
-    /* Settings screen */
-    .setting-item {
-      margin-bottom: 1rem;
-    }
-
-    .setting-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.25rem;
-    }
-
-    .setting-label {
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .setting-description {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.25rem;
-    }
-
-    textarea {
-      height: 6rem;
-      font-family: monospace;
-      font-size: 0.75rem;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .button-container button {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      border: none;
-      cursor: pointer;
-    }
-
-    .primary-button {
-      background-color: #2563eb;
-      color: white;
-    }
-
-    .secondary-button {
-      background-color: #e5e7eb;
-    }
-
-    .danger-button {
-      width: 100%;
-      background-color: #fee2e2;
-      color: #b91c1c;
-      padding: 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      border: none;
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-
-    .version {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    /* Hide all screens except dashboard initially */
-    #cookies-screen,
-    #domain-screen,
-    #settings-screen {
+    .hidden {
       display: none;
     }
-
-    /* Hidden state for details sections */
-    .cookie-details,
-    .rule-details {
-      display: none;
-    }
-    .header .refresh-btn {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        padding: 8px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .header .refresh-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-50%) rotate(180deg);
-    }
-
-    /* Domains */
-        /* Input Section */
-        .blocked-domains {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .input-container {
-            position: relative;
-            margin-bottom: 12px;
-        }
-
-        #domain-to-block {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 4px;
-            font-size: 14px;
-            background: white;
-            outline: none;
-        }
-
-        #domain-to-block:focus {
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-        }
-
-        #domain-to-block::placeholder {
-            color: #a0aec0;
-        }
-
-        .suggestions-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #cbd5e0;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-
-        .suggestion-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            border-bottom: 1px solid #f7fafc;
-        }
-
-        .suggestion-item:hover {
-            background-color: #edf2f7;
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        #add-block-domain {
-            background-color: #4299e1;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        #add-block-domain:hover {
-            background-color: #3182ce;
-        }
-
-        #add-block-domain:disabled {
-            background-color: #a0aec0;
-            cursor: not-allowed;
-        }
-
-        /* Blocked Domains List */
-        #blocked-domains-list {
-            list-style: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            margin-bottom: 24px;
-            background: white;
-        }
-
-        #blocked-domains-list:empty::after {
-            content: "Không có domain nào bị chặn";
-            display: block;
-            padding: 16px;
-            text-align: center;
-            color: #718096;
-            font-style: italic;
-        }
-
-        #blocked-domains-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
-
-        #blocked-domains-list li:last-child {
-            border-bottom: none;
-        }
-
-        .domain-name {
-            font-family: 'Monaco', 'Menlo', monospace;
-            background-color: #f7fafc;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-
-        .remove-domain {
-            background-color: #e53e3e;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .remove-domain:hover {
-            background-color: #c53030;
-        }
-
-        /* Stats Section */
-        #stats-tab {
-            border-top: 1px solid #e2e8f0;
-            padding-top: 24px;
-        }
-
-        #top-domains {
-            list-style: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            background: white;
-        }
-
-        #top-domains:empty::after {
-            content: "Chưa có dữ liệu cookie";
-            display: block;
-            padding: 16px;
-            text-align: center;
-            color: #718096;
-            font-style: italic;
-        }
-
-        #top-domains li {
-            padding: 10px 16px;
-            border-bottom: 1px solid #f7fafc;
-            font-size: 14px;
-        }
-
-        #top-domains li:last-child {
-            border-bottom: none;
-        }
-
-        #top-domains li strong {
-            font-family: 'Monaco', 'Menlo', monospace;
-            color: #2d3748;
-            background-color: #f7fafc;
-            padding: 1px 4px;
-            border-radius: 2px;
-            font-size: 13px;
-        }
-
-        .cookie-count {
-            color: #718096;
-            font-size: 13px;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            padding: 12px 16px;
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-            z-index: 10000;
-            max-width: 300px;
-        }
-
-        .notification.success {
-            background-color: #38a169;
-        }
-
-        .notification.error {
-            background-color: #e53e3e;
-        }
-
-        /* Loading state */
-        .loading {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            margin-right: 6px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                margin: 10px;
-                padding: 16px;
-            }
-
-            #blocked-domains-list li {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .remove-domain {
-                align-self: flex-end;
-            }
-        }
-
   </style>
-</head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="title">Cookie Compliance Monitor</div>
+      <div class="actions">
+        <button id="header-settings">
+          <i data-lucide="settings" size="16"></i>
+        </button>
+      </div>
+    </div>
 
-<body>
-  <!-- Header -->
-  <div class="header">
-    <div class="title">Cookie Compliance Monitor</div>
-    <div class="actions">
-      <button id="header-settings">
-        <i data-lucide="settings" size="16"></i>
+    <div class="navigation">
+      <button class="nav-button active" id="nav-dashboard">
+        <i data-lucide="bar-chart" size="20"></i>
+        <span> 📊 Dashboard</span>
+      </button>
+      <button class="nav-button" id="nav-cookies">
+        <i data-lucide="database" size="20"></i>
+        <span> 🍪 Cookies</span>
+      </button>
+      <button class="nav-button" id="nav-domains">
+        <i data-lucide="file-text" size="20"></i>
+        <span>🛡️Domains</span>
+      </button>
+      <button class="nav-button" id="nav-settings">
+        <i data-lucide="settings" size="20"></i>
+        <span>⚙️Settings</span>
       </button>
     </div>
-  </div>
 
-  <div class="navigation">
-    <button class="nav-button active" id="nav-dashboard">
-      <i data-lucide="bar-chart" size="20"></i>
-      <span> 📊 Dashboard</span>
-    </button>
-    <button class="nav-button" id="nav-cookies">
-      <i data-lucide="database" size="20"></i>
-      <span> 🍪 Cookies</span>
-    </button>
-    <button class="nav-button" id="nav-domains">
-      <i data-lucide="file-text" size="20"></i>
-      <span>🛡️Domains</span>
-    </button>
-    <button class="nav-button" id="nav-settings">
-      <i data-lucide="settings" size="20"></i>
-      <span>⚙️Settings</span>
-    </button>
-  </div>
+    <div id="current-tab-info" class="current-tab">
+      <span class="url-label">Trang web hiện tại:</span>
+      <span id="current-url"></span>
+    </div>
 
-  <div id="current-tab-info" class="current-tab">
-    <span class="url-label">Trang web hiện tại:</span>
-    <span id="current-url"></span>
-  </div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Dashboard Screen -->
+      <div class="dashboard-screen">
+        <h2 class="screen-title">Dashboard</h2>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Dashboard Screen -->
-    <div id="dashboard-screen">
-      <h2 class="screen-title">Dashboard</h2>
+        <!-- Summary Cards -->
 
-      <!-- Summary Cards -->
-      <div class="summary-cards">
-        <div class="card">
-          <div class="label">Cookies Monitored</div>
-          <div class="value">32</div>
-        </div>
-        <div class="card">
-          <div class="label">Violations Detected</div>
-          <div class="value alert">26</div>
-        </div>
-        <div class="card">
-          <div class="label">Third party</div>
-          <div class="value">24</div>
-        </div>
-        <div class="card">
-          <div class="label">First party</div>
-          <div class="value">12</div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">Violation Categories</div>
-        <div style="padding: 1rem">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span>Retention Issues</span>
-              <span class="value">42%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="fill" style="width: 42%"></div>
+        <!-- Cookie Statistics -->
+        <div class="panel">
+          <div class="panel-header">Summary Statistics</div>
+          <div class="panel-content">
+            <div class="summary-cards" style="margin-bottom: 0">
+              <div class="card">
+                <div class="label">Cookies Monitored</div>
+                <div class="value" id="cookies-monitored">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label">Violations Detected</div>
+                <div class="value alert" id="violations-detected">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label">Compliance Score</div>
+                <div class="value alert" id="compliance-score">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label">Declared Cookies</div>
+                <div class="value" id="declared-cookies">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label">Third Party</div>
+                <div class="value" id="third-party">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label">First Party</div>
+                <div class="value" id="first-party">
+                  <div class="loading">Loading</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span>Third-party Sharing</span>
-              <span class="value">28%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="fill" style="width: 28%"></div>
+        </div>
+
+
+        <!-- Cookie Policy Section -->
+        <div class="policy-section">
+          <div class="policy-header">Cookie Policy Status</div>
+          <div id="policy-status">
+            <div class="loading">Checking policy</div>
+          </div>
+        </div>
+
+        <!-- Violation Charts -->
+        <div class="charts-grid">
+          <div class="panel">
+            <div class="panel-header">Violations by Severity</div>
+            <div class="panel-content">
+              <div id="severity-chart-loading" class="loading">
+                Loading chart
+              </div>
+              <div class="chart-container">
+                <canvas id="severityChart" class="hidden"></canvas>
+              </div>
             </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span>Purpose Mismatch</span>
-              <span class="value">21%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="fill" style="width: 21%"></div>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span>Undefined Attributes</span>
-              <span class="value">9%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="fill" style="width: 9%"></div>
+
+          <div class="panel">
+            <div class="panel-header">Violations by Type</div>
+            <div class="panel-content">
+              <div id="type-chart-loading" class="loading">Loading chart</div>
+              <div class="chart-container">
+                <canvas id="typeChart" class="hidden"></canvas>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Recent Violations -->
         <div class="panel">
-          <div class="panel-header">Recent Violations</div>
-          <div>
-            <div class="violation-item list-divider">
-              <div class="icon red">
-                <i data-lucide="alert-triangle" size="16"></i>
-              </div>
-              <div class="content">
-                <div class="title">google.com</div>
-                <div class="subtitle">_ga - Specific - Retention</div>
-              </div>
-              <div class="time">5 mins ago</div>
+          <div class="panel-header">Top 5 Critical Violations</div>
+          <div class="panel-content">
+            <div id="violations-list">
+              <div class="loading">Loading violations</div>
             </div>
           </div>
           <div class="panel-footer">
-            <button>View All Violations</button>
+            <button
+              class="action-btn primary" id="view-all-violations-btn"
+            >
+              View All Violations
+            </button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Cookies Screen -->
-    <div id="cookies-screen">
-      <div class="screen-header">
-        <!-- <h2 class="screen-title">Cookies Monitor</h2> -->
-        <div class="search-box">
-          <input type="text" placeholder="Search cookies..." />
-          <i data-lucide="search" size="14" class="search-icon"></i>
-        </div>
-      </div>
-
-      <!-- Filters -->
-      <div class="filters">
-        <button class="filter-button active" data-filter="all">All</button>
-        <button class="filter-button" data-filter="violations">
-          Violations
-        </button>
-        <button class="filter-button" data-filter="no-issues">
-          No Issues
-        </button>
-        <!-- <button class="filter-button" data-filter="performance">Performance</button> -->
-        <button class="filter-button" data-filter="tracking">Tracking</button>
-      </div>
-
-      <!-- Cookie List -->
-      <div class="panel">
-        <div class="list-divider">
-          <div class="cookie-item violation" data-id="cookie1">
-            <div class="icon">
-              <i data-lucide="alert-triangle" size="16" class="text-red-600"></i>
-            </div>
-            <div class="content">
-              <div class="title">_ga</div>
-              <div class="subtitle">
-                example.com · Session (Violation: >24h)
-              </div>
-            </div>
-            <i data-lucide="chevron-right" size="16" class="chevron"></i>
-          </div>
-          <div class="cookie-details" id="cookie1-details">
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">Purpose</div>
-                <div>Analytical</div>
-              </div>
-              <div>
-                <div class="detail-label">Third-party</div>
-                <div>Google Analytics</div>
-              </div>
-              <div>
-                <div class="detail-label">Behavior</div>
-                <div>Tracks user sessions</div>
-              </div>
-              <div>
-                <div class="detail-label">Policy Match</div>
-                <div style="color: #dc2626">Violation</div>
-              </div>
-            </div>
-            <div class="violation-alert">
-              <div class="title">Violations:</div>
-              <ul class="violation-list">
-                <li>
-                  Cookie is declared as "session" but persists longer than 24
-                  hours
-                </li>
-                <li>
-                  Actual expiration exceeds declared duration by more than 30%
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="cookie2">
-            <div class="icon">
-              <i data-lucide="check-circle" size="16" class="green"></i>
-            </div>
-            <div class="content">
-              <div class="title">JSESSIONID</div>
-              <div class="subtitle">example.com · Session</div>
-            </div>
-            <i data-lucide="chevron-right" size="16" class="chevron"></i>
-          </div>
-          <div class="cookie-details" id="cookie2-details">
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">Purpose</div>
-                <div>Analytical</div>
-              </div>
-              <div>
-                <div class="detail-label">Third-party</div>
-                <div>Google Analytics</div>
-              </div>
-              <div>
-                <div class="detail-label">Behavior</div>
-                <div>Tracks user sessions</div>
-              </div>
-              <div>
-                <div class="detail-label">Policy Match</div>
-                <div>Compliant</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item violation" data-id="cookie3">
-            <div class="icon">
-              <i data-lucide="alert-triangle" size="16" class="text-red-600"></i>
-            </div>
-            <div class="content">
-              <div class="title">__gads</div>
-              <div class="subtitle">
-                doubleclick.net · 1 year (Violation: Policy states 30 days)
-              </div>
-            </div>
-            <i data-lucide="chevron-right" size="16" class="chevron"></i>
-          </div>
-          <div class="cookie-details" id="cookie3-details">
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">Purpose</div>
-                <div>Advertising</div>
-              </div>
-              <div>
-                <div class="detail-label">Third-party</div>
-                <div>DoubleClick</div>
-              </div>
-              <div>
-                <div class="detail-label">Behavior</div>
-                <div>Tracks for ad targeting</div>
-              </div>
-              <div>
-                <div class="detail-label">Policy Match</div>
-                <div style="color: #dc2626">Violation</div>
-              </div>
-            </div>
-            <div class="violation-alert">
-              <div class="title">Violations:</div>
-              <ul class="violation-list">
-                <li>Cookie expiration exceeds policy limits</li>
-                <li>
-                  Actual expiration exceeds declared duration by more than 30%
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item" data-id="cookie4">
-            <div class="icon">
-              <i data-lucide="check-circle" size="16" class="green"></i>
-            </div>
-            <div class="content">
-              <div class="title">user_preferences</div>
-              <div class="subtitle">example.com · 1 month</div>
-            </div>
-            <i data-lucide="chevron-right" size="16" class="chevron"></i>
-          </div>
-          <div class="cookie-details" id="cookie4-details">
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">Purpose</div>
-                <div>Preferences</div>
-              </div>
-              <div>
-                <div class="detail-label">Third-party</div>
-                <div>None</div>
-              </div>
-              <div>
-                <div class="detail-label">Behavior</div>
-                <div>Stores user preferences</div>
-              </div>
-              <div>
-                <div class="detail-label">Policy Match</div>
-                <div>Compliant</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="list-divider">
-          <div class="cookie-item violation" data-id="cookie5">
-            <div class="icon">
-              <i data-lucide="alert-triangle" size="16" class="text-red-600"></i>
-            </div>
-            <div class="content">
-              <div class="title">_fbp</div>
-              <div class="subtitle">
-                facebook.com · 3 months (Violation: Not in policy)
-              </div>
-            </div>
-            <i data-lucide="chevron-right" size="16" class="chevron"></i>
-          </div>
-          <div class="cookie-details" id="cookie5-details">
-            <div class="details-grid">
-              <div>
-                <div class="detail-label">Purpose</div>
-                <div>Advertising</div>
-              </div>
-              <div>
-                <div class="detail-label">Third-party</div>
-                <div>Facebook</div>
-              </div>
-              <div>
-                <div class="detail-label">Behavior</div>
-                <div>Tracks for ad targeting</div>
-              </div>
-              <div>
-                <div class="detail-label">Policy Match</div>
-                <div style="color: #dc2626">Violation</div>
-              </div>
-            </div>
-            <div class="violation-alert">
-              <div class="title">Violations:</div>
-              <ul class="violation-list">
-                <li>Cookie not declared in policy</li>
-                <li>Third-party tracking not disclosed to users</li>
-              </ul>
+        <!-- Quick Actions -->
+        <div class="panel">
+          <div class="panel-header">Quick Actions</div>
+          <div class="panel-content">
+            <div class="actions-grid">
+              <button
+                class="action-btn"
+                id="view-cookie-details-btn"
+              >
+                View Cookie Details
+              </button>
+              <button
+                class="action-btn danger"
+                id="block-domain-btn"
+                >
+                Block Domain
+              </button>
+              <button
+                class="action-btn danger"
+                id="clear-all-cookies-btn"
+                >
+                Clear All Cookies
+              </button>
+              <button class="action-btn"
+              id="export-report-btn"
+              >
+                Export Report
+              </button>
+              <button class="action-btn"
+              id="view-policy-btn"
+              >
+                View Policy
+              </button>
+              <button
+                class="action-btn primary"
+                id="refresh-check-btn"
+                >
+                Refresh Check
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-      <!-- Domains Screen -->
-      <!-- <div id="domain-screen" class="tab-content">
-        <h3>Chặn cookie từ domain</h3>
-        <div class="blocked-domains">
-          <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)">
-          <button id="add-block-domain">Thêm</button>
+      <!-- Cookies Screen -->
+      <div id="cookies-screen">
+        <div class="screen-header">
+          <!-- <h2 class="screen-title">Cookies Monitor</h2> -->
+          <div class="search-box">
+            <input type="text" placeholder="Search cookies..." />
+            <i data-lucide="search" size="14" class="search-icon"></i>
+          </div>
         </div>
-        <h4>Danh sách domain đang bị chặn:</h4>
-        <ul id="blocked-domains-list">
-        </ul>
-        <div id="stats-tab" class="tab-content">
-          <h3>Thống kê chi tiết</h3>
-          <div id="stats-content">
-            <div id="domain-stats">
-              <h4>Top domains đặt cookie:</h4>
-              <ul id="top-domains">
-              </ul>
+
+        <!-- Filters -->
+        <div class="filters">
+          <button class="filter-button active" data-filter="all">All</button>
+          <button class="filter-button" data-filter="violations">
+            Violations
+          </button>
+          <button class="filter-button" data-filter="no-issues">
+            No Issues
+          </button>
+          <!-- <button class="filter-button" data-filter="performance">Performance</button> -->
+          <button class="filter-button" data-filter="tracking">Tracking</button>
+        </div>
+
+        <!-- Cookie List -->
+        <div class="panel">
+          <div class="list-divider">
+            <div class="cookie-item violation" data-id="cookie1">
+              <div class="icon">
+                <i
+                  data-lucide="alert-triangle"
+                  size="16"
+                  class="text-red-600"
+                ></i>
+              </div>
+              <div class="content">
+                <div class="title">_ga</div>
+                <div class="subtitle">
+                  example.com · Session (Violation: >24h)
+                </div>
+              </div>
+              <i data-lucide="chevron-right" size="16" class="chevron"></i>
+            </div>
+            <div class="cookie-details" id="cookie1-details">
+              <div class="details-grid">
+                <div>
+                  <div class="detail-label">Purpose</div>
+                  <div>Analytical</div>
+                </div>
+                <div>
+                  <div class="detail-label">Third-party</div>
+                  <div>Google Analytics</div>
+                </div>
+                <div>
+                  <div class="detail-label">Behavior</div>
+                  <div>Tracks user sessions</div>
+                </div>
+                <div>
+                  <div class="detail-label">Policy Match</div>
+                  <div style="color: #dc2626">Violation</div>
+                </div>
+              </div>
+              <div class="violation-alert">
+                <div class="title">Violations:</div>
+                <ul class="violation-list">
+                  <li>
+                    Cookie is declared as "session" but persists longer than 24
+                    hours
+                  </li>
+                  <li>
+                    Actual expiration exceeds declared duration by more than 30%
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="list-divider">
+            <div class="cookie-item" data-id="cookie2">
+              <div class="icon">
+                <i data-lucide="check-circle" size="16" class="green"></i>
+              </div>
+              <div class="content">
+                <div class="title">JSESSIONID</div>
+                <div class="subtitle">example.com · Session</div>
+              </div>
+              <i data-lucide="chevron-right" size="16" class="chevron"></i>
+            </div>
+            <div class="cookie-details" id="cookie2-details">
+              <div class="details-grid">
+                <div>
+                  <div class="detail-label">Purpose</div>
+                  <div>Analytical</div>
+                </div>
+                <div>
+                  <div class="detail-label">Third-party</div>
+                  <div>Google Analytics</div>
+                </div>
+                <div>
+                  <div class="detail-label">Behavior</div>
+                  <div>Tracks user sessions</div>
+                </div>
+                <div>
+                  <div class="detail-label">Policy Match</div>
+                  <div>Compliant</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="list-divider">
+            <div class="cookie-item violation" data-id="cookie3">
+              <div class="icon">
+                <i
+                  data-lucide="alert-triangle"
+                  size="16"
+                  class="text-red-600"
+                ></i>
+              </div>
+              <div class="content">
+                <div class="title">__gads</div>
+                <div class="subtitle">
+                  doubleclick.net · 1 year (Violation: Policy states 30 days)
+                </div>
+              </div>
+              <i data-lucide="chevron-right" size="16" class="chevron"></i>
+            </div>
+            <div class="cookie-details" id="cookie3-details">
+              <div class="details-grid">
+                <div>
+                  <div class="detail-label">Purpose</div>
+                  <div>Advertising</div>
+                </div>
+                <div>
+                  <div class="detail-label">Third-party</div>
+                  <div>DoubleClick</div>
+                </div>
+                <div>
+                  <div class="detail-label">Behavior</div>
+                  <div>Tracks for ad targeting</div>
+                </div>
+                <div>
+                  <div class="detail-label">Policy Match</div>
+                  <div style="color: #dc2626">Violation</div>
+                </div>
+              </div>
+              <div class="violation-alert">
+                <div class="title">Violations:</div>
+                <ul class="violation-list">
+                  <li>Cookie expiration exceeds policy limits</li>
+                  <li>
+                    Actual expiration exceeds declared duration by more than 30%
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="list-divider">
+            <div class="cookie-item" data-id="cookie4">
+              <div class="icon">
+                <i data-lucide="check-circle" size="16" class="green"></i>
+              </div>
+              <div class="content">
+                <div class="title">user_preferences</div>
+                <div class="subtitle">example.com · 1 month</div>
+              </div>
+              <i data-lucide="chevron-right" size="16" class="chevron"></i>
+            </div>
+            <div class="cookie-details" id="cookie4-details">
+              <div class="details-grid">
+                <div>
+                  <div class="detail-label">Purpose</div>
+                  <div>Preferences</div>
+                </div>
+                <div>
+                  <div class="detail-label">Third-party</div>
+                  <div>None</div>
+                </div>
+                <div>
+                  <div class="detail-label">Behavior</div>
+                  <div>Stores user preferences</div>
+                </div>
+                <div>
+                  <div class="detail-label">Policy Match</div>
+                  <div>Compliant</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="list-divider">
+            <div class="cookie-item violation" data-id="cookie5">
+              <div class="icon">
+                <i
+                  data-lucide="alert-triangle"
+                  size="16"
+                  class="text-red-600"
+                ></i>
+              </div>
+              <div class="content">
+                <div class="title">_fbp</div>
+                <div class="subtitle">
+                  facebook.com · 3 months (Violation: Not in policy)
+                </div>
+              </div>
+              <i data-lucide="chevron-right" size="16" class="chevron"></i>
+            </div>
+            <div class="cookie-details" id="cookie5-details">
+              <div class="details-grid">
+                <div>
+                  <div class="detail-label">Purpose</div>
+                  <div>Advertising</div>
+                </div>
+                <div>
+                  <div class="detail-label">Third-party</div>
+                  <div>Facebook</div>
+                </div>
+                <div>
+                  <div class="detail-label">Behavior</div>
+                  <div>Tracks for ad targeting</div>
+                </div>
+                <div>
+                  <div class="detail-label">Policy Match</div>
+                  <div style="color: #dc2626">Violation</div>
+                </div>
+              </div>
+              <div class="violation-alert">
+                <div class="title">Violations:</div>
+                <ul class="violation-list">
+                  <li>Cookie not declared in policy</li>
+                  <li>Third-party tracking not disclosed to users</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
 
       <div id="domain-screen" class="tab-content">
         <h3>Chặn cookie từ domain</h3>
 
         <div class="blocked-domains">
-            <div class="input-container">
-                <input type="text" id="domain-to-block" placeholder="Nhập domain (vd: analytics.google.com)" autocomplete="off">
-                <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
-            </div>
-            <button id="add-block-domain">
-                <span>Thêm Domain</span>
-            </button>
+          <div class="input-container">
+            <input
+              type="text"
+              id="domain-to-block"
+              placeholder="Nhập domain (vd: analytics.google.com)"
+              autocomplete="off"
+            />
+            <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
+          </div>
+          <button id="add-block-domain">
+            <span>Thêm Domain</span>
+          </button>
         </div>
 
         <h4>Danh sách domain đang bị chặn:</h4>
         <ul id="blocked-domains-list">
-            <li>
-                <span class="domain-name">analytics.google.com</span>
-                <button class="remove-domain" data-domain="analytics.google.com">Xóa</button>
-            </li>
-            <li>
-                <span class="domain-name">facebook.com</span>
-                <button class="remove-domain" data-domain="facebook.com">Xóa</button>
-            </li>
-            <li>
-                <span class="domain-name">doubleclick.net</span>
-                <button class="remove-domain" data-domain="doubleclick.net">Xóa</button>
-            </li>
+          <li>
+            <span class="domain-name">analytics.google.com</span>
+            <button class="remove-domain" data-domain="analytics.google.com">
+              Xóa
+            </button>
+          </li>
+          <li>
+            <span class="domain-name">facebook.com</span>
+            <button class="remove-domain" data-domain="facebook.com">
+              Xóa
+            </button>
+          </li>
+          <li>
+            <span class="domain-name">doubleclick.net</span>
+            <button class="remove-domain" data-domain="doubleclick.net">
+              Xóa
+            </button>
+          </li>
         </ul>
 
         <div id="stats-tab" class="tab-content">
-            <h3>Thống kê chi tiết</h3>
-            <div id="stats-content">
-                <div id="domain-stats">
-                    <h4>Danh sách domains đặt cookie tại trang web này</h4>
-                    <ul id="top-domains">
-                    </ul>
+          <h3>Thống kê chi tiết</h3>
+          <div id="stats-content">
+            <div id="domain-stats">
+              <h4>Danh sách domains đặt cookie tại trang web này</h4>
+              <ul id="top-domains"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Screen -->
+      <div id="settings-screen">
+        <h2 class="screen-title">Settings</h2>
+
+        <div class="panel mb-4">
+          <div class="panel-header">Monitoring Options</div>
+          <div style="padding: 1rem">
+            <div class="setting-item">
+              <div class="setting-header">
+                <label class="setting-label">Auto-scan websites</label>
+                <div class="toggle-switch on">
+                  <div class="toggle-handle"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Settings Screen -->
-    <div id="settings-screen">
-      <h2 class="screen-title">Settings</h2>
-
-      <div class="panel mb-4">
-        <div class="panel-header">Monitoring Options</div>
-        <div style="padding: 1rem">
-          <div class="setting-item">
-            <div class="setting-header">
-              <label class="setting-label">Auto-scan websites</label>
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
               </div>
+              <p class="setting-description">
+                Automatically scan cookies on websites you visit
+              </p>
             </div>
-            <p class="setting-description">
-              Automatically scan cookies on websites you visit
-            </p>
-          </div>
 
-          <div class="setting-item">
-            <div class="setting-header">
-              <label class="setting-label">Show notifications</label>
-              <div class="toggle-switch on">
-                <div class="toggle-handle"></div>
+            <div class="setting-item">
+              <div class="setting-header">
+                <label class="setting-label">Show notifications</label>
+                <div class="toggle-switch on">
+                  <div class="toggle-handle"></div>
+                </div>
               </div>
+              <p class="setting-description">
+                Show desktop notifications for violations
+              </p>
             </div>
-            <p class="setting-description">
-              Show desktop notifications for violations
-            </p>
-          </div>
 
-          <div class="setting-item">
-            <div class="setting-header">
-              <label class="setting-label">Detailed logging</label>
-              <div class="toggle-switch off">
-                <div class="toggle-handle"></div>
+            <div class="setting-item">
+              <div class="setting-header">
+                <label class="setting-label">Detailed logging</label>
+                <div class="toggle-switch off">
+                  <div class="toggle-handle"></div>
+                </div>
               </div>
+              <p class="setting-description">
+                Keep detailed logs of all cookie activities
+              </p>
             </div>
-            <p class="setting-description">
-              Keep detailed logs of all cookie activities
-            </p>
-          </div>
 
-          <div class="setting-item">
-            <label class="setting-label" style="display: block; margin-bottom: 0.25rem">Scan frequency</label>
-            <select>
-              <option>Every page load</option>
-              <option>Every 1 hour</option>
-              <option>Every 24 hours</option>
-              <option>Manually only</option>
-            </select>
+            <div class="setting-item">
+              <label
+                class="setting-label"
+                style="display: block; margin-bottom: 0.25rem"
+                >Scan frequency</label
+              >
+              <select>
+                <option>Every page load</option>
+                <option>Every 1 hour</option>
+                <option>Every 24 hours</option>
+                <option>Manually only</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-header">Advanced</div>
-        <div style="padding: 1rem">
-          <div class="setting-item">
-            <label class="setting-label" style="display: block; margin-bottom: 0.25rem">Data retention</label>
-            <select>
-              <option>30 days</option>
-              <option>90 days</option>
-              <option>1 year</option>
-              <option>Until manually cleared</option>
-            </select>
+        <div class="panel">
+          <div class="panel-header">Advanced</div>
+          <div style="padding: 1rem">
+            <div class="setting-item">
+              <label
+                class="setting-label"
+                style="display: block; margin-bottom: 0.25rem"
+                >Data retention</label
+              >
+              <select>
+                <option>30 days</option>
+                <option>90 days</option>
+                <option>1 year</option>
+                <option>Until manually cleared</option>
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <button class="danger-button">Clear All Data</button>
+            </div>
+
+            <div class="version">Version 1.0.0</div>
           </div>
-
-          <div class="setting-item">
-            <button class="danger-button">Clear All Data</button>
-          </div>
-
-          <div class="version">Version 1.0.0</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- <script src="popup-v2.js"></script> -->
-  <script src="main.js" type="module"></script>
-</body>
-
+    <!-- <script src="popup-v2.js"></script> -->
+    <script src="main.js" type="module"></script>
+    <script src="./lib/chart.js-4.4.2/package/dist/chart.umd.js"></script>
+  </body>
 </html>
