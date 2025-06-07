@@ -12,14 +12,16 @@ document.addEventListener('DOMContentLoaded', async function() {
       { Dashboard },
       { CookieManager },
       { DomainBlocking },
-      { Settings }
+      { Settings },
+      { initializeLocalization, changeLanguage }
     ] = await Promise.all([
       import('./modules/tab-manager.js'),
       import('./modules/navigation.js'),
       import('./modules/dashboard.js'),
       import('./modules/cookie-manager.js'),
       import('./modules/domain-blocking.js'),
-      import('./modules/settings.js')
+      import('./modules/settings.js'),
+      import('./modules/localization.js')
     ]);
 
     // Initialize all modules
@@ -36,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     cookieManager.init();
     domainBlocking.init();
     settings.init();
+    initializeLocalization(); // Initialize localization after other modules
 
     // Load current tab data
     const tabId = await tabManager.getCurrentTabId();
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       await cookieManager.loadCookieDataForTab(tabId);
       await domainBlocking.loadBlockedDomains();
       await tabManager.updateCurrentTabInfo(tabId);
-      // dashboard.updateStats();
+      // dashboard.updateDashboard();
     } else {
       tabManager.showNoTabMessage();
     }
@@ -55,7 +58,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       dashboard,
       cookieManager,
       domainBlocking,
-      settings
+      settings,
+      initializeLocalization, // Add initializeLocalization
+      changeLanguage          // Add changeLanguage
     });
 
   } catch (error) {
@@ -89,21 +94,30 @@ function setupModuleCommunication(modules) {
   eventBus.on('tabChange', async (tabId) => {
     await modules.cookieManager.loadCookieDataForTab(tabId);
     await modules.tabManager.updateCurrentTabInfo(tabId);
-    modules.dashboard.updateStats();
+    modules.dashboard.updateDashboard();
   });
 
   eventBus.on('dataCleared', () => {
-    modules.dashboard.updateStats();
+    modules.dashboard.updateDashboard();
     modules.cookieManager.clearDisplay();
   });
 
   eventBus.on('navigationChange', (screen) => {
     if (screen === 'dashboard') {
-      modules.dashboard.updateStats();
+      modules.dashboard.updateDashboard();
     } else if (screen === 'cookies') {
       modules.cookieManager.applyFilter('all');
     } else if (screen === 'domains') {
       modules.domainBlocking.loadBlockedDomains();
     }
   });
+
+  // Handle language change in settings
+  const languageSelect = document.querySelector('select[data-setting="language"]');
+  if (languageSelect) {
+    languageSelect.addEventListener('change', async (event) => {
+      await modules.changeLanguage(event.target.value);
+      modules.initializeLocalization(); // Re-initialize localization to update all data-i18n elements
+    });
+  }
 }

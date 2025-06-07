@@ -5,6 +5,7 @@ const CONFIG = {
   STORAGE_KEYS: {
     COOKIES: 'collected_cookies',
     COOKIES_BY_TAB: 'cookiesByTab',
+    COMPLIANCE_RESULT: 'complianceResult',
     SETTINGS: 'user_settings',
     BLOCKED_DOMAINS: 'blocked_domains',
     SCAN_HISTORY: 'scan_history'
@@ -15,12 +16,11 @@ const CONFIG = {
       scanFrequency: 'pageload',
       notifications: true
     },
-    SCAN_INTERVAL: 1 * 1000  * 6 // 5 minutes
+    SCAN_INTERVAL: 1 * 1000  * 6
   },
   API_ENDPOINTS: {
     SERVER_API: "http://127.0.0.1:8000",
     COOKIES_ANALYZE: "http://127.0.0.1:8000/analyze",
-    WEB_ANALYSIS: "http://127.0.0.1:8000/submit-cookies"
   }
 };
 
@@ -449,6 +449,11 @@ class ExtensionController {
   async handleMessage(request, sender, sendResponse) {
     try {
       switch (request.action) {
+        case 'GET_COMPLIANCE_RESULT':
+          console.log("get dashboard data");
+          const complianceResult = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT);
+          return ({ success: true, data: complianceResult });
+
         case 'GET_COOKIES':
           console.log("Request from popup: ", request);
           const tabId = activeTabId;
@@ -521,7 +526,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     console.log("Sending cookies to server for analysis:", body);
 
 
-    const response = await fetch("http://localhost:8000/analyze", {
+    const response = await fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -531,6 +536,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     const result = await response.json();
     console.log("Compliance Result:", result);
+    StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, result);
+    console.log("Compliance result saved to localStorage");
   }});
 
 // setInterval(() => {
@@ -561,9 +568,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 //           })
 //     .catch(err => console.error("Error getting cookies:", err));
 //   }
-// }, CONFIG.DEFAULTS.SCAN_INTERVAL || 10000);
+// }, CONFIG.DEFAULTS.SCAN_INTERVAL || 600000);
 
 // Message handling
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   controller.handleMessage(request, sender, sendResponse)
     .then(response => sendResponse(response))

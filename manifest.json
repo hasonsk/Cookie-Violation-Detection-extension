@@ -1,15 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Cookie Session Validator",
+  "name": "__MSG_extensionName__",
   "version": "1.0",
-  "description": "Validates if session cookies actually expire after browser close",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "vi",
   "permissions": ["cookies", "storage", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
       "resources": [
         "modules/*",
-        "main.js"
+        "main.js",
+        "_locales/*"
       ],
       "matches": ["<all_urls>"],
       "use_dynamic_url": false

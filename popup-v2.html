@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cookie Compliance Monitor</title>
+    <title data-i18n="extensionName"></title>
     <link rel="stylesheet" href="popup-v2.css">
   </head>
   <style>
@@ -14,85 +14,85 @@
   <body>
     <!-- Header -->
     <div class="header">
-      <div class="title">Cookie Compliance Monitor</div>
-      <div class="actions">
+      <div class="title" data-i18n="extensionName"></div>
+      <!-- <div class="actions">
         <button id="header-settings">
           <i data-lucide="settings" size="16"></i>
         </button>
-      </div>
+      </div> -->
     </div>
 
     <div class="navigation">
       <button class="nav-button active" id="nav-dashboard">
         <i data-lucide="bar-chart" size="20"></i>
-        <span> 📊 Dashboard</span>
+        <span data-i18n="dashboard"></span>
       </button>
       <button class="nav-button" id="nav-cookies">
-        <i data-lucide="database" size="20"></i>
-        <span> 🍪 Cookies</span>
+        <i data-lucide="cookie" size="20"></i>
+        <span data-i18n="cookies"></span>
       </button>
       <button class="nav-button" id="nav-domains">
         <i data-lucide="file-text" size="20"></i>
-        <span>🛡️Domains</span>
+        <span data-i18n="domains"></span>
       </button>
       <button class="nav-button" id="nav-settings">
         <i data-lucide="settings" size="20"></i>
-        <span>⚙️Settings</span>
+        <span data-i18n="settings"></span>
       </button>
     </div>
 
     <div id="current-tab-info" class="current-tab">
-      <span class="url-label">Trang web hiện tại:</span>
+      <span class="url-label" data-i18n="currentWebsite"></span>
       <span id="current-url"></span>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <body class="main-content">
       <!-- Dashboard Screen -->
-      <div class="dashboard-screen">
-        <h2 class="screen-title">Dashboard</h2>
+      <div id="dashboard-screen">
+        <h2 class="screen-title" data-i18n="dashboard"></h2>
 
         <!-- Summary Cards -->
 
         <!-- Cookie Statistics -->
         <div class="panel">
-          <div class="panel-header">Summary Statistics</div>
+          <div class="panel-header" data-i18n="summaryStatistics"></div>
           <div class="panel-content">
             <div class="summary-cards" style="margin-bottom: 0">
               <div class="card">
-                <div class="label">Cookies Monitored</div>
+                <div class="label" data-i18n="cookiesMonitored"></div>
                 <div class="value" id="cookies-monitored">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
               <div class="card">
-                <div class="label">Violations Detected</div>
+                <div class="label" data-i18n="violationsDetected"></div>
                 <div class="value alert" id="violations-detected">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
               <div class="card">
-                <div class="label">Compliance Score</div>
+                <div class="label" data-i18n="complianceScore"></div>
                 <div class="value alert" id="compliance-score">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
               <div class="card">
-                <div class="label">Declared Cookies</div>
+                <div class="label" data-i18n="declaredCookies"></div>
                 <div class="value" id="declared-cookies">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
               <div class="card">
-                <div class="label">Third Party</div>
+                <div class="label" data-i18n="thirdParty"></div>
                 <div class="value" id="third-party">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
               <div class="card">
-                <div class="label">First Party</div>
+                <div class="label" data-i18n="firstParty"></div>
                 <div class="value" id="first-party">
-                  <div class="loading">Loading</div>
+                  <div class="loading" data-i18n="loading"></div>
                 </div>
               </div>
             </div>
@@ -102,19 +102,18 @@
 
         <!-- Cookie Policy Section -->
         <div class="policy-section">
-          <div class="policy-header">Cookie Policy Status</div>
+          <div class="policy-header" data-i18n="cookiePolicyStatus"></div>
           <div id="policy-status">
-            <div class="loading">Checking policy</div>
+            <div class="loading" data-i18n="checkingPolicy"></div>
           </div>
         </div>
 
         <!-- Violation Charts -->
         <div class="charts-grid">
           <div class="panel">
-            <div class="panel-header">Violations by Severity</div>
+            <div class="panel-header" data-i18n="violationsBySeverity"></div>
             <div class="panel-content">
-              <div id="severity-chart-loading" class="loading">
-                Loading chart
+              <div id="severity-chart-loading" class="loading" data-i18n="loadingChart">
               </div>
               <div class="chart-container">
                 <canvas id="severityChart" class="hidden"></canvas>
@@ -123,9 +122,9 @@
           </div>
 
           <div class="panel">
-            <div class="panel-header">Violations by Type</div>
+            <div class="panel-header" data-i18n="violationsByType"></div>
             <div class="panel-content">
-              <div id="type-chart-loading" class="loading">Loading chart</div>
+              <div id="type-chart-loading" class="loading" data-i18n="loadingChart"></div>
               <div class="chart-container">
                 <canvas id="typeChart" class="hidden"></canvas>
               </div>
@@ -135,59 +134,43 @@
 
         <!-- Recent Violations -->
         <div class="panel">
-          <div class="panel-header">Top 5 Critical Violations</div>
+          <div class="panel-header" data-i18n="top5CriticalViolations"></div>
           <div class="panel-content">
             <div id="violations-list">
-              <div class="loading">Loading violations</div>
+              <div class="loading" data-i18n="loadingViolations"></div>
             </div>
           </div>
           <div class="panel-footer">
             <button
-              class="action-btn primary" id="view-all-violations-btn"
+              class="action-btn primary" id="view-all-violations-btn" data-i18n="viewAllViolations"
             >
-              View All Violations
             </button>
           </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="panel">
-          <div class="panel-header">Quick Actions</div>
+          <div class="panel-header" data-i18n="quickActions"></div>
           <div class="panel-content">
             <div class="actions-grid">
               <button
-                class="action-btn"
-                id="view-cookie-details-btn"
-              >
-                View Cookie Details
-              </button>
-              <button
-                class="action-btn danger"
-                id="block-domain-btn"
-                >
-                Block Domain
-              </button>
-              <button
-                class="action-btn danger"
-                id="clear-all-cookies-btn"
-                >
-                Clear All Cookies
-              </button>
-              <button class="action-btn"
-              id="export-report-btn"
-              >
-                Export Report
-              </button>
-              <button class="action-btn"
-              id="view-policy-btn"
-              >
-                View Policy
-              </button>
-              <button
                 class="action-btn primary"
-                id="refresh-check-btn"
+                id="refresh-check-btn" data-i18n="refreshCheck"
                 >
-                Refresh Check
+              </button>
+              <button class="action-btn primary"
+              id="export-report-btn" data-i18n="exportReport"
+              >
+              </button>
+              <button
+                class="action-btn danger"
+                id="block-domain-btn" data-i18n="blockDomain"
+                >
+              </button>
+              <button
+                class="action-btn danger"
+                id="clear-all-cookies-btn" data-i18n="clearAllCookies"
+                >
               </button>
             </div>
           </div>
@@ -199,22 +182,20 @@
         <div class="screen-header">
           <!-- <h2 class="screen-title">Cookies Monitor</h2> -->
           <div class="search-box">
-            <input type="text" placeholder="Search cookies..." />
+            <input type="text" data-i18n-placeholder="searchCookies" />
             <i data-lucide="search" size="14" class="search-icon"></i>
           </div>
         </div>
 
         <!-- Filters -->
         <div class="filters">
-          <button class="filter-button active" data-filter="all">All</button>
-          <button class="filter-button" data-filter="violations">
-            Violations
+          <button class="filter-button active" data-filter="all" data-i18n="all"></button>
+          <button class="filter-button" data-filter="violations" data-i18n="violations">
           </button>
-          <button class="filter-button" data-filter="no-issues">
-            No Issues
+          <button class="filter-button" data-filter="no-issues" data-i18n="noIssues">
           </button>
           <!-- <button class="filter-button" data-filter="performance">Performance</button> -->
-          <button class="filter-button" data-filter="tracking">Tracking</button>
+          <button class="filter-button" data-filter="tracking" data-i18n="tracking"></button>
         </div>
 
         <!-- Cookie List -->
@@ -231,7 +212,7 @@
               <div class="content">
                 <div class="title">_ga</div>
                 <div class="subtitle">
-                  example.com · Session (Violation: >24h)
+                  example.com · Session (<span data-i18n="violation"></span>: >24h)
                 </div>
               </div>
               <i data-lucide="chevron-right" size="16" class="chevron"></i>
@@ -239,31 +220,28 @@
             <div class="cookie-details" id="cookie1-details">
               <div class="details-grid">
                 <div>
-                  <div class="detail-label">Purpose</div>
-                  <div>Analytical</div>
+                  <div class="detail-label" data-i18n="purpose"></div>
+                  <div data-i18n="analytical"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Third-party</div>
+                  <div class="detail-label" data-i18n="thirdParty"></div>
                   <div>Google Analytics</div>
                 </div>
                 <div>
-                  <div class="detail-label">Behavior</div>
-                  <div>Tracks user sessions</div>
+                  <div class="detail-label" data-i18n="behavior"></div>
+                  <div data-i18n="tracksUserSessions"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Policy Match</div>
-                  <div style="color: #dc2626">Violation</div>
+                  <div class="detail-label" data-i18n="policyMatch"></div>
+                  <div style="color: #dc2626" data-i18n="violation"></div>
                 </div>
               </div>
               <div class="violation-alert">
-                <div class="title">Violations:</div>
+                <div class="title" data-i18n="violationsTitle"></div>
                 <ul class="violation-list">
-                  <li>
-                    Cookie is declared as "session" but persists longer than 24
-                    hours
+                  <li data-i18n="cookieDeclaredSessionPersistsLonger">
                   </li>
-                  <li>
-                    Actual expiration exceeds declared duration by more than 30%
+                  <li data-i18n="actualExpirationExceedsDeclared">
                   </li>
                 </ul>
               </div>
@@ -283,20 +261,20 @@
             <div class="cookie-details" id="cookie2-details">
               <div class="details-grid">
                 <div>
-                  <div class="detail-label">Purpose</div>
-                  <div>Analytical</div>
+                  <div class="detail-label" data-i18n="purpose"></div>
+                  <div data-i18n="analytical"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Third-party</div>
+                  <div class="detail-label" data-i18n="thirdParty"></div>
                   <div>Google Analytics</div>
                 </div>
                 <div>
-                  <div class="detail-label">Behavior</div>
-                  <div>Tracks user sessions</div>
+                  <div class="detail-label" data-i18n="behavior"></div>
+                  <div data-i18n="tracksUserSessions"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Policy Match</div>
-                  <div>Compliant</div>
+                  <div class="detail-label" data-i18n="policyMatch"></div>
+                  <div data-i18n="compliant"></div>
                 </div>
               </div>
             </div>
@@ -313,7 +291,7 @@
               <div class="content">
                 <div class="title">__gads</div>
                 <div class="subtitle">
-                  doubleclick.net · 1 year (Violation: Policy states 30 days)
+                  doubleclick.net · 1 year (<span data-i18n="violationPolicyStates"></span>)
                 </div>
               </div>
               <i data-lucide="chevron-right" size="16" class="chevron"></i>
@@ -321,28 +299,27 @@
             <div class="cookie-details" id="cookie3-details">
               <div class="details-grid">
                 <div>
-                  <div class="detail-label">Purpose</div>
-                  <div>Advertising</div>
+                  <div class="detail-label" data-i18n="purpose"></div>
+                  <div data-i18n="advertising"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Third-party</div>
-                  <div>DoubleClick</div>
+                  <div class="detail-label" data-i18n="thirdParty"></div>
+                  <div data-i18n="doubleClick"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Behavior</div>
-                  <div>Tracks for ad targeting</div>
+                  <div class="detail-label" data-i18n="behavior"></div>
+                  <div data-i18n="tracksForAdTargeting"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Policy Match</div>
-                  <div style="color: #dc2626">Violation</div>
+                  <div class="detail-label" data-i18n="policyMatch"></div>
+                  <div style="color: #dc2626" data-i18n="violation"></div>
                 </div>
               </div>
               <div class="violation-alert">
-                <div class="title">Violations:</div>
+                <div class="title" data-i18n="violationsTitle"></div>
                 <ul class="violation-list">
-                  <li>Cookie expiration exceeds policy limits</li>
-                  <li>
-                    Actual expiration exceeds declared duration by more than 30%
+                  <li data-i18n="cookieExpirationExceedsPolicy"></li>
+                  <li data-i18n="actualExpirationExceedsDeclared">
                   </li>
                 </ul>
               </div>
@@ -362,20 +339,20 @@
             <div class="cookie-details" id="cookie4-details">
               <div class="details-grid">
                 <div>
-                  <div class="detail-label">Purpose</div>
-                  <div>Preferences</div>
+                  <div class="detail-label" data-i18n="purpose"></div>
+                  <div data-i18n="preferences"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Third-party</div>
-                  <div>None</div>
+                  <div class="detail-label" data-i18n="thirdParty"></div>
+                  <div data-i18n="none"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Behavior</div>
-                  <div>Stores user preferences</div>
+                  <div class="detail-label" data-i18n="behavior"></div>
+                  <div data-i18n="storesUserPreferences"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Policy Match</div>
-                  <div>Compliant</div>
+                  <div class="detail-label" data-i18n="policyMatch"></div>
+                  <div data-i18n="compliant"></div>
                 </div>
               </div>
             </div>
@@ -392,7 +369,7 @@
               <div class="content">
                 <div class="title">_fbp</div>
                 <div class="subtitle">
-                  facebook.com · 3 months (Violation: Not in policy)
+                  facebook.com · 3 months (<span data-i18n="violation"></span>: <span data-i18n="notInPolicy"></span>)
                 </div>
               </div>
               <i data-lucide="chevron-right" size="16" class="chevron"></i>
@@ -400,27 +377,27 @@
             <div class="cookie-details" id="cookie5-details">
               <div class="details-grid">
                 <div>
-                  <div class="detail-label">Purpose</div>
-                  <div>Advertising</div>
+                  <div class="detail-label" data-i18n="purpose"></div>
+                  <div data-i18n="advertising"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Third-party</div>
-                  <div>Facebook</div>
+                  <div class="detail-label" data-i18n="thirdParty"></div>
+                  <div data-i18n="facebook"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Behavior</div>
-                  <div>Tracks for ad targeting</div>
+                  <div class="detail-label" data-i18n="behavior"></div>
+                  <div data-i18n="tracksForAdTargeting"></div>
                 </div>
                 <div>
-                  <div class="detail-label">Policy Match</div>
-                  <div style="color: #dc2626">Violation</div>
+                  <div class="detail-label" data-i18n="policyMatch"></div>
+                  <div style="color: #dc2626" data-i18n="violation"></div>
                 </div>
               </div>
               <div class="violation-alert">
-                <div class="title">Violations:</div>
+                <div class="title" data-i18n="violationsTitle"></div>
                 <ul class="violation-list">
-                  <li>Cookie not declared in policy</li>
-                  <li>Third-party tracking not disclosed to users</li>
+                  <li data-i18n="cookieNotDeclaredInPolicy"></li>
+                  <li data-i18n="thirdPartyTrackingNotDisclosed"></li>
                 </ul>
               </div>
             </div>
@@ -429,50 +406,31 @@
       </div>
 
       <div id="domain-screen" class="tab-content">
-        <h3>Chặn cookie từ domain</h3>
+        <h3 data-i18n="blockCookiesFromDomain"></h3>
 
         <div class="blocked-domains">
           <div class="input-container">
             <input
               type="text"
               id="domain-to-block"
-              placeholder="Nhập domain (vd: analytics.google.com)"
+              data-i18n-placeholder="enterDomainExample"
               autocomplete="off"
             />
             <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
           </div>
           <button id="add-block-domain">
-            <span>Thêm Domain</span>
+            <span data-i18n="addDomain"></span>
           </button>
         </div>
 
-        <h4>Danh sách domain đang bị chặn:</h4>
+        <h4 data-i18n="blockedDomainsList"></h4>
         <ul id="blocked-domains-list">
-          <li>
-            <span class="domain-name">analytics.google.com</span>
-            <button class="remove-domain" data-domain="analytics.google.com">
-              Xóa
-            </button>
-          </li>
-          <li>
-            <span class="domain-name">facebook.com</span>
-            <button class="remove-domain" data-domain="facebook.com">
-              Xóa
-            </button>
-          </li>
-          <li>
-            <span class="domain-name">doubleclick.net</span>
-            <button class="remove-domain" data-domain="doubleclick.net">
-              Xóa
-            </button>
-          </li>
         </ul>
 
         <div id="stats-tab" class="tab-content">
-          <h3>Thống kê chi tiết</h3>
           <div id="stats-content">
             <div id="domain-stats">
-              <h4>Danh sách domains đặt cookie tại trang web này</h4>
+              <h4 data-i18n="domainsSettingCookies"></h4>
               <ul id="top-domains"></ul>
             </div>
           </div>
@@ -481,92 +439,110 @@
 
       <!-- Settings Screen -->
       <div id="settings-screen">
-        <h2 class="screen-title">Settings</h2>
+        <h2 class="screen-title" data-i18n="settings"></h2>
+
+        <div class="settings-status">
+            <div class="status-indicator" id="save-status"></div>
+            <span id="save-status-text" data-i18n="settingsSaved"></span>
+        </div>
 
         <div class="panel mb-4">
-          <div class="panel-header">Monitoring Options</div>
-          <div style="padding: 1rem">
-            <div class="setting-item">
-              <div class="setting-header">
-                <label class="setting-label">Auto-scan websites</label>
-                <div class="toggle-switch on">
-                  <div class="toggle-handle"></div>
+            <div class="panel-header" data-i18n="monitoringOptions"></div>
+            <div style="padding: 1rem">
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <label class="setting-label" data-i18n="autoScanWebsites"></label>
+                        <div class="toggle-switch on" data-setting="enableCookieBlocking">
+                            <div class="toggle-handle"></div>
+                        </div>
+                    </div>
+                    <p class="setting-description" data-i18n="automaticallyScanCookies">
+                    </p>
                 </div>
-              </div>
-              <p class="setting-description">
-                Automatically scan cookies on websites you visit
-              </p>
-            </div>
 
-            <div class="setting-item">
-              <div class="setting-header">
-                <label class="setting-label">Show notifications</label>
-                <div class="toggle-switch on">
-                  <div class="toggle-handle"></div>
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <label class="setting-label" data-i18n="showNotifications"></label>
+                        <div class="toggle-switch on" data-setting="showViolationNotifications">
+                            <div class="toggle-handle"></div>
+                        </div>
+                    </div>
+                    <p class="setting-description" data-i18n="showDesktopNotifications">
+                    </p>
                 </div>
-              </div>
-              <p class="setting-description">
-                Show desktop notifications for violations
-              </p>
-            </div>
 
-            <div class="setting-item">
-              <div class="setting-header">
-                <label class="setting-label">Detailed logging</label>
-                <div class="toggle-switch off">
-                  <div class="toggle-handle"></div>
+                <div class="setting-item">
+                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="scanFrequency">
+                    </label>
+                    <select data-setting="scanFrequency">
+                        <option value="pageload" data-i18n="everyPageLoad"></option>
+                        <option value="1hour" data-i18n="every1Hour"></option>
+                        <option value="24hours" data-i18n="every24Hours"></option>
+                        <option value="manual" data-i18n="manuallyOnly"></option>
+                    </select>
                 </div>
-              </div>
-              <p class="setting-description">
-                Keep detailed logs of all cookie activities
-              </p>
-            </div>
 
-            <div class="setting-item">
-              <label
-                class="setting-label"
-                style="display: block; margin-bottom: 0.25rem"
-                >Scan frequency</label
-              >
-              <select>
-                <option>Every page load</option>
-                <option>Every 1 hour</option>
-                <option>Every 24 hours</option>
-                <option>Manually only</option>
-              </select>
+                <div class="setting-item">
+                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="notificationDuration">
+                    </label>
+                    <input type="range" min="1000" max="10000" step="500" value="3000"
+                           data-setting="notificationDuration">
+                    <div class="range-display" data-display="notificationDuration">3s</div>
+                </div>
             </div>
-          </div>
         </div>
 
         <div class="panel">
-          <div class="panel-header">Advanced</div>
-          <div style="padding: 1rem">
-            <div class="setting-item">
-              <label
-                class="setting-label"
-                style="display: block; margin-bottom: 0.25rem"
-                >Data retention</label
-              >
-              <select>
-                <option>30 days</option>
-                <option>90 days</option>
-                <option>1 year</option>
-                <option>Until manually cleared</option>
-              </select>
+            <div class="panel-header" data-i18n="advanced"></div>
+            <div style="padding: 1rem">
+                <div class="setting-item">
+                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="dataRetention">
+                    </label>
+                    <select data-setting="dataRetention">
+                        <option value="30" data-i18n="30Days"></option>
+                        <option value="90" data-i18n="90Days"></option>
+                        <option value="365" data-i18n="1Year"></option>
+                        <option value="forever" data-i18n="untilManuallyCleared"></option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="theme">
+                    </label>
+                    <select data-setting="theme">
+                        <option value="light" data-i18n="light"></option>
+                        <option value="dark" data-i18n="dark"></option>
+                        <option value="auto" data-i18n="auto"></option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="language">
+                    </label>
+                    <select data-setting="language">
+                        <option value="en" data-i18n="english"></option>
+                        <option value="vi" data-i18n="vietnamese"></option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <button class="danger-button" id="clear-all-data" data-i18n="clearAllData"></button>
+                </div>
+
+                <div class="version">Version 1.0.0</div>
             </div>
 
-            <div class="setting-item">
-              <button class="danger-button">Clear All Data</button>
+            <!-- Save/Reset buttons -->
+            <div class="button-container">
+                <button class="secondary-button" id="reset-settings" data-i18n="resetToDefaults"></button>
+                <button class="primary-button" id="save-settings" data-i18n="saveSettings"></button>
             </div>
-
-            <div class="version">Version 1.0.0</div>
-          </div>
         </div>
-      </div>
     </div>
 
     <!-- <script src="popup-v2.js"></script> -->
     <script src="main.js" type="module"></script>
     <script src="./lib/chart.js-4.4.2/package/dist/chart.umd.js"></script>
+    <script src="./lib/lucide-0.513.0-dist/umd/lucide.js"></script>
   </body>
 </html>

@@ -5,7 +5,6 @@ export class Dashboard {
     this.charts = {};
     this.init();
     this.viewAllViolations();
-    this.viewCookieDetails();
     this.blockDomain();
     this.clearAllCookies();
     this.exportReport();
@@ -14,138 +13,25 @@ export class Dashboard {
   }
 
   init() {
-    // Simulate loading data
     setTimeout(() => {
-      this.loadSampleData();
-      this.updateDashboard();
+      this.loadSampleData().then(() => {
+        this.updateDashboard();
+      });
     }, 1000);
   }
 
-  loadSampleData() {
-    // Sample data based on the provided JSON
-    this.data = {
-      website_url:
-        "https://docs.google.com/spreadsheets/d/1SCBkfJOuFw8e9UMlMHjt8t8Sg5CbUlhuJS0xP5PgFHI/edit?gid=0#gid=0",
-      total_issues: 22,
-      compliance_score: 0,
-      statistics: {
-        by_severity: {
-          Critical: 0,
-          High: 6,
-          Medium: 16,
-          Low: 0,
-        },
-        by_category: {
-          Specific: 0,
-          General: 16,
-          Undefined: 6,
-        },
-        by_type: {
-          Purpose: 22,
-        },
-      },
-      summary: {
-        critical_issues: 0,
-        high_issues: 6,
-        undeclared_cookies: [
-          "COMPASS",
-          "SID",
-          "__Secure-1PSID",
-          "__Secure-3PSID",
-          "HSID",
-          "SSID",
-          "APISID",
-          "SAPISID",
-          "__Secure-1PAPISID",
-          "__Secure-3PAPISID",
-          "OSID",
-          "__Secure-OSID",
-          "SEARCH_SAMESITE",
-          "OTZ",
-          "AEC",
-          "__Secure-ENID",
-          "NID",
-          "__Secure-1PSIDTS",
-          "__Secure-3PSIDTS",
-          "SIDCC",
-          "__Secure-1PSIDCC",
-          "__Secure-3PSIDCC",
-        ],
-        declared_cookies: [],
-        third_party_cookies: [],
-        long_term_cookies: [
-          "SID",
-          "__Secure-1PSID",
-          "__Secure-3PSID",
-          "HSID",
-          "SSID",
-          "APISID",
-          "SAPISID",
-          "__Secure-1PAPISID",
-          "__Secure-3PAPISID",
-          "OSID",
-          "__Secure-OSID",
-          "__Secure-ENID",
-        ],
-      },
-      policy_cookies_count: 0,
-      actual_cookies_count: 28,
-      issues: [
-        {
-          cookie_name: "OSID",
-          severity: "High",
-          description:
-            "Undeclared cookie collects user data and persists or transmits to third-party",
-          category: "Undefined",
-          details: {
-            retention_days: 390,
-            inferred_purpose: "Authentication/Session Management",
-          },
-        },
-        {
-          cookie_name: "SID",
-          severity: "High",
-          description:
-            "Undeclared cookie collects user data and persists or transmits to third-party",
-          category: "Undefined",
-          details: {
-            retention_days: 388,
-            inferred_purpose: "Long-term Tracking/Profiling",
-          },
-        },
-        {
-          cookie_name: "__Secure-ENID",
-          severity: "High",
-          description:
-            "Undeclared cookie collects user data and persists or transmits to third-party",
-          category: "Undefined",
-          details: {
-            retention_days: 394,
-            inferred_purpose: "Analytics/Tracking",
-          },
-        },
-        {
-          cookie_name: "AEC",
-          severity: "Medium",
-          description:
-            "Cookie purpose shows no clear alignment with declared policy purposes",
-          category: "General",
-          details: {
-            inferred_purpose: "Long-term Tracking/Profiling",
-          },
-        },
-        {
-          cookie_name: "APISID",
-          severity: "Medium",
-          description:
-            "Cookie purpose shows no clear alignment with declared policy purposes",
-          category: "General",
-          details: {
-            inferred_purpose: "Long-term Tracking/Profiling",
-          },
-        },
-      ],
-    };
+  async loadSampleData() {
+    try {
+      const response = await chrome.runtime.sendMessage({ action: "GET_COMPLIANCE_RESULT" });
+      if (response && response.data) {
+        this.data = response.data;
+        console.log("Data loaded from background script:", this.data);
+      } else {
+        alert("No data received from background script.");
+      }
+    } catch (error) {
+      alert("Error fetching data from background script:", error);
+    }
   }
 
   updateDashboard() {
@@ -171,9 +57,9 @@ export class Dashboard {
   updatePolicyStatus() {
     const policyElement = document.getElementById("policy-status");
 
-    if (this.data.website_url && this.data.policy_cookies_count > 0) {
+    if (this.data.policy_url) {
       policyElement.innerHTML = `
-              <a href="${this.data.website_url}" class="policy-link" target="_blank">
+              <a href="${this.data.policy_url}" class="policy-link" target="_blank">
                   📄 Cookie Policy Found - Click to View
               </a>
           `;
@@ -189,7 +75,7 @@ export class Dashboard {
   updateCookieStatistics() {
     this.updateElement("declared-cookies", this.data.policy_cookies_count);
     this.updateElement("actual-cookies", this.data.actual_cookies_count);
-    this.updateElement("compliance-score", `${this.data.compliance_score}%`);
+    this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
   }
 
   createCharts() {
@@ -257,7 +143,7 @@ export class Dashboard {
 
   createTypeChart() {
     const ctx = document.getElementById("typeChart").getContext("2d");
-    const data = this.data.statistics.by_category;
+    const data = this.data.statistics.by_type;
 
     document.getElementById("type-chart-loading").classList.add("hidden");
     document.getElementById("typeChart").classList.remove("hidden");
@@ -337,21 +223,9 @@ export class Dashboard {
     const viewAllBtn = document.getElementById("view-all-violations-btn");
     if (viewAllBtn) {
       viewAllBtn.addEventListener("click", function () {
-        alert("Navigating to detailed violations view...");
       });
     }
     // Implement navigation to detailed violations page
-  }
-
-  viewCookieDetails() {
-    const viewCookieDetailsBtn = document.getElementById(
-      "view-cookie-details-btn"
-    );
-    if (viewCookieDetailsBtn) {
-      viewCookieDetailsBtn.addEventListener("click", function () {
-        alert("Opening cookie details...");
-      });
-    }
   }
 
   blockDomain() {
