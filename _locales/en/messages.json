@@ -1,0 +1,341 @@
+{
+  "extensionName": {
+    "message": "Cookie Compliance Monitor"
+  },
+  "extensionDescription": {
+    "message": "Validates if session cookies actually expire after browser close"
+  },
+  "dashboard": {
+    "message": "Dashboard"
+  },
+  "cookies": {
+    "message": "Cookies"
+  },
+  "domains": {
+    "message": "Domains"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "currentWebsite": {
+    "message": "Current Website:"
+  },
+  "summaryStatistics": {
+    "message": "Summary Statistics"
+  },
+  "cookiesMonitored": {
+    "message": "Cookies Monitored"
+  },
+  "violationsDetected": {
+    "message": "Violations Detected"
+  },
+  "complianceScore": {
+    "message": "Compliance Score"
+  },
+  "declaredCookies": {
+    "message": "Declared Cookies"
+  },
+  "thirdParty": {
+    "message": "Third Party"
+  },
+  "firstParty": {
+    "message": "First Party"
+  },
+  "loading": {
+    "message": "Loading"
+  },
+  "cookiePolicyStatus": {
+    "message": "Cookie Policy Status"
+  },
+  "checkingPolicy": {
+    "message": "Checking policy"
+  },
+  "violationsBySeverity": {
+    "message": "Violations by Severity"
+  },
+  "violationsByType": {
+    "message": "Violations by Type"
+  },
+  "declaredCookiesByThirdParty": {
+    "message": "Declared Cookies by Third-Party"
+  },
+  "loadingChart": {
+    "message": "Loading chart"
+  },
+  "top5CriticalViolations": {
+    "message": "Top 5 Critical Violations"
+  },
+  "loadingViolations": {
+    "message": "Loading violations"
+  },
+  "viewAllViolations": {
+    "message": "View All Violations"
+  },
+  "quickActions": {
+    "message": "Quick Actions"
+  },
+  "refreshCheck": {
+    "message": "Refresh Check"
+  },
+  "blockDomain": {
+    "message": "Block Domain"
+  },
+  "clearAllCookies": {
+    "message": "Clear All Cookies"
+  },
+  "exportReport": {
+    "message": "Export Report"
+  },
+  "viewPolicy": {
+    "message": "View Policy"
+  },
+  "searchCookies": {
+    "message": "Search cookies..."
+  },
+  "all": {
+    "message": "All"
+  },
+  "violations": {
+    "message": "Violations"
+  },
+  "noIssues": {
+    "message": "No Issues"
+  },
+  "tracking": {
+    "message": "Tracking"
+  },
+  "purpose": {
+    "message": "Purpose"
+  },
+  "analytical": {
+    "message": "Analytical"
+  },
+  "behavior": {
+    "message": "Tracks user sessions"
+  },
+  "policyMatch": {
+    "message": "Policy Match"
+  },
+  "violation": {
+    "message": "Violation"
+  },
+  "violationsTitle": {
+    "message": "Violations:"
+  },
+  "cookieDeclaredSessionPersistsLonger": {
+    "message": "Cookie is declared as \"session\" but persists longer than 24 hours"
+  },
+  "actualExpirationExceedsDeclared": {
+    "message": "Actual expiration exceeds declared duration by more than 30%"
+  },
+  "compliant": {
+    "message": "Compliant"
+  },
+  "violationPolicyStates": {
+    "message": "Violation: Policy states 30 days"
+  },
+  "advertising": {
+    "message": "Advertising"
+  },
+  "doubleClick": {
+    "message": "DoubleClick"
+  },
+  "tracksForAdTargeting": {
+    "message": "Tracks for ad targeting"
+  },
+  "cookieExpirationExceedsPolicy": {
+    "message": "Cookie expiration exceeds policy limits"
+  },
+  "notInPolicy": {
+    "message": "Not in policy"
+  },
+  "facebook": {
+    "message": "Facebook"
+  },
+  "cookieNotDeclaredInPolicy": {
+    "message": "Cookie not declared in policy"
+  },
+  "thirdPartyTrackingNotDisclosed": {
+    "message": "Third-party tracking not disclosed to users"
+  },
+  "none": {
+    "message": "None"
+  },
+  "storesUserPreferences": {
+    "message": "Stores user preferences"
+  },
+  "blockCookiesFromDomain": {
+    "message": "Block cookies from domain"
+  },
+  "enterDomainExample": {
+    "message": "Enter domain (e.g., analytics.google.com)"
+  },
+  "addDomain": {
+    "message": "Add Domain"
+  },
+  "blockedDomainsList": {
+    "message": "List of blocked domains:"
+  },
+  "domainsSettingCookies": {
+    "message": "List of domains setting cookies on this website"
+  },
+  "settingsSaved": {
+    "message": "Settings saved"
+  },
+  "monitoringOptions": {
+    "message": "Monitoring Options"
+  },
+  "autoScanWebsites": {
+    "message": "Auto-scan websites"
+  },
+  "automaticallyScanCookies": {
+    "message": "Automatically scan cookies on websites you visit"
+  },
+  "showNotifications": {
+    "message": "Show notifications"
+  },
+  "showDesktopNotifications": {
+    "message": "Show desktop notifications for violations"
+  },
+  "scanFrequency": {
+    "message": "Scan frequency"
+  },
+  "everyPageLoad": {
+    "message": "Every page load"
+  },
+  "every1Hour": {
+    "message": "Every 1 hour"
+  },
+  "every24Hours": {
+    "message": "Every 24 hours"
+  },
+  "manuallyOnly": {
+    "message": "Manually only"
+  },
+  "notificationDuration": {
+    "message": "Notification duration"
+  },
+  "advanced": {
+    "message": "Advanced"
+  },
+  "dataRetention": {
+    "message": "Data retention"
+  },
+  "30Days": {
+    "message": "30 days"
+  },
+  "90Days": {
+    "message": "90 days"
+  },
+  "1Year": {
+    "message": "1 year"
+  },
+  "untilManuallyCleared": {
+    "message": "Until manually cleared"
+  },
+  "theme": {
+    "message": "Theme"
+  },
+  "light": {
+    "message": "Light"
+  },
+  "dark": {
+    "message": "Dark"
+  },
+  "auto": {
+    "message": "Auto"
+  },
+  "language": {
+    "message": "Language"
+  },
+  "english": {
+    "message": "English"
+  },
+  "vietnamese": {
+    "message": "Tiếng Việt"
+  },
+  "clearAllData": {
+    "message": "Clear All Data"
+  },
+  "resetToDefaults": {
+    "message": "Reset to Defaults"
+  },
+  "saveSettings": {
+    "message": "Save Settings"
+  },
+  "loadingCookies": {
+    "message": "Loading cookies..."
+  },
+  "retention": {
+    "message": "Retention"
+  },
+  "description": {
+    "message": "Description"
+  },
+  "viewIssue": {
+    "message": "View Issue"
+  },
+  "noCookiesFound": {
+    "message": "No cookies found for this website."
+  },
+  "declaredLabel": {
+    "message": "Declared"
+  },
+  "undeclaredLabel": {
+    "message": "Undeclared"
+  },
+  "name": {
+    "message": "Name"
+  },
+  "value": {
+    "message": "Value"
+  },
+  "domain": {
+    "message": "Domain"
+  },
+  "expirationDate": {
+    "message": "Expiration Date"
+  },
+  "secure": {
+    "message": "Secure"
+  },
+  "httpOnly": {
+    "message": "HttpOnly"
+  },
+  "sameSite": {
+    "message": "SameSite"
+  },
+  "path": {
+    "message": "Path"
+  },
+  "filterPolicy": {
+    "message": "Policy Cookies"
+  },
+  "filterRealtime": {
+    "message": "Realtime Cookies"
+  },
+  "filterAll": {
+    "message": "All"
+  },
+  "filterViolations": {
+    "message": "Violations"
+  },
+  "filterNoIssues": {
+    "message": "No Issues"
+  },
+  "filterThirdParty": {
+    "message": "Third-party"
+  },
+  "tagPolicy": {
+    "message": "Policy"
+  },
+  "tagRealtime": {
+    "message": "Realtime"
+  },
+  "tagInPolicy": {
+    "message": "In Policy"
+  },
+  "tagThirdParty": {
+    "message": "3rd Party"
+  }
+}

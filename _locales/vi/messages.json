@@ -1,0 +1,341 @@
+{
+  "extensionName": {
+    "message": "Công cụ giám sát tuân thủ cookie"
+  },
+  "extensionDescription": {
+    "message": "Xác thực xem cookie phiên có thực sự hết hạn sau khi đóng trình duyệt hay không"
+  },
+  "dashboard": {
+    "message": "Dashboard"
+  },
+  "cookies": {
+    "message": "Cookie"
+  },
+  "domains": {
+    "message": "Domains"
+  },
+  "settings": {
+    "message": "Cài đặt"
+  },
+  "currentWebsite": {
+    "message": "Trang web hiện tại:"
+  },
+  "summaryStatistics": {
+    "message": "Thống kê tổng quan"
+  },
+  "cookiesMonitored": {
+    "message": "Cookie được giám sát"
+  },
+  "violationsDetected": {
+    "message": "Vi phạm được phát hiện"
+  },
+  "complianceScore": {
+    "message": "Điểm tuân thủ"
+  },
+  "declaredCookies": {
+    "message": "Cookie đã khai báo"
+  },
+  "thirdParty": {
+    "message": "Cookies bên thứ ba"
+  },
+  "firstParty": {
+    "message": "Cookies bên thứ nhất"
+  },
+  "loading": {
+    "message": "Đang tải"
+  },
+  "cookiePolicyStatus": {
+    "message": "Trạng thái chính sách cookie"
+  },
+  "checkingPolicy": {
+    "message": "Đang kiểm tra chính sách"
+  },
+  "violationsBySeverity": {
+    "message": "Vi phạm theo mức độ nghiêm trọng"
+  },
+  "violationsByType": {
+    "message": "Vi phạm theo loại"
+  },
+  "declaredCookiesByThirdParty": {
+    "message": "Cookie đã khai báo theo bên thứ ba"
+  },
+  "loadingChart": {
+    "message": "Đang tải biểu đồ"
+  },
+  "top5CriticalViolations": {
+    "message": "5 vi phạm nghiêm trọng hàng đầu"
+  },
+  "loadingViolations": {
+    "message": "Đang tải vi phạm"
+  },
+  "viewAllViolations": {
+    "message": "Xem tất cả vi phạm"
+  },
+  "quickActions": {
+    "message": "Hành động nhanh"
+  },
+  "refreshCheck": {
+    "message": "Làm mới kiểm tra"
+  },
+  "blockDomain": {
+    "message": "Chặn miền"
+  },
+  "clearAllCookies": {
+    "message": "Xóa tất cả cookie"
+  },
+  "exportReport": {
+    "message": "Xuất báo cáo"
+  },
+  "viewPolicy": {
+    "message": "Xem chính sách"
+  },
+  "searchCookies": {
+    "message": "Tìm kiếm cookie..."
+  },
+  "all": {
+    "message": "Tất cả"
+  },
+  "violations": {
+    "message": "Vi phạm"
+  },
+  "noIssues": {
+    "message": "Không có vấn đề"
+  },
+  "tracking": {
+    "message": "Theo dõi"
+  },
+  "purpose": {
+    "message": "Mục đích"
+  },
+  "analytical": {
+    "message": "Phân tích"
+  },
+  "behavior": {
+    "message": "Hành vi"
+  },
+  "tracksUserSessions": {
+    "message": "Theo dõi phiên người dùng"
+  },
+  "policyMatch": {
+    "message": "Đối sánh chính sách"
+  },
+  "violation": {
+    "message": "Vi phạm"
+  },
+  "violationsTitle": {
+    "message": "Vi phạm:"
+  },
+  "cookieDeclaredSessionPersistsLonger": {
+    "message": "Cookie được khai báo là \"phiên\" nhưng tồn tại lâu hơn 24 giờ"
+  },
+  "actualExpirationExceedsDeclared": {
+    "message": "Thời gian hết hạn thực tế vượt quá thời gian khai báo hơn 30%"
+  },
+  "compliant": {
+    "message": "Tuân thủ"
+  },
+  "violationPolicyStates": {
+    "message": "Vi phạm: Chính sách quy định 30 ngày"
+  },
+  "advertising": {
+    "message": "Quảng cáo"
+  },
+  "doubleClick": {
+    "message": "DoubleClick"
+  },
+  "tracksForAdTargeting": {
+    "message": "Theo dõi để nhắm mục tiêu quảng cáo"
+  },
+  "cookieExpirationExceedsPolicy": {
+    "message": "Thời gian hết hạn cookie vượt quá giới hạn chính sách"
+  },
+  "notInPolicy": {
+    "message": "Không có trong chính sách"
+  },
+  "facebook": {
+    "message": "Facebook"
+  },
+  "cookieNotDeclaredInPolicy": {
+    "message": "Cookie không được khai báo trong chính sách"
+  },
+  "thirdPartyTrackingNotDisclosed": {
+    "message": "Theo dõi bên thứ ba không được tiết lộ cho người dùng"
+  },
+  "none": {
+    "message": "Không"
+  },
+  "storesUserPreferences": {
+    "message": "Lưu trữ tùy chọn người dùng"
+  },
+  "blockCookiesFromDomain": {
+    "message": "Chặn cookie từ miền"
+  },
+  "enterDomainExample": {
+    "message": "Nhập miền (ví dụ: analytics.google.com)"
+  },
+  "addDomain": {
+    "message": "Thêm miền"
+  },
+  "blockedDomainsList": {
+    "message": "Danh sách miền đang bị chặn:"
+  },
+  "domainsSettingCookies": {
+    "message": "Danh sách miền đặt cookie trên trang web này"
+  },
+  "settingsSaved": {
+    "message": "Cài đặt đã lưu"
+  },
+  "monitoringOptions": {
+    "message": "Tùy chọn giám sát"
+  },
+  "autoScanWebsites": {
+    "message": "Tự động quét trang web"
+  },
+  "automaticallyScanCookies": {
+    "message": "Tự động quét cookie trên các trang web bạn truy cập"
+  },
+  "showNotifications": {
+    "message": "Hiển thị thông báo"
+  },
+  "showDesktopNotifications": {
+    "message": "Hiển thị thông báo trên máy tính để bàn cho các vi phạm"
+  },
+  "scanFrequency": {
+    "message": "Tần suất quét"
+  },
+  "everyPageLoad": {
+    "message": "Mỗi lần tải trang"
+  },
+  "every1Hour": {
+    "message": "Mỗi 1 giờ"
+  },
+  "every24Hours": {
+    "message": "Mỗi 24 giờ"
+  },
+  "manuallyOnly": {
+    "message": "Chỉ thủ công"
+  },
+  "notificationDuration": {
+    "message": "Thời lượng thông báo"
+  },
+  "advanced": {
+    "message": "Nâng cao"
+  },
+  "dataRetention": {
+    "message": "Lưu giữ dữ liệu"
+  },
+  "30Days": {
+    "message": "30 ngày"
+  },
+  "90Days": {
+    "message": "90 ngày"
+  },
+  "1Year": {
+    "message": "1 năm"
+  },
+  "untilManuallyCleared": {
+    "message": "Cho đến khi xóa thủ công"
+  },
+  "theme": {
+    "message": "Chủ đề"
+  },
+  "light": {
+    "message": "Sáng"
+  },
+  "dark": {
+    "message": "Tối"
+  },
+  "auto": {
+    "message": "Tự động"
+  },
+  "language": {
+    "message": "Ngôn ngữ"
+  },
+  "english": {
+    "message": "Tiếng Anh"
+  },
+  "vietnamese": {
+    "message": "Tiếng Việt"
+  },
+  "clearAllData": {
+    "message": "Xóa tất cả dữ liệu"
+  },
+  "resetToDefaults": {
+    "message": "Đặt lại về mặc định"
+  },
+  "saveSettings": {
+    "message": "Lưu cài đặt"
+  },
+  "loadingCookies": {
+    "message": "Đang tải cookie..."
+  },
+  "retention": {
+    "message": "Thời gian lưu giữ"
+  },
+  "description": {
+    "message": "Mô tả"
+  },
+  "viewIssue": {
+    "message": "Xem vấn đề"
+  },
+  "noCookiesFound": {
+    "message": "Không tìm thấy cookie nào cho trang web này."
+  },
+  "declaredLabel": {
+    "message": "Đã khai báo"
+  },
+  "undeclaredLabel": {
+    "message": "Chưa khai báo"
+  },
+  "name": {
+    "message": "Tên"
+  },
+  "value": {
+    "message": "Giá trị"
+  },
+  "domain": {
+    "message": "Miền"
+  },
+  "expirationDate": {
+    "message": "Ngày hết hạn"
+  },
+  "secure": {
+    "message": "Bảo mật"
+  },
+  "httpOnly": {
+    "message": "Chỉ HTTP"
+  },
+  "sameSite": {
+    "message": "SameSite"
+  },
+  "filterPolicy": {
+    "message": "Chính sách Cookie"
+  },
+  "filterRealtime": {
+    "message": "Cookie thời gian thực"
+  },
+  "filterAll": {
+    "message": "Tất cả"
+  },
+  "filterViolations": {
+    "message": "Vi phạm"
+  },
+  "filterNoIssues": {
+    "message": "Không có vấn đề"
+  },
+  "filterThirdParty": {
+    "message": "Bên thứ ba"
+  },
+  "tagPolicy": {
+    "message": "Chính sách"
+  },
+  "tagRealtime": {
+    "message": "Thời gian thực"
+  },
+  "tagInPolicy": {
+    "message": "Trong chính sách"
+  },
+  "tagThirdParty": {
+    "message": "Bên thứ ba"
+  }
+}
