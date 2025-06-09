@@ -6,7 +6,6 @@ export class CookieManager {
   init() {
     this.setupCookieFilters();
     this.setupSearchFunctionality();
-    this.setupExportButtons();
   }
 
   async loadCookieDataForTab(tabId) {
@@ -168,20 +167,6 @@ export class CookieManager {
     }
   }
 
-  setupExportButtons() {
-    // Add event listeners for export and clear functions
-    const exportButton = document.getElementById('export-csv');
-    const clearButton = document.getElementById('clear-data');
-
-    if (exportButton) {
-      exportButton.addEventListener('click', () => this.exportToCsv());
-    }
-
-    if (clearButton) {
-      clearButton.addEventListener('click', () => this.clearCookieData());
-    }
-  }
-
   applyFilter(filterType) {
     const cookieItems = document.querySelectorAll('.cookie-item');
 
@@ -210,21 +195,6 @@ export class CookieManager {
           }
           break;
 
-        case 'performance':
-          // Show only performance cookies
-          const isPerformance = item.querySelector('.subtitle')?.textContent.toLowerCase().includes('performance');
-          if (!isPerformance) {
-            if (parentDiv) parentDiv.style.display = 'none';
-          }
-          break;
-
-        case 'tracking':
-          // Show only tracking cookies
-          const isTracking = item.querySelector('.content')?.textContent.toLowerCase().includes('track');
-          if (!isTracking) {
-            if (parentDiv) parentDiv.style.display = 'none';
-          }
-          break;
       }
     });
   }
@@ -242,100 +212,6 @@ export class CookieManager {
         if (parentDiv) parentDiv.style.display = 'none';
       }
     });
-  }
-
-  async exportToCsv() {
-    try {
-      const { TabManager } = await import('./tab-manager.js');
-      const tabManager = new TabManager();
-      const tabId = await tabManager.getCurrentTabId();
-
-      if (!tabId) return;
-
-      chrome.storage.local.get('cookiesByTab', (data) => {
-        if (!data.cookiesByTab || !data.cookiesByTab[tabId] || data.cookiesByTab[tabId].length === 0) {
-          alert('Không có dữ liệu để xuất');
-          return;
-        }
-
-        const tabCookies = data.cookiesByTab[tabId];
-        this.generateCsvFile(tabCookies, tabId);
-      });
-    } catch (error) {
-      console.error('Error exporting CSV:', error);
-    }
-  }
-
-  generateCsvFile(cookies, tabId) {
-    // Create CSV header
-    let csvContent = 'Domain,Cookie Name,Value,Expires,Path,HttpOnly,Secure,SameSite,Type,Timestamp,URL\n';
-
-    // Add data rows
-    cookies.forEach(cookie => {
-      const row = [
-        cookie.domain,
-        cookie.cookieName,
-        cookie.cookieValue,
-        cookie.expires,
-        cookie.path,
-        cookie.httpOnly,
-        cookie.secure,
-        cookie.sameSite,
-        cookie.isThirdParty ? 'Third-party' : 'First-party',
-        cookie.timestamp,
-        cookie.url || ''
-      ].map(item => `"${String(item || '').replace(/"/g, '""')}"`).join(',');
-
-      csvContent += row + '\n';
-    });
-
-    // Create and download CSV file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-
-    chrome.tabs.get(tabId, (tab) => {
-      const domain = new URL(tab.url).hostname;
-
-      link.setAttribute('href', url);
-      link.setAttribute('download', `cookie_report_${domain}_${new Date().toISOString().slice(0,10)}.csv`);
-      link.style.visibility = 'hidden';
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      URL.revokeObjectURL(url);
-    });
-  }
-
-  async clearCookieData() {
-    try {
-      const { TabManager } = await import('./tab-manager.js');
-      const tabManager = new TabManager();
-      const tabId = await tabManager.getCurrentTabId();
-
-      if (!tabId) return;
-
-      chrome.storage.local.get('cookiesByTab', (data) => {
-        if (data.cookiesByTab) {
-          // Only clear cookies for current tab
-          delete data.cookiesByTab[tabId];
-          chrome.storage.local.set({ 'cookiesByTab': data.cookiesByTab }, () => {
-            chrome.action.setBadgeText({ text: '' });
-            this.currentCookies = [];
-            this.clearDisplay();
-
-            // Emit data cleared event
-            if (window.appEventBus) {
-              window.appEventBus.emit('dataCleared');
-            }
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error clearing cookie data:', error);
-    }
   }
 
   clearDisplay() {
@@ -364,71 +240,5 @@ export class CookieManager {
     if (diffDays < 30) return `${diffDays} days`;
     if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months`;
     return `${Math.ceil(diffDays / 365)} years`;
-  }
-
-  checkCookieViolations(cookie) {
-    const violations = [];
-
-    if (!cookie.expires) {
-      if (cookie.cookieName.includes('_ga') || cookie.cookieName.includes('_gid')) {
-        violations.push('Analytics cookie without proper expiration');
-      }
-    } else {
-      const expiryDate = new Date(cookie.expires);
-      const now = new Date();
-      const diffYears = (expiryDate - now) / (1000 * 60 * 60 * 24 * 365);
-
-      if (diffYears > 2) {
-        violations.push('Cookie expires more than 2 years in the future');
-      }
-    }
-
-    if (cookie.isThirdParty && (
-      cookie.cookieName.includes('_ga') ||
-      cookie.cookieName.includes('_gid') ||
-      cookie.cookieName.includes('__gads') ||
-      cookie.cookieName.includes('_fbp')
-    )) {
-      violations.push('Third-party tracking cookie detected');
-    }
-
-    if (!cookie.secure && cookie.domain.includes('https')) {
-      violations.push('Cookie should be marked as Secure');
-    }
-
-    return violations.length > 0;
-  }
-
-  getViolationMessages(cookie) {
-    const violations = [];
-
-    if (!cookie.expires) {
-      if (cookie.cookieName.includes('_ga') || cookie.cookieName.includes('_gid')) {
-        violations.push('Analytics cookie without proper expiration declaration');
-      }
-    } else {
-      const expiryDate = new Date(cookie.expires);
-      const now = new Date();
-      const diffYears = (expiryDate - now) / (1000 * 60 * 60 * 24 * 365);
-
-      if (diffYears > 2) {
-        violations.push('Cookie expiration exceeds recommended duration');
-      }
-    }
-
-    if (cookie.isThirdParty && (
-      cookie.cookieName.includes('_ga') ||
-      cookie.cookieName.includes('_gid') ||
-      cookie.cookieName.includes('__gads') ||
-      cookie.cookieName.includes('_fbp')
-    )) {
-      violations.push('Third-party tracking without explicit user consent');
-    }
-
-    if (!cookie.secure) {
-      violations.push('Cookie transmitted over insecure connection');
-    }
-
-    return violations.length > 0 ? violations : ['No violations detected'];
   }
 }

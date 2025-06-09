@@ -130,6 +130,16 @@
               </div>
             </div>
           </div>
+
+          <div class="panel">
+            <div class="panel-header" data-i18n="declaredCookiesByThirdParty"></div>
+            <div class="panel-content">
+              <div id="third-party-declared-chart-loading" class="loading" data-i18n="loadingChart"></div>
+              <div class="chart-container">
+                <canvas id="declaredCookiesByThirdPartyChart" class="hidden"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Recent Violations -->
@@ -180,227 +190,25 @@
       <!-- Cookies Screen -->
       <div id="cookies-screen">
         <div class="screen-header">
-          <!-- <h2 class="screen-title">Cookies Monitor</h2> -->
           <div class="search-box">
-            <input type="text" data-i18n-placeholder="searchCookies" />
-            <i data-lucide="search" size="14" class="search-icon"></i>
+            <i data-lucide="search" size="16" class="search-icon"></i>
+            <input type="text" id="cookie-search" placeholder="Search cookies..." />
           </div>
         </div>
-
-        <!-- Filters -->
         <div class="filters">
-          <button class="filter-button active" data-filter="all" data-i18n="all"></button>
-          <button class="filter-button" data-filter="violations" data-i18n="violations">
-          </button>
-          <button class="filter-button" data-filter="no-issues" data-i18n="noIssues">
-          </button>
-          <!-- <button class="filter-button" data-filter="performance">Performance</button> -->
-          <button class="filter-button" data-filter="tracking" data-i18n="tracking"></button>
+          <button class="filter-button active" data-filter="all" data-i18n="filterAll">All</button>
+          <button class="filter-button" data-filter="policy" data-i18n="filterPolicy">Policy Cookies</button>
+          <button class="filter-button" data-filter="realtime" data-i18n="filterRealtime">Realtime Cookies</button>
+          <button class="filter-button" data-filter="violations" data-i18n="filterViolations">Violations</button>
+          <button class="filter-button" data-filter="no-issues" data-i18n="filterNoIssues">No Issues</button>
+          <button class="filter-button" data-filter="third-party" data-i18n="filterThirdParty">Third-party</button>
         </div>
-
+        <div id="cookie-items-container"></div>
         <!-- Cookie List -->
         <div class="panel">
-          <div class="list-divider">
-            <div class="cookie-item violation" data-id="cookie1">
-              <div class="icon">
-                <i
-                  data-lucide="alert-triangle"
-                  size="16"
-                  class="text-red-600"
-                ></i>
-              </div>
-              <div class="content">
-                <div class="title">_ga</div>
-                <div class="subtitle">
-                  example.com · Session (<span data-i18n="violation"></span>: >24h)
-                </div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-            <div class="cookie-details" id="cookie1-details">
-              <div class="details-grid">
-                <div>
-                  <div class="detail-label" data-i18n="purpose"></div>
-                  <div data-i18n="analytical"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="thirdParty"></div>
-                  <div>Google Analytics</div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="behavior"></div>
-                  <div data-i18n="tracksUserSessions"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="policyMatch"></div>
-                  <div style="color: #dc2626" data-i18n="violation"></div>
-                </div>
-              </div>
-              <div class="violation-alert">
-                <div class="title" data-i18n="violationsTitle"></div>
-                <ul class="violation-list">
-                  <li data-i18n="cookieDeclaredSessionPersistsLonger">
-                  </li>
-                  <li data-i18n="actualExpirationExceedsDeclared">
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="list-divider">
-            <div class="cookie-item" data-id="cookie2">
-              <div class="icon">
-                <i data-lucide="check-circle" size="16" class="green"></i>
-              </div>
-              <div class="content">
-                <div class="title">JSESSIONID</div>
-                <div class="subtitle">example.com · Session</div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-            <div class="cookie-details" id="cookie2-details">
-              <div class="details-grid">
-                <div>
-                  <div class="detail-label" data-i18n="purpose"></div>
-                  <div data-i18n="analytical"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="thirdParty"></div>
-                  <div>Google Analytics</div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="behavior"></div>
-                  <div data-i18n="tracksUserSessions"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="policyMatch"></div>
-                  <div data-i18n="compliant"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="list-divider">
-            <div class="cookie-item violation" data-id="cookie3">
-              <div class="icon">
-                <i
-                  data-lucide="alert-triangle"
-                  size="16"
-                  class="text-red-600"
-                ></i>
-              </div>
-              <div class="content">
-                <div class="title">__gads</div>
-                <div class="subtitle">
-                  doubleclick.net · 1 year (<span data-i18n="violationPolicyStates"></span>)
-                </div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-            <div class="cookie-details" id="cookie3-details">
-              <div class="details-grid">
-                <div>
-                  <div class="detail-label" data-i18n="purpose"></div>
-                  <div data-i18n="advertising"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="thirdParty"></div>
-                  <div data-i18n="doubleClick"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="behavior"></div>
-                  <div data-i18n="tracksForAdTargeting"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="policyMatch"></div>
-                  <div style="color: #dc2626" data-i18n="violation"></div>
-                </div>
-              </div>
-              <div class="violation-alert">
-                <div class="title" data-i18n="violationsTitle"></div>
-                <ul class="violation-list">
-                  <li data-i18n="cookieExpirationExceedsPolicy"></li>
-                  <li data-i18n="actualExpirationExceedsDeclared">
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="list-divider">
-            <div class="cookie-item" data-id="cookie4">
-              <div class="icon">
-                <i data-lucide="check-circle" size="16" class="green"></i>
-              </div>
-              <div class="content">
-                <div class="title">user_preferences</div>
-                <div class="subtitle">example.com · 1 month</div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-            <div class="cookie-details" id="cookie4-details">
-              <div class="details-grid">
-                <div>
-                  <div class="detail-label" data-i18n="purpose"></div>
-                  <div data-i18n="preferences"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="thirdParty"></div>
-                  <div data-i18n="none"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="behavior"></div>
-                  <div data-i18n="storesUserPreferences"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="policyMatch"></div>
-                  <div data-i18n="compliant"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="list-divider">
-            <div class="cookie-item violation" data-id="cookie5">
-              <div class="icon">
-                <i
-                  data-lucide="alert-triangle"
-                  size="16"
-                  class="text-red-600"
-                ></i>
-              </div>
-              <div class="content">
-                <div class="title">_fbp</div>
-                <div class="subtitle">
-                  facebook.com · 3 months (<span data-i18n="violation"></span>: <span data-i18n="notInPolicy"></span>)
-                </div>
-              </div>
-              <i data-lucide="chevron-right" size="16" class="chevron"></i>
-            </div>
-            <div class="cookie-details" id="cookie5-details">
-              <div class="details-grid">
-                <div>
-                  <div class="detail-label" data-i18n="purpose"></div>
-                  <div data-i18n="advertising"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="thirdParty"></div>
-                  <div data-i18n="facebook"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="behavior"></div>
-                  <div data-i18n="tracksForAdTargeting"></div>
-                </div>
-                <div>
-                  <div class="detail-label" data-i18n="policyMatch"></div>
-                  <div style="color: #dc2626" data-i18n="violation"></div>
-                </div>
-              </div>
-              <div class="violation-alert">
-                <div class="title" data-i18n="violationsTitle"></div>
-                <ul class="violation-list">
-                  <li data-i18n="cookieNotDeclaredInPolicy"></li>
-                  <li data-i18n="thirdPartyTrackingNotDisclosed"></li>
-                </ul>
-              </div>
-            </div>
+          <div class="panel-header" data-i18n="cookies"></div>
+          <div id="cookie-list-container" class="cookie-list-container">
+            <div class="loading" data-i18n="loadingCookies"></div>
           </div>
         </div>
       </div>

@@ -3,25 +3,25 @@
 // =====================================================
 const CONFIG = {
   STORAGE_KEYS: {
-    COOKIES: 'collected_cookies',
-    COOKIES_BY_TAB: 'cookiesByTab',
-    COMPLIANCE_RESULT: 'complianceResult',
-    SETTINGS: 'user_settings',
-    BLOCKED_DOMAINS: 'blocked_domains',
-    SCAN_HISTORY: 'scan_history'
+    COOKIES: "collected_cookies",
+    COOKIES_BY_TAB: "cookiesByTab",
+    COMPLIANCE_RESULT: "complianceResult",
+    SETTINGS: "user_settings",
+    BLOCKED_DOMAINS: "blocked_domains",
+    SCAN_HISTORY: "scan_history",
   },
   DEFAULTS: {
     SETTINGS: {
       autoScan: true,
-      scanFrequency: 'pageload',
-      notifications: true
+      scanFrequency: "pageload",
+      notifications: true,
     },
-    SCAN_INTERVAL: 1 * 1000  * 6
+    SCAN_INTERVAL: 1 * 1000 * 6,
   },
   API_ENDPOINTS: {
     SERVER_API: "http://127.0.0.1:8000",
-    COOKIES_ANALYZE: "http://127.0.0.1:8000/analyze",
-  }
+    COOKIES_ANALYZE: "http://127.0.0.1:8000",
+  },
 };
 
 // Global variables for tracking
@@ -50,33 +50,33 @@ const Utils = {
   parseCookie(setCookieHeader) {
     if (!setCookieHeader) return null;
 
-    const parts = setCookieHeader.split(';').map(part => part.trim());
+    const parts = setCookieHeader.split(";").map((part) => part.trim());
     const [nameValue] = parts;
-    const [name, value] = nameValue.split('=');
+    const [name, value] = nameValue.split("=");
 
     const cookie = {
       name: name?.trim(),
-      value: value?.trim() || '',
-      attributes: {}
+      value: value?.trim() || "",
+      attributes: {},
     };
 
-    parts.slice(1).forEach(part => {
-      const [key, val] = part.split('=');
+    parts.slice(1).forEach((part) => {
+      const [key, val] = part.split("=");
       const attrKey = key?.trim().toLowerCase();
 
-      if (attrKey === 'expires') {
+      if (attrKey === "expires") {
         cookie.expires = val?.trim();
-      } else if (attrKey === 'max-age') {
+      } else if (attrKey === "max-age") {
         cookie.maxAge = parseInt(val?.trim());
-      } else if (attrKey === 'path') {
+      } else if (attrKey === "path") {
         cookie.path = val?.trim();
-      } else if (attrKey === 'domain') {
+      } else if (attrKey === "domain") {
         cookie.domain = val?.trim();
-      } else if (attrKey === 'samesite') {
+      } else if (attrKey === "samesite") {
         cookie.sameSite = val?.trim();
-      } else if (attrKey === 'httponly') {
+      } else if (attrKey === "httponly") {
         cookie.httpOnly = true;
-      } else if (attrKey === 'secure') {
+      } else if (attrKey === "secure") {
         cookie.secure = true;
       }
     });
@@ -86,9 +86,9 @@ const Utils = {
 
   // Extract main domain from subdomain
   extractMainDomain(domain) {
-    const parts = domain.split('.');
+    const parts = domain.split(".");
     if (parts.length >= 2) {
-      return parts.slice(-2).join('.');
+      return parts.slice(-2).join(".");
     }
     return domain;
   },
@@ -98,11 +98,14 @@ const Utils = {
     if (cookieDomain === tabDomain) return true;
 
     // Remove leading dot from cookie domain if present
-    const cleanCookieDomain = cookieDomain.startsWith('.') ?
-      cookieDomain.substring(1) : cookieDomain;
+    const cleanCookieDomain = cookieDomain.startsWith(".")
+      ? cookieDomain.substring(1)
+      : cookieDomain;
 
-    return tabDomain.endsWith('.' + cleanCookieDomain) ||
-           tabDomain === cleanCookieDomain;
+    return (
+      tabDomain.endsWith("." + cleanCookieDomain) ||
+      tabDomain === cleanCookieDomain
+    );
   },
 
   // Generate unique ID
@@ -113,7 +116,7 @@ const Utils = {
   // Log with timestamp
   log(message, data = null) {
     console.log(`[CookieExt ${new Date().toISOString()}] ${message}`, data);
-  }
+  },
 };
 
 // =====================================================
@@ -125,7 +128,7 @@ class StorageManager {
       const result = await chrome.storage.local.get(key);
       return result[key];
     } catch (error) {
-      Utils.log('Storage get error:', error);
+      Utils.log("Storage get error:", error);
       return null;
     }
   }
@@ -135,7 +138,7 @@ class StorageManager {
       await chrome.storage.local.set({ [key]: value });
       return true;
     } catch (error) {
-      Utils.log('Storage set error:', error);
+      Utils.log("Storage set error:", error);
       return false;
     }
   }
@@ -149,7 +152,7 @@ class StorageManager {
     const currentSettings = await this.getSettings();
     return await this.set(CONFIG.STORAGE_KEYS.SETTINGS, {
       ...currentSettings,
-      ...newSettings
+      ...newSettings,
     });
   }
 }
@@ -164,17 +167,19 @@ class CookieManager {
 
   // Get cookies for specific tab
   async getCookiesForTab(tabId) {
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     return cookiesByTab[tabId] || [];
   }
 
   // Get cookies for specific domain from tab data
   async getCookiesForDomain(domain) {
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     const allCookies = [];
 
-    Object.values(cookiesByTab).forEach(tabCookies => {
-      tabCookies.forEach(cookie => {
+    Object.values(cookiesByTab).forEach((tabCookies) => {
+      tabCookies.forEach((cookie) => {
         if (cookie.domain === domain || cookie.mainDomain === domain) {
           allCookies.push(cookie);
         }
@@ -191,25 +196,31 @@ class CookieManager {
 
       for (const cookie of cookies) {
         await chrome.cookies.remove({
-          url: `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`,
-          name: cookie.name
+          url: `http${cookie.secure ? "s" : ""}://${cookie.domain}${
+            cookie.path
+          }`,
+          name: cookie.name,
         });
       }
 
       // Clear from storage
-      const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
-      cookiesByTab = cookiesByTab[tabId]
+      const cookiesByTab =
+        (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
+      cookiesByTab = cookiesByTab[tabId];
 
-      Object.keys(cookiesByTab).forEach(tabId => {
+      Object.keys(cookiesByTab).forEach((tabId) => {
         cookiesByTab[tabId] = cookiesByTab[tabId].filter(
-          cookie => cookie.domain !== domain && cookie.mainDomain !== domain
+          (cookie) => cookie.domain !== domain && cookie.mainDomain !== domain
         );
       });
 
-      await StorageManager.set(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB, cookiesByTab);
+      await StorageManager.set(
+        CONFIG.STORAGE_KEYS.COOKIES_BY_TAB,
+        cookiesByTab
+      );
       return true;
     } catch (error) {
-      Utils.log('Clear cookies error:', error);
+      Utils.log("Clear cookies error:", error);
       return false;
     }
   }
@@ -222,12 +233,12 @@ class CookieManager {
     const count = cookies.length;
 
     await chrome.action.setBadgeText({
-      text: count > 0 ? count.toString() : '',
-      tabId: activeTabId
+      text: count > 0 ? count.toString() : "",
+      tabId: activeTabId,
     });
 
     await chrome.action.setBadgeBackgroundColor({
-      color: count > 0 ? '#FF6B6B' : '#4ECDC4'
+      color: count > 0 ? "#FF6B6B" : "#4ECDC4",
     });
   }
 
@@ -238,16 +249,20 @@ class CookieManager {
       const url = new URL(tab.url);
 
       // Get existing cookies via Chrome API as fallback
-      const existingCookies = await chrome.cookies.getAll({ domain: url.hostname });
+      const existingCookies = await chrome.cookies.getAll({
+        domain: url.hostname,
+      });
 
       if (existingCookies.length > 0) {
-        const processedCookies = existingCookies.map(cookie => ({
+        const processedCookies = existingCookies.map((cookie) => ({
           domain: cookie.domain,
           mainDomain: Utils.extractMainDomain(cookie.domain),
           url: tab.url,
           cookieName: cookie.name,
           cookieValue: cookie.value,
-          expires: cookie.expirationDate ? new Date(cookie.expirationDate * 1000).toISOString() : "Session",
+          expires: cookie.expirationDate
+            ? new Date(cookie.expirationDate * 1000).toISOString()
+            : "Session",
           path: cookie.path,
           httpOnly: cookie.httpOnly,
           secure: cookie.secure,
@@ -256,24 +271,29 @@ class CookieManager {
           isThirdParty: false,
           initiator: null,
           tabUrl: tab.url,
-          source: 'manual_scan'
+          source: "manual_scan",
         }));
 
         // Update storage
-        const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+        const cookiesByTab =
+          (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
         cookiesByTab[tabId] = processedCookies;
-        await StorageManager.set(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB, cookiesByTab);
+        await StorageManager.set(
+          CONFIG.STORAGE_KEYS.COOKIES_BY_TAB,
+          cookiesByTab
+        );
 
         // Update global variable
         detectedCookies[tabId] = processedCookies;
 
-        Utils.log(`Manual scan completed: ${processedCookies.length} cookies found`);
+        Utils.log(
+          `Manual scan completed: ${processedCookies.length} cookies found`
+        );
       }
 
       await this.updateBadgeForActiveTab();
-
     } catch (error) {
-      Utils.log('Manual scan error:', error);
+      Utils.log("Manual scan error:", error);
     }
   }
 }
@@ -284,13 +304,13 @@ class CookieManager {
 class PolicyAnalyzer {
   async loadCookieSpecs() {
     try {
-      const response = await fetch(chrome.runtime.getURL('cookie_specs.json'));
+      const response = await fetch(chrome.runtime.getURL("cookie_specs.json"));
       if (!response.ok) {
-        throw new Error('Failed to load cookie specifications');
+        throw new Error("Failed to load cookie specifications");
       }
       return await response.json();
     } catch (error) {
-      Utils.log('Error loading cookie specifications:', error);
+      Utils.log("Error loading cookie specifications:", error);
       return null;
     }
   }
@@ -300,18 +320,21 @@ class PolicyAnalyzer {
 
     // Check in specific declarations
     const specificCookie = cookieSpecs.specific?.find(
-      spec => spec.name === cookieName &&
-      spec.attribute === "retention" &&
-      spec.value.toLowerCase() === "session"
+      (spec) =>
+        spec.name === cookieName &&
+        spec.attribute === "retention" &&
+        spec.value.toLowerCase() === "session"
     );
 
     if (specificCookie) return true;
 
     // Check in general categories
     for (const generalSpec of cookieSpecs.general || []) {
-      if (cookieName.includes(generalSpec.name) &&
-          generalSpec.attribute === "retention" &&
-          generalSpec.value.toLowerCase() === "session") {
+      if (
+        cookieName.includes(generalSpec.name) &&
+        generalSpec.attribute === "retention" &&
+        generalSpec.value.toLowerCase() === "session"
+      ) {
         return true;
       }
     }
@@ -342,13 +365,16 @@ class PolicyAnalyzer {
     const violations = [];
 
     for (const cookie of cookies) {
-      if (this.isSessionCookie(cookie.cookieName, cookieSpecs) &&
-          this.persistsLongerThan24Hours(cookie)) {
+      if (
+        this.isSessionCookie(cookie.cookieName, cookieSpecs) &&
+        this.persistsLongerThan24Hours(cookie)
+      ) {
         violations.push({
           name: cookie.cookieName,
           domain: cookie.domain,
           expirationDate: cookie.expires,
-          message: "Cookie is declared as a 'session' cookie but persists longer than 24 hours"
+          message:
+            "Cookie is declared as a 'session' cookie but persists longer than 24 hours",
         });
       }
     }
@@ -363,33 +389,36 @@ class PolicyAnalyzer {
 class BlockingManager {
   async blockDomain(domain) {
     try {
-      const blockedDomains = await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS) || [];
+      const blockedDomains =
+        (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
 
       if (!blockedDomains.includes(domain)) {
         blockedDomains.push(domain);
-        await StorageManager.set(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS, blockedDomains);
+        await StorageManager.set(
+          CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS,
+          blockedDomains
+        );
       }
 
       await this.updateBlockingRules(blockedDomains);
       return true;
-
     } catch (error) {
-      Utils.log('Block domain error:', error);
+      Utils.log("Block domain error:", error);
       return false;
     }
   }
 
   async unblockDomain(domain) {
     try {
-      const blockedDomains = await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS) || [];
-      const updated = blockedDomains.filter(d => d !== domain);
+      const blockedDomains =
+        (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
+      const updated = blockedDomains.filter((d) => d !== domain);
 
       await StorageManager.set(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS, updated);
       await this.updateBlockingRules(updated);
       return true;
-
     } catch (error) {
-      Utils.log('Unblock domain error:', error);
+      Utils.log("Unblock domain error:", error);
       return false;
     }
   }
@@ -405,22 +434,22 @@ class NotificationManager {
 
     const notifications = {
       violation: {
-        title: 'Cookie Policy Violation Detected',
+        title: "Cookie Policy Violation Detected",
         message: `Found ${data.count} violations on ${data.domain}`,
-        iconUrl: 'icons/warning.png'
+        iconUrl: "icons/warning.png",
       },
       scan_complete: {
-        title: 'Scan Complete',
+        title: "Scan Complete",
         message: `Analyzed ${data.cookieCount} cookies on ${data.domain}`,
-        iconUrl: 'icons/success.png'
-      }
+        iconUrl: "icons/success.png",
+      },
     };
 
     const notification = notifications[type];
     if (notification) {
       await chrome.notifications.create({
-        type: 'basic',
-        ...notification
+        type: "basic",
+        ...notification,
       });
     }
   }
@@ -439,22 +468,26 @@ class ExtensionController {
   }
 
   async handleInstallation() {
-    Utils.log('Extension installed');
-    await StorageManager.set(CONFIG.STORAGE_KEYS.SETTINGS, CONFIG.DEFAULTS.SETTINGS);
+    Utils.log("Extension installed");
+    await StorageManager.set(
+      CONFIG.STORAGE_KEYS.SETTINGS,
+      CONFIG.DEFAULTS.SETTINGS
+    );
     await chrome.tabs.create({
-      url: chrome.runtime.getURL('welcome.html')
+      url: chrome.runtime.getURL("welcome.html"),
     });
   }
 
   async handleMessage(request, sender, sendResponse) {
     try {
       switch (request.action) {
-        case 'GET_COMPLIANCE_RESULT':
-          console.log("get dashboard data");
-          const complianceResult = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT);
-          return ({ success: true, data: complianceResult });
+        case "GET_COMPLIANCE_RESULT":
+          const complianceResult = await StorageManager.get(
+            CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+          );
+          return { success: true, data: complianceResult };
 
-        case 'GET_COOKIES':
+        case "GET_COOKIES":
           console.log("Request from popup: ", request);
           const tabId = activeTabId;
 
@@ -463,33 +496,38 @@ class ExtensionController {
           // const providerParty = await categorizeDomainsByParty(tabId);
           // console.log("Categorized domains:", providerParty);
           return { success: true, data: cookies };
-          // return { success: true, data: cookies, cookiesCount: cookies.length, violationCount: 0, firstPartyCount: providerParty.firstParty.length, thirdPartyCount: providerParty.thirdParty.length };
 
-        case 'UPDATE_SETTINGS':
+        case "UPDATE_SETTINGS":
           await StorageManager.updateSettings(request.settings);
           return { success: true };
 
-        case 'BLOCK_DOMAIN':
-          const blocked = await this.blockingManager.blockDomain(request.domain);
+        case "BLOCK_DOMAIN":
+          const blocked = await this.blockingManager.blockDomain(
+            request.domain
+          );
           return { success: blocked };
 
-        case 'CLEAR_COOKIES':
-          const cleared = await this.cookieManager.clearCookiesForDomain(request.domain);
+        case "CLEAR_COOKIES":
+          const cleared = await this.cookieManager.clearCookiesForDomain(
+            request.domain
+          );
           return { success: cleared };
 
-        case 'MANUAL_SCAN':
+        case "MANUAL_SCAN":
           await this.cookieManager.performManualScan(request.tabId);
           return { success: true };
 
-        case 'validate':
-          const violations = await this.policyAnalyzer.validateSessionCookies(request.domain);
+        case "validate":
+          const violations = await this.policyAnalyzer.validateSessionCookies(
+            request.domain
+          );
           return { violations };
 
         default:
-          return { success: false, error: 'Unknown action' };
+          return { success: false, error: "Unknown action" };
       }
     } catch (error) {
-      Utils.log('Message handling error:', error);
+      Utils.log("Message handling error:", error);
       return { success: false, error: error.message };
     }
   }
@@ -502,13 +540,14 @@ const controller = new ExtensionController();
 
 // Installation event
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
+  if (details.reason === "install") {
     controller.handleInstallation();
   }
 });
 
 // Track active tab
-chrome.tabs.onActivated.addListener(async (activeInfo) => { //  lắng nghe sự kiện người dùng chuyển đổi giữa các tab trong trình duyệt
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  //  lắng nghe sự kiện người dùng chuyển đổi giữa các tab trong trình duyệt
   activeTabId = activeInfo.tabId;
   await controller.cookieManager.updateBadgeForActiveTab();
 });
@@ -517,28 +556,46 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => { //  lắng nghe sự
 // Lắng nghe khi tab được load xong
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tabId === activeTabId) {
+    // Only process valid web URLs (http/https)
+    if (
+      !tab.url ||
+      (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
+    ) {
+      Utils.log(`Skipping scan for non-web URL: ${tab.url}`);
+      return;
+    }
+
+    // Skip specific domains like chrome://newtab
+    const excludedDomains = ["chrome://newtab", "chrome://extensions"];
+    if (excludedDomains.some((excluded) => tab.url.includes(excluded))) {
+      Utils.log(`Skipping scan for excluded domain: ${tab.url}`);
+      return;
+    }
+
     await controller.cookieManager.updateBadgeForActiveTab();
-    const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(activeTabId);
+    const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(
+      activeTabId
+    );
     const body = {
       website_url: tab.url,
       cookies: allCookiesFromDomainsList,
     };
-    console.log("Sending cookies to server for analysis:", body);
-
+    Utils.log("Sending cookies to server for analysis:", body);
 
     const response = await fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
 
     const result = await response.json();
-    console.log("Compliance Result:", result);
+    Utils.log("Compliance Result:", result);
     StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, result);
-    console.log("Compliance result saved to localStorage");
-  }});
+    Utils.log("Compliance result saved to localStorage");
+  }
+});
 
 // setInterval(() => {
 //   if (isDetectedCookiesInPolicy) {
@@ -573,9 +630,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 // Message handling
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  controller.handleMessage(request, sender, sendResponse)
-    .then(response => sendResponse(response))
-    .catch(error => sendResponse({ success: false, error: error.message }));
+  controller
+    .handleMessage(request, sender, sendResponse)
+    .then((response) => sendResponse(response))
+    .catch((error) => sendResponse({ success: false, error: error.message }));
 
   return true; // Keep message channel open for async response
 });
@@ -584,14 +642,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // 10. WEB REQUEST COOKIE COLLECTION
 // =====================================================
 chrome.webRequest.onHeadersReceived.addListener(
-  function(details) {
+  function (details) {
     // Chỉ xử lý cho tab có ID hợp lệ
     // if (!details.tabId || details.tabId < 0) {
     //   return; // Bỏ qua request không thuộc về tab nào
     // }
     // Tìm kiếm tất cả các header Set-Cookie
     const setCookieHeaders = details.responseHeaders?.filter(
-      header => header.name.toLowerCase() === "set-cookie"
+      (header) => header.name.toLowerCase() === "set-cookie"
     );
 
     if (setCookieHeaders && setCookieHeaders.length > 0) {
@@ -601,11 +659,10 @@ chrome.webRequest.onHeadersReceived.addListener(
       const mainDomain = Utils.extractMainDomain(domain);
 
       // Xác định main URL của tab đang xem
-      chrome.tabs.get(details.tabId, async function(tab) {
+      chrome.tabs.get(details.tabId, async function (tab) {
         if (!tab) return;
 
         const tabUrl = new URL(tab.url);
-        console.log("I am here", tabUrl)
         const tabDomain = tabUrl.hostname;
         const isThirdParty = !Utils.isDomainOrSubdomain(domain, tabDomain);
 
@@ -614,9 +671,8 @@ chrome.webRequest.onHeadersReceived.addListener(
           detectedCookies[details.tabId] = [];
         }
 
-        console.log('Detected cookies:', detectedCookies);
         // Lưu thông tin về mỗi cookie được đặt
-        setCookieHeaders.forEach(header => {
+        setCookieHeaders.forEach((header) => {
           const cookieInfo = Utils.parseCookie(header.value);
           if (!cookieInfo || !cookieInfo.name) return;
 
@@ -638,7 +694,7 @@ chrome.webRequest.onHeadersReceived.addListener(
             isThirdParty: isThirdParty,
             initiator: details.initiator || null,
             tabUrl: tab.url,
-            source: 'webRequest'
+            source: "webRequest",
           });
         });
 
@@ -672,18 +728,19 @@ chrome.notifications.onClicked.addListener((notificationId) => {
 // =====================================================
 // 11. PERIODIC CLEANUP
 // =====================================================
-chrome.alarms.create('cleanup', { periodInMinutes: 60 });
+chrome.alarms.create("cleanup", { periodInMinutes: 60 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === 'cleanup') {
-    Utils.log('Running periodic cleanup');
+  if (alarm.name === "cleanup") {
+    Utils.log("Running periodic cleanup");
 
     // Clean up old cookie data (older than 7 days)
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
-    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-    Object.keys(cookiesByTab).forEach(tabId => {
-      cookiesByTab[tabId] = cookiesByTab[tabId].filter(cookie => {
+    Object.keys(cookiesByTab).forEach((tabId) => {
+      cookiesByTab[tabId] = cookiesByTab[tabId].filter((cookie) => {
         const cookieTime = new Date(cookie.timestamp).getTime();
         return cookieTime > sevenDaysAgo;
       });
@@ -714,29 +771,30 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
  */
 async function getAllDomainsFromCookies(tabId = null) {
   try {
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     const domains = new Set();
 
     if (tabId !== null) {
       // Lấy domains từ tab cụ thể
       const tabCookies = cookiesByTab[tabId] || [];
-      tabCookies.forEach(cookie => {
+      tabCookies.forEach((cookie) => {
         domains.add(cookie.domain);
         domains.add(cookie.mainDomain);
       });
     } else {
       // Lấy domains từ tất cả tabs
-      Object.values(cookiesByTab).forEach(tabCookies => {
-        tabCookies.forEach(cookie => {
+      Object.values(cookiesByTab).forEach((tabCookies) => {
+        tabCookies.forEach((cookie) => {
           domains.add(cookie.domain);
           domains.add(cookie.mainDomain);
         });
       });
     }
-    console.log("Danh sach domain: ", domains)
-    return Array.from(domains).filter(domain => domain); // Loại bỏ null/undefined
+    console.log("Danh sach domain: ", domains);
+    return Array.from(domains).filter((domain) => domain); // Loại bỏ null/undefined
   } catch (error) {
-    Utils.log('Error getting domains from cookies:', error);
+    Utils.log("Error getting domains from cookies:", error);
     return [];
   }
 }
@@ -744,13 +802,14 @@ async function getAllDomainsFromCookies(tabId = null) {
 // Phân loại domains thành first-party và third-party
 async function categorizeDomainsByParty(tabId) {
   try {
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     const tabCookies = cookiesByTab[tabId] || [];
 
     const firstPartyDomains = new Set();
     const thirdPartyDomains = new Set();
 
-    tabCookies.forEach(cookie => {
+    tabCookies.forEach((cookie) => {
       if (cookie.isThirdParty) {
         thirdPartyDomains.add(cookie.domain);
         thirdPartyDomains.add(cookie.mainDomain);
@@ -761,11 +820,11 @@ async function categorizeDomainsByParty(tabId) {
     });
 
     return {
-      firstParty: Array.from(firstPartyDomains).filter(domain => domain),
-      thirdParty: Array.from(thirdPartyDomains).filter(domain => domain)
+      firstParty: Array.from(firstPartyDomains).filter((domain) => domain),
+      thirdParty: Array.from(thirdPartyDomains).filter((domain) => domain),
     };
   } catch (error) {
-    Utils.log('Error categorizing domains:', error);
+    Utils.log("Error categorizing domains:", error);
     return { firstParty: [], thirdParty: [] };
   }
 }
@@ -773,7 +832,8 @@ async function categorizeDomainsByParty(tabId) {
 // Lấy thống kê chi tiết về cookies theo domain
 async function getDomainCookieStats(domain) {
   try {
-    const cookiesByTab = await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB) || {};
+    const cookiesByTab =
+      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     const stats = {
       domain: domain,
       totalCookies: 0,
@@ -786,13 +846,13 @@ async function getDomainCookieStats(domain) {
       sameSiteLax: 0,
       tabsWithCookies: 0,
       cookieNames: new Set(),
-      lastSeen: null
+      lastSeen: null,
     };
 
-    Object.values(cookiesByTab).forEach(tabCookies => {
+    Object.values(cookiesByTab).forEach((tabCookies) => {
       let hasThisDomain = false;
 
-      tabCookies.forEach(cookie => {
+      tabCookies.forEach((cookie) => {
         if (cookie.domain === domain || cookie.mainDomain === domain) {
           if (!hasThisDomain) {
             stats.tabsWithCookies++;
@@ -814,13 +874,13 @@ async function getDomainCookieStats(domain) {
 
           // Phân loại theo SameSite
           switch (cookie.sameSite?.toLowerCase()) {
-            case 'none':
+            case "none":
               stats.sameSiteNone++;
               break;
-            case 'strict':
+            case "strict":
               stats.sameSiteStrict++;
               break;
-            case 'lax':
+            case "lax":
               stats.sameSiteLax++;
               break;
           }
@@ -837,7 +897,7 @@ async function getDomainCookieStats(domain) {
     stats.cookieNames = Array.from(stats.cookieNames);
     return stats;
   } catch (error) {
-    Utils.log('Error getting domain cookie stats:', error);
+    Utils.log("Error getting domain cookie stats:", error);
     return null;
   }
 }
@@ -848,30 +908,33 @@ async function getAllCookiesFromDomainsList(domains, url) {
 
     for (const domain of domains) {
       const cookies = await chrome.cookies.getAll({ domain, url });
-      console.log("Amazing: ", cookies, "Domain: ", domain);
-      allCookies.push(...cookies.map(cookie => ({
-        name: cookie.name,
-        value: cookie.value,
-        domain: cookie.domain,
-        path: cookie.path,
-        secure: cookie.secure,
-        httpOnly: cookie.httpOnly,
-        sameSite: cookie.sameSite,
-        expirationDate: cookie.expirationDate ? new Date(cookie.expirationDate * 1000).toISOString() : "Session"
-      })));
+      allCookies.push(
+        ...cookies.map((cookie) => ({
+          name: cookie.name,
+          value: cookie.value,
+          domain: cookie.domain,
+          path: cookie.path,
+          secure: cookie.secure,
+          httpOnly: cookie.httpOnly,
+          sameSite: cookie.sameSite,
+          expirationDate: cookie.expirationDate
+            ? new Date(cookie.expirationDate * 1000).toISOString()
+            : "Session",
+        }))
+      );
     }
 
     return allCookies;
   } catch (error) {
-    Utils.log('Error getting cookies from domains list:', error);
+    Utils.log("Error getting cookies from domains list:", error);
     return [];
   }
 }
 
 async function getAllCookiesFromActiveTab(activeTabId) {
-  const url = await chrome.tabs.get(activeTabId).then(tab => tab.url);
+  const url = await chrome.tabs.get(activeTabId).then((tab) => tab.url);
   const domain = new URL(url).hostname;
-  const domains = await getAllDomainsFromCookies(activeTabId) || [domain];
+  const domains = (await getAllDomainsFromCookies(activeTabId)) || [domain];
   const allCookies = await getAllCookiesFromDomainsList(domains, url);
   return allCookies;
 }

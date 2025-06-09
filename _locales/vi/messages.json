@@ -56,6 +56,9 @@
   "violationsByType": {
     "message": "Vi phạm theo loại"
   },
+  "declaredCookiesByThirdParty": {
+    "message": "Cookie đã khai báo theo bên thứ ba"
+  },
   "loadingChart": {
     "message": "Đang tải biểu đồ"
   },
@@ -262,5 +265,77 @@
   },
   "saveSettings": {
     "message": "Lưu cài đặt"
+  },
+  "loadingCookies": {
+    "message": "Đang tải cookie..."
+  },
+  "retention": {
+    "message": "Thời gian lưu giữ"
+  },
+  "description": {
+    "message": "Mô tả"
+  },
+  "viewIssue": {
+    "message": "Xem vấn đề"
+  },
+  "noCookiesFound": {
+    "message": "Không tìm thấy cookie nào cho trang web này."
+  },
+  "declaredLabel": {
+    "message": "Đã khai báo"
+  },
+  "undeclaredLabel": {
+    "message": "Chưa khai báo"
+  },
+  "name": {
+    "message": "Tên"
+  },
+  "value": {
+    "message": "Giá trị"
+  },
+  "domain": {
+    "message": "Miền"
+  },
+  "expirationDate": {
+    "message": "Ngày hết hạn"
+  },
+  "secure": {
+    "message": "Bảo mật"
+  },
+  "httpOnly": {
+    "message": "Chỉ HTTP"
+  },
+  "sameSite": {
+    "message": "SameSite"
+  },
+  "filterPolicy": {
+    "message": "Chính sách Cookie"
+  },
+  "filterRealtime": {
+    "message": "Cookie thời gian thực"
+  },
+  "filterAll": {
+    "message": "Tất cả"
+  },
+  "filterViolations": {
+    "message": "Vi phạm"
+  },
+  "filterNoIssues": {
+    "message": "Không có vấn đề"
+  },
+  "filterThirdParty": {
+    "message": "Bên thứ ba"
+  },
+  "tagPolicy": {
+    "message": "Chính sách"
+  },
+  "tagRealtime": {
+    "message": "Thời gian thực"
+  },
+  "tagInPolicy": {
+    "message": "Trong chính sách"
+  },
+  "tagThirdParty": {
+    "message": "Bên thứ ba"
   }
 }

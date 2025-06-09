@@ -45,7 +45,7 @@ export class Dashboard {
   updateSummaryCards() {
     const totalCookies = this.data.actual_cookies_count;
     const totalViolations = this.data.total_issues;
-    const thirdPartyCount = this.data.summary.third_party_cookies.length;
+    const thirdPartyCount = this.data.summary.third_party_cookies?.length || 0;
     const firstPartyCount = totalCookies - thirdPartyCount;
 
     this.updateElement("cookies-monitored", totalCookies);
@@ -82,6 +82,7 @@ export class Dashboard {
     this.destroyExistingCharts();
     this.createSeverityChart();
     this.createTypeChart();
+    this.createDeclaredCookiesByThirdPartyChart();
   }
 
   destroyExistingCharts() {
@@ -93,6 +94,10 @@ export class Dashboard {
     if (this.charts.type) {
       this.charts.type.destroy();
       this.charts.type = null;
+    }
+    if (this.charts.declaredCookiesByThirdParty) {
+      this.charts.declaredCookiesByThirdParty.destroy();
+      this.charts.declaredCookiesByThirdParty = null;
     }
   }
 
@@ -143,7 +148,7 @@ export class Dashboard {
 
   createTypeChart() {
     const ctx = document.getElementById("typeChart").getContext("2d");
-    const data = this.data.statistics.by_type;
+    const data = this.data.statistics.by_category;
 
     document.getElementById("type-chart-loading").classList.add("hidden");
     document.getElementById("typeChart").classList.remove("hidden");
@@ -185,9 +190,65 @@ export class Dashboard {
     });
   }
 
+  createDeclaredCookiesByThirdPartyChart() {
+    const ctx = document.getElementById("declaredCookiesByThirdPartyChart").getContext("2d");
+    const declaredByThirdParty = this.data.details.declared_by_third_party;
+
+    const labels = Object.keys(declaredByThirdParty);
+    const data = labels.map(thirdParty => declaredByThirdParty[thirdParty].length);
+
+    document.getElementById("third-party-declared-chart-loading").classList.add("hidden");
+    document.getElementById("declaredCookiesByThirdPartyChart").classList.remove("hidden");
+
+    this.charts.declaredCookiesByThirdParty = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Declared Cookies",
+            data: data,
+            backgroundColor: "#2ecc71", // Green
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+            },
+          },
+        },
+      },
+    });
+  }
+
   updateViolationsList() {
     const listElement = document.getElementById("violations-list");
-    const topViolations = this.data.issues.slice(0, 5);
+
+    const severityOrder = {
+      "Critical": 4,
+      "High": 3,
+      "Medium": 2,
+      "Low": 1
+    };
+
+    // Sort issues by severity in descending order
+    const sortedViolations = [...this.data.issues].sort((a, b) => {
+      return severityOrder[b.severity] - severityOrder[a.severity];
+    });
+
+    const topViolations = sortedViolations.slice(0, 5);
 
     const html = topViolations
       .map(

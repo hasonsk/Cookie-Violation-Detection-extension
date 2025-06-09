@@ -56,6 +56,9 @@
   "violationsByType": {
     "message": "Violations by Type"
   },
+  "declaredCookiesByThirdParty": {
+    "message": "Declared Cookies by Third-Party"
+  },
   "loadingChart": {
     "message": "Loading chart"
   },
@@ -108,9 +111,6 @@
     "message": "Analytical"
   },
   "behavior": {
-    "message": "Behavior"
-  },
-  "tracksUserSessions": {
     "message": "Tracks user sessions"
   },
   "policyMatch": {
@@ -262,5 +262,80 @@
   },
   "saveSettings": {
     "message": "Save Settings"
+  },
+  "loadingCookies": {
+    "message": "Loading cookies..."
+  },
+  "retention": {
+    "message": "Retention"
+  },
+  "description": {
+    "message": "Description"
+  },
+  "viewIssue": {
+    "message": "View Issue"
+  },
+  "noCookiesFound": {
+    "message": "No cookies found for this website."
+  },
+  "declaredLabel": {
+    "message": "Declared"
+  },
+  "undeclaredLabel": {
+    "message": "Undeclared"
+  },
+  "name": {
+    "message": "Name"
+  },
+  "value": {
+    "message": "Value"
+  },
+  "domain": {
+    "message": "Domain"
+  },
+  "expirationDate": {
+    "message": "Expiration Date"
+  },
+  "secure": {
+    "message": "Secure"
+  },
+  "httpOnly": {
+    "message": "HttpOnly"
+  },
+  "sameSite": {
+    "message": "SameSite"
+  },
+  "path": {
+    "message": "Path"
+  },
+  "filterPolicy": {
+    "message": "Policy Cookies"
+  },
+  "filterRealtime": {
+    "message": "Realtime Cookies"
+  },
+  "filterAll": {
+    "message": "All"
+  },
+  "filterViolations": {
+    "message": "Violations"
+  },
+  "filterNoIssues": {
+    "message": "No Issues"
+  },
+  "filterThirdParty": {
+    "message": "Third-party"
+  },
+  "tagPolicy": {
+    "message": "Policy"
+  },
+  "tagRealtime": {
+    "message": "Realtime"
+  },
+  "tagInPolicy": {
+    "message": "In Policy"
+  },
+  "tagThirdParty": {
+    "message": "3rd Party"
   }
 }

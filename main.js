@@ -10,17 +10,19 @@ document.addEventListener('DOMContentLoaded', async function() {
       { TabManager },
       { Navigation },
       { Dashboard },
-      { CookieManager },
+      // { CookieManager },
       { DomainBlocking },
       { Settings },
+      { CookieDisplay },
       { initializeLocalization, changeLanguage }
     ] = await Promise.all([
       import('./modules/tab-manager.js'),
       import('./modules/navigation.js'),
       import('./modules/dashboard.js'),
-      import('./modules/cookie-manager.js'),
+      // import('./modules/cookie-manager.js'),
       import('./modules/domain-blocking.js'),
       import('./modules/settings.js'),
+      import('./modules/cookie-display.js'),
       import('./modules/localization.js')
     ]);
 
@@ -28,14 +30,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     const tabManager = new TabManager();
     const navigation = new Navigation();
     const dashboard = new Dashboard();
-    const cookieManager = new CookieManager();
+    // const cookieManager = new CookieManager();
     const domainBlocking = new DomainBlocking();
     const settings = new Settings();
+    const cookieDisplay = new CookieDisplay(); // Instantiate CookieDisplay
 
     // Initialize navigation first
     navigation.init();
     dashboard.init();
-    cookieManager.init();
+    // cookieManager.init();
     domainBlocking.init();
     settings.init();
     initializeLocalization(); // Initialize localization after other modules
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load current tab data
     const tabId = await tabManager.getCurrentTabId();
     if (tabId) {
-      await cookieManager.loadCookieDataForTab(tabId);
+      // await cookieManager.loadCookieDataForTab(tabId);
       await domainBlocking.loadBlockedDomains();
       await tabManager.updateCurrentTabInfo(tabId);
       // dashboard.updateDashboard();
@@ -56,11 +59,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       tabManager,
       navigation,
       dashboard,
-      cookieManager,
+      // cookieManager,
       domainBlocking,
       settings,
-      initializeLocalization, // Add initializeLocalization
-      changeLanguage          // Add changeLanguage
+      cookieDisplay, // Add cookieDisplay
+      initializeLocalization,
+      changeLanguage
     });
 
   } catch (error) {
@@ -98,15 +102,22 @@ function setupModuleCommunication(modules) {
   });
 
   eventBus.on('dataCleared', () => {
-    modules.dashboard.updateDashboard();
-    modules.cookieManager.clearDisplay();
+      modules.dashboard.updateDashboard();
   });
 
   eventBus.on('navigationChange', (screen) => {
     if (screen === 'dashboard') {
       modules.dashboard.updateDashboard();
     } else if (screen === 'cookies') {
-      modules.cookieManager.applyFilter('all');
+      // Ensure dashboard data is loaded before initializing cookie display
+      if (modules.dashboard.data) {
+        modules.cookieDisplay.init(modules.dashboard.data);
+      } else {
+        // If data is not yet loaded, wait for it
+        modules.dashboard.loadSampleData().then(() => {
+          modules.cookieDisplay.init(modules.dashboard.data);
+        });
+      }
     } else if (screen === 'domains') {
       modules.domainBlocking.loadBlockedDomains();
     }
