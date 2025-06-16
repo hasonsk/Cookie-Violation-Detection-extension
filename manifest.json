@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "vi",
-  "permissions": ["cookies", "storage", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms"],
+  "permissions": ["cookies", "storage", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms", "scripting"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {

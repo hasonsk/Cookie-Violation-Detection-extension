@@ -20,7 +20,7 @@ const CONFIG = {
   },
   API_ENDPOINTS: {
     SERVER_API: "http://127.0.0.1:8000",
-    COOKIES_ANALYZE: "http://127.0.0.1:8000",
+    COOKIES_ANALYZE: "http://127.0.0.1:8000/violations/analyze",
   },
 };
 
@@ -593,6 +593,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const result = await response.json();
     Utils.log("Compliance Result:", result);
     StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, result);
+    chrome.tabs.sendMessage(activeTabId, {
+      action: "showCookieWarning",
+      analysisData: result,
+    });
     Utils.log("Compliance result saved to localStorage");
   }
 });
