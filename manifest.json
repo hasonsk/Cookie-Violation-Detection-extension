@@ -4,14 +4,24 @@
   "version": "1.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "vi",
-  "permissions": ["cookies", "storage", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms", "scripting"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "cookies", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms", "scripting"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
       "resources": [
         "modules/*",
         "main.js",
-        "_locales/*"
+        "viewer/*",
+        "viewer/html/*.html",
+        "viewer/styles/*.css",
+        "viewer/javascript/*.js",
+        "_locales/*",
+        "cookie-compliance-checker.html",
+        "cookie-compliance-checker.css"
       ],
       "matches": ["<all_urls>"],
       "use_dynamic_url": false

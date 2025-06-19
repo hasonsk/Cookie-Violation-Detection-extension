@@ -8,7 +8,6 @@ const CONFIG = {
     COMPLIANCE_RESULT: "complianceResult",
     SETTINGS: "user_settings",
     BLOCKED_DOMAINS: "blocked_domains",
-    SCAN_HISTORY: "scan_history",
   },
   DEFAULTS: {
     SETTINGS: {
@@ -33,7 +32,6 @@ let isDetectedCookiesInPolicy = false;
 // 2. UTILITY FUNCTIONS
 // =====================================================
 const Utils = {
-  // Debounce function để tránh spam
   debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -244,57 +242,6 @@ class CookieManager {
 
   // Manual scan functionality
   async performManualScan(tabId) {
-    try {
-      const tab = await chrome.tabs.get(tabId);
-      const url = new URL(tab.url);
-
-      // Get existing cookies via Chrome API as fallback
-      const existingCookies = await chrome.cookies.getAll({
-        domain: url.hostname,
-      });
-
-      if (existingCookies.length > 0) {
-        const processedCookies = existingCookies.map((cookie) => ({
-          domain: cookie.domain,
-          mainDomain: Utils.extractMainDomain(cookie.domain),
-          url: tab.url,
-          cookieName: cookie.name,
-          cookieValue: cookie.value,
-          expires: cookie.expirationDate
-            ? new Date(cookie.expirationDate * 1000).toISOString()
-            : "Session",
-          path: cookie.path,
-          httpOnly: cookie.httpOnly,
-          secure: cookie.secure,
-          sameSite: cookie.sameSite,
-          timestamp: new Date().toISOString(),
-          isThirdParty: false,
-          initiator: null,
-          tabUrl: tab.url,
-          source: "manual_scan",
-        }));
-
-        // Update storage
-        const cookiesByTab =
-          (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
-        cookiesByTab[tabId] = processedCookies;
-        await StorageManager.set(
-          CONFIG.STORAGE_KEYS.COOKIES_BY_TAB,
-          cookiesByTab
-        );
-
-        // Update global variable
-        detectedCookies[tabId] = processedCookies;
-
-        Utils.log(
-          `Manual scan completed: ${processedCookies.length} cookies found`
-        );
-      }
-
-      await this.updateBadgeForActiveTab();
-    } catch (error) {
-      Utils.log("Manual scan error:", error);
-    }
   }
 }
 
@@ -340,44 +287,12 @@ class BlockingManager {
 }
 
 // =====================================================
-// 7. NOTIFICATION MANAGER
-// =====================================================
-class NotificationManager {
-  async showNotification(type, data) {
-    const settings = await StorageManager.getSettings();
-    if (!settings.notifications) return;
-
-    const notifications = {
-      violation: {
-        title: "Cookie Policy Violation Detected",
-        message: `Found ${data.count} violations on ${data.domain}`,
-        iconUrl: "icons/warning.png",
-      },
-      scan_complete: {
-        title: "Scan Complete",
-        message: `Analyzed ${data.cookieCount} cookies on ${data.domain}`,
-        iconUrl: "icons/success.png",
-      },
-    };
-
-    const notification = notifications[type];
-    if (notification) {
-      await chrome.notifications.create({
-        type: "basic",
-        ...notification,
-      });
-    }
-  }
-}
-
-// =====================================================
 // 8. MAIN CONTROLLER
 // =====================================================
 class ExtensionController {
   constructor() {
     this.cookieManager = new CookieManager();
     this.blockingManager = new BlockingManager();
-    this.notificationManager = new NotificationManager();
   }
 
   async handleInstallation() {
@@ -387,7 +302,7 @@ class ExtensionController {
       CONFIG.DEFAULTS.SETTINGS
     );
     await chrome.tabs.create({
-      url: chrome.runtime.getURL("welcome.html"),
+      url: chrome.runtime.getURL("cookie-compliance-checker.html"),
     });
   }
 
@@ -485,6 +400,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       cookies: allCookiesFromDomainsList,
     };
     Utils.log("Sending cookies to server for analysis:", body);
+    // await chrome.tabs.create({
+    //   url: chrome.runtime.getURL("cookie-compliance-checker.html"),
+    // });
+
 
     const response = await fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
       method: "POST",

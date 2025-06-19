@@ -1,0 +1,58 @@
+<!-- Header -->
+<div class="header">
+    <h1>Cookie Compliance Dashboard</h1>
+    <div class="header-info">
+        <strong>overleaf.com</strong>
+        <div class="compliance-badge compliance-warning">
+            <span>🔍</span>
+            Điểm tuân thủ: 85%
+        </div>
+        <span>Phân tích vào: 19/06/2025 14:16</span>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Tổng số vi phạm</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">10</div>
+        <div class="stat-label">Cookie được khai báo</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">2</div>
+        <div class="stat-label">Cookie realtime</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">1</div>
+        <div class="stat-label">Cookie cả hai loại</div>
+    </div>
+</div>
+
+<!-- Filters -->
+
+<!-- Cookie Table -->
+<div class="cookie-table">
+    <div class="table-header">
+        Danh sách Cookie và Vi phạm
+    </div>
+    <div class="filters">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Tìm kiếm cookie..." id="searchInput">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Tất cả</button>
+            <button class="filter-btn" data-filter="declared">Đã khai báo</button>
+            <button class="filter-btn" data-filter="realtime">Realtime</button>
+            <button class="filter-btn" data-filter="both">Cả hai</button>
+            <button class="filter-btn" data-filter="violations">Có vi phạm</button>
+            <button class="filter-btn" data-filter="no-violations">Không vi phạm</button>
+        </div>
+    </div>
+
+    <div id="cookieList">
+        <!-- Cookie rows will be inserted here -->
+    </div>
+</div>

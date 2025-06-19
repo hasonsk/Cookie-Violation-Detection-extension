@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Compliance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            color: #1a202c;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .compliance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .compliance-good {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .compliance-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .filter-btn:hover {
+            border-color: #3182ce;
+            color: #3182ce;
+        }
+
+        .filter-btn.active {
+            background: #3182ce;
+            border-color: #3182ce;
+            color: white;
+        }
+
+        .cookie-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #f7fafc;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .cookie-row {
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s;
+        }
+
+        .cookie-row:hover {
+            background: #f8fafc;
+        }
+
+        .cookie-main {
+            padding: 16px 24px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            gap: 16px;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .cookie-name {
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cookie-type-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .declared {
+            background: #e6fffa;
+            color: #065f46;
+        }
+
+        .realtime {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .both {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .violation-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .no-violations {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .has-violations {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .severity-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .severity-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .expand-icon {
+            transition: transform 0.2s;
+            color: #6b7280;
+        }
+
+        .cookie-row.expanded .expand-icon {
+            transform: rotate(90deg);
+        }
+
+        .cookie-details {
+            display: none;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .cookie-row.expanded .cookie-details {
+            display: block;
+        }
+
+        .details-content {
+            padding: 24px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .detail-section h4 {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #374151;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .violations-section {
+            margin-top: 20px;
+        }
+
+        .violation-item {
+            background: white;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .violation-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .violation-title {
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 4px;
+        }
+
+        .violation-description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .search-box {
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3182ce;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .cookie-main {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Cookie Compliance Dashboard</h1>
+            <div class="header-info">
+                <strong>overleaf.com</strong>
+                <div class="compliance-badge compliance-warning">
+                    <span>🔍</span>
+                    Điểm tuân thủ: 85%
+                </div>
+                <span>Phân tích vào: 19/06/2025 14:16</span>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Tổng số vi phạm</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">10</div>
+                <div class="stat-label">Cookie được khai báo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Cookie realtime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1</div>
+                <div class="stat-label">Cookie cả hai loại</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Tìm kiếm cookie..." id="searchInput">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="declared">Đã khai báo</button>
+                <button class="filter-btn" data-filter="realtime">Realtime</button>
+                <button class="filter-btn" data-filter="both">Cả hai</button>
+                <button class="filter-btn" data-filter="violations">Có vi phạm</button>
+                <button class="filter-btn" data-filter="no-violations">Không vi phạm</button>
+            </div>
+        </div>
+
+        <!-- Cookie Table -->
+        <div class="cookie-table">
+            <div class="table-header">
+                Danh sách Cookie và Vi phạm
+            </div>
+
+            <div id="cookieList">
+                <!-- Cookie rows will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cookie data from the JSON
+        const cookieData = {
+            "declared_cookies": [
+                {
+                    "cookie_name": "overleaf_session2",
+                    "declared_purpose": "Authentication",
+                    "declared_retention": "5 days",
+                    "declared_third_parties": ["First Party"],
+                    "declared_description": "Authentication",
+                    "violations": [
+                        {
+                            "issue_id": 8,
+                            "category": "General",
+                            "type": "Purpose",
+                            "description": "Observed cookie name shows no semantic similarity with any declared purpose label (max similarity < 0.5).",
+                            "severity": "Medium"
+                        }
+                    ]
+                },
+                {
+                    "cookie_name": "deviceHistory",
+                    "declared_purpose": "Security",
+                    "declared_retention": "90 days",
+                    "declared_third_parties": ["First Party"],
+                    "declared_description": "Security",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "doc.*,editor.*,layout.*,pdf.*",
+                    "declared_purpose": "Functionality",
+                    "declared_retention": "local storage",
+                    "declared_third_parties": ["First Party"],
+                    "declared_description": "Preferences (remember editor settings)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "_grecaptcha",
+                    "declared_purpose": "Security",
+                    "declared_retention": "local storage",
+                    "declared_third_parties": ["Google"],
+                    "declared_description": "Security (Google reCAPTCHA)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "GCLB",
+                    "declared_purpose": "Performance",
+                    "declared_retention": "session",
+                    "declared_third_parties": ["Google"],
+                    "declared_description": "Performance (Google Cloud Load Balancer for websocket fallback)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "__recurly__.deviceId",
+                    "declared_purpose": "Security",
+                    "declared_retention": "local storage",
+                    "declared_third_parties": ["Recurly"],
+                    "declared_description": "Security (Recurly payment processing)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "algoliasearch-client-js",
+                    "declared_purpose": "Functionality",
+                    "declared_retention": "local storage",
+                    "declared_third_parties": ["First Party"],
+                    "declared_description": "Preferences (Algolia documentation search)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "_ga*",
+                    "declared_purpose": "Analytical",
+                    "declared_retention": "13 months",
+                    "declared_third_parties": ["Google"],
+                    "declared_description": "Analytics used to distinguish users (Google Analytics)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "_gid",
+                    "declared_purpose": "Analytical",
+                    "declared_retention": "24 hours",
+                    "declared_third_parties": ["Google"],
+                    "declared_description": "Analytics used to distinguish users (Google Analytics)",
+                    "violations": []
+                },
+                {
+                    "cookie_name": "_gat",
+                    "declared_purpose": "Analytical",
+                    "declared_retention": "1 minute",
+                    "declared_third_parties": ["Google"],
+                    "declared_description": "Analytics used to throttle request rate (Google Analytics)",
+                    "violations": []
+                }
+            ],
+            "realtime_cookies": [
+                {
+                    "name": "__stripe_mid",
+                    "value": "107c8da0-9c1c-4b42-932d-238096e87feb896b6b",
+                    "domain": ".www.overleaf.com",
+                    "expirationDate": "2026-06-18T11:05:08.000Z",
+                    "secure": true,
+                    "httpOnly": false,
+                    "sameSite": "strict",
+                    "path": "/",
+                    "violations": [
+                        {
+                            "issue_id": 12,
+                            "category": "Undefined",
+                            "type": "Behavior",
+                            "description": "Cookie is deployed without being mentioned in the policy, potentially without user consent.",
+                            "severity": "Medium"
+                        }
+                    ]
+                },
+                {
+                    "name": "overleaf_session2",
+                    "value": "s%3AgULdMeURB54tjEjN4jhTiZ01CMYTljf4.CXYValjEIj76Xkg0YcOCaqSCPsBaOcGmJYwZp7jRNZs",
+                    "domain": ".overleaf.com",
+                    "expirationDate": "2025-06-24T07:15:46.215Z",
+                    "secure": true,
+                    "httpOnly": true,
+                    "sameSite": "lax",
+                    "path": "/",
+                    "violations": []
+                }
+            ]
+        };
+
+        // Combine and process data
+        function processData() {
+            const processedCookies = [];
+            const cookieMap = new Map();
+
+            // Add declared cookies
+            cookieData.declared_cookies.forEach(cookie => {
+                cookieMap.set(cookie.cookie_name, {
+                    name: cookie.cookie_name,
+                    type: 'declared',
+                    declared: cookie,
+                    realtime: null,
+                    violations: cookie.violations || []
+                });
+            });
+
+            // Add realtime cookies
+            cookieData.realtime_cookies.forEach(cookie => {
+                if (cookieMap.has(cookie.name)) {
+                    // This cookie exists in both
+                    const existing = cookieMap.get(cookie.name);
+                    existing.type = 'both';
+                    existing.realtime = cookie;
+                    // Merge violations
+                    if (cookie.violations) {
+                        existing.violations = [...existing.violations, ...cookie.violations];
+                    }
+                } else {
+                    // This is realtime only
+                    cookieMap.set(cookie.name, {
+                        name: cookie.name,
+                        type: 'realtime',
+                        declared: null,
+                        realtime: cookie,
+                        violations: cookie.violations || []
+                    });
+                }
+            });
+
+            return Array.from(cookieMap.values());
+        }
+
+        const processedCookies = processData();
+        let filteredCookies = processedCookies;
+
+        function renderCookies() {
+            const container = document.getElementById('cookieList');
+            container.innerHTML = '';
+
+            filteredCookies.forEach((cookie, index) => {
+                const row = document.createElement('div');
+                row.className = 'cookie-row';
+                row.innerHTML = `
+                    <div class="cookie-main" onclick="toggleDetails(${index})">
+                        <div class="cookie-name">
+                            ${cookie.name}
+                            <span class="cookie-type-badge ${cookie.type}">${getTypeLabel(cookie.type)}</span>
+                        </div>
+                        <div>${cookie.declared ? cookie.declared.declared_purpose || '-' : '-'}</div>
+                        <div>${cookie.declared ? cookie.declared.declared_third_parties.join(', ') : '-'}</div>
+                        <div>${cookie.declared ? cookie.declared.declared_retention || '-' : formatExpiration(cookie.realtime)}</div>
+                        <div class="violation-count ${cookie.violations.length > 0 ? 'has-violations' : 'no-violations'}">
+                            ${cookie.violations.length > 0 ? '⚠️ ' + cookie.violations.length + ' vi phạm' : '✅ Không vi phạm'}
+                        </div>
+                        <div class="expand-icon">▶</div>
+                    </div>
+                    <div class="cookie-details">
+                        <div class="details-content">
+                            <div class="details-grid">
+                                <div class="detail-section">
+                                    <h4>Thông tin khai báo</h4>
+                                    ${cookie.declared ? `
+                                        <div class="detail-item">
+                                            <span class="detail-label">Mục đích:</span>
+                                            <span class="detail-value">${cookie.declared.declared_purpose}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Thời gian lưu:</span>
+                                            <span class="detail-value">${cookie.declared.declared_retention}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Bên thứ ba:</span>
+                                            <span class="detail-value">${cookie.declared.declared_third_parties.join(', ')}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Mô tả:</span>
+                                            <span class="detail-value">${cookie.declared.declared_description}</span>
+                                        </div>
+                                    ` : '<p style="color: #6b7280;">Không có thông tin khai báo</p>'}
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Thông tin realtime</h4>
+                                    ${cookie.realtime ? `
+                                        <div class="detail-item">
+                                            <span class="detail-label">Domain:</span>
+                                            <span class="detail-value">${cookie.realtime.domain}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Hết hạn:</span>
+                                            <span class="detail-value">${formatExpiration(cookie.realtime)}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Secure:</span>
+                                            <span class="detail-value">${cookie.realtime.secure ? 'Có' : 'Không'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">HttpOnly:</span>
+                                            <span class="detail-value">${cookie.realtime.httpOnly ? 'Có' : 'Không'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">SameSite:</span>
+                                            <span class="detail-value">${cookie.realtime.sameSite}</span>
+                                        </div>
+                                    ` : '<p style="color: #6b7280;">Không phát hiện cookie realtime</p>'}
+                                </div>
+                            </div>
+                            ${cookie.violations.length > 0 ? `
+                                <div class="violations-section">
+                                    <h4 style="color: #dc2626; margin-bottom: 16px;">Vi phạm phát hiện</h4>
+                                    ${cookie.violations.map(violation => `
+                                        <div class="violation-item">
+                                            <div class="violation-header">
+                                                <span class="severity-badge severity-${violation.severity.toLowerCase()}">${violation.severity}</span>
+                                                <span style="color: #6b7280; font-size: 12px;">${violation.category} - ${violation.type}</span>
+                                            </div>
+                                            <div class="violation-title">Vi phạm #${violation.issue_id}</div>
+                                            <div class="violation-description">${violation.description}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function getTypeLabel(type) {
+            switch(type) {
+                case 'declared': return 'Đã khai báo';
+                case 'realtime': return 'Realtime';
+                case 'both': return 'Cả hai';
+                default: return 'Không xác định';
+            }
+        }
+
+        function formatExpiration(cookie) {
+            if (!cookie || !cookie.expirationDate) return '-';
+            const date = new Date(cookie.expirationDate);
+            return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+        }
+
+        function toggleDetails(index) {
+            const rows = document.querySelectorAll('.cookie-row');
+            const row = rows[index];
+            row.classList.toggle('expanded');
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                filterCookies(filter);
+            });
+        });
+
+        function filterCookies(filter) {
+            switch(filter) {
+                case 'all':
+                    filteredCookies = processedCookies;
+                    break;
+                case 'declared':
+                    filteredCookies = processedCookies.filter(c => c.type === 'declared' || c.type === 'both');
+                    break;
+                case 'realtime':
+                    filteredCookies = processedCookies.filter(c => c.type === 'realtime' || c.type === 'both');
+                    break;
+                case 'both':
+                    filteredCookies = processedCookies.filter(c => c.type === 'both');
+                    break;
+                case 'violations':
+                    filteredCookies = processedCookies.filter(c => c.violations.length > 0);
+                    break;
+                case 'no-violations':
+                    filteredCookies = processedCookies.filter(c => c.violations.length === 0);
+                    break;
+            }
+            renderCookies();
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filteredCookies = processedCookies.filter(cookie =>
+                cookie.name.toLowerCase().includes(searchTerm) ||
+                (cookie.declared && cookie.declared.declared_purpose.toLowerCase().includes(searchTerm)) ||
+                (cookie.declared && cookie.declared.declared_description.toLowerCase().includes(searchTerm))
+            );
+            renderCookies();
+        });
+
+        renderCookies();
+    </script>
+</body>
+</html>
