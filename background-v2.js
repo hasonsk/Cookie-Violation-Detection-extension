@@ -299,91 +299,6 @@ class CookieManager {
 }
 
 // =====================================================
-// 5. POLICY ANALYZER
-// =====================================================
-class PolicyAnalyzer {
-  async loadCookieSpecs() {
-    try {
-      const response = await fetch(chrome.runtime.getURL("cookie_specs.json"));
-      if (!response.ok) {
-        throw new Error("Failed to load cookie specifications");
-      }
-      return await response.json();
-    } catch (error) {
-      Utils.log("Error loading cookie specifications:", error);
-      return null;
-    }
-  }
-
-  isSessionCookie(cookieName, cookieSpecs) {
-    if (!cookieSpecs) return false;
-
-    // Check in specific declarations
-    const specificCookie = cookieSpecs.specific?.find(
-      (spec) =>
-        spec.name === cookieName &&
-        spec.attribute === "retention" &&
-        spec.value.toLowerCase() === "session"
-    );
-
-    if (specificCookie) return true;
-
-    // Check in general categories
-    for (const generalSpec of cookieSpecs.general || []) {
-      if (
-        cookieName.includes(generalSpec.name) &&
-        generalSpec.attribute === "retention" &&
-        generalSpec.value.toLowerCase() === "session"
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  persistsLongerThan24Hours(cookie) {
-    if (cookie.expires === "Session" || !cookie.expires) {
-      return false;
-    }
-
-    try {
-      const expirationDate = new Date(cookie.expires);
-      const now = new Date();
-      const diffInHours = (expirationDate - now) / (1000 * 60 * 60);
-      return diffInHours > 24;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  async validateSessionCookies(domain) {
-    const cookieSpecs = await this.loadCookieSpecs();
-    if (!cookieSpecs) return [];
-
-    const cookies = await this.cookieManager.getCookiesForDomain(domain);
-    const violations = [];
-
-    for (const cookie of cookies) {
-      if (
-        this.isSessionCookie(cookie.cookieName, cookieSpecs) &&
-        this.persistsLongerThan24Hours(cookie)
-      ) {
-        violations.push({
-          name: cookie.cookieName,
-          domain: cookie.domain,
-          expirationDate: cookie.expires,
-          message:
-            "Cookie is declared as a 'session' cookie but persists longer than 24 hours",
-        });
-      }
-    }
-
-    return violations;
-  }
-}
-
-// =====================================================
 // 6. BLOCKING MANAGER
 // =====================================================
 class BlockingManager {
@@ -462,8 +377,6 @@ class ExtensionController {
   constructor() {
     this.cookieManager = new CookieManager();
     this.blockingManager = new BlockingManager();
-    this.policyAnalyzer = new PolicyAnalyzer();
-    this.policyAnalyzer.cookieManager = this.cookieManager; // Inject dependency
     this.notificationManager = new NotificationManager();
   }
 
@@ -516,15 +429,6 @@ class ExtensionController {
         case "MANUAL_SCAN":
           await this.cookieManager.performManualScan(request.tabId);
           return { success: true };
-
-        case "validate":
-          const violations = await this.policyAnalyzer.validateSessionCookies(
-            request.domain
-          );
-          return { violations };
-
-        default:
-          return { success: false, error: "Unknown action" };
       }
     } catch (error) {
       Utils.log("Message handling error:", error);

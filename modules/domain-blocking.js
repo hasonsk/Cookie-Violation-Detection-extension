@@ -1,9 +1,3 @@
-// modules/domain-blocking.js
-
-/**
- * Domain Blocking Module
- * Handles blocking and unblocking domains, managing the blocked domains list
- */
 export class DomainBlocking {
   constructor() {
     this.blockedDomains = [];

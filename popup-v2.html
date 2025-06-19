@@ -62,37 +62,37 @@
               <div class="card">
                 <div class="label" data-i18n="cookiesMonitored"></div>
                 <div class="value" id="cookies-monitored">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="violationsDetected"></div>
                 <div class="value alert" id="violations-detected">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="complianceScore"></div>
                 <div class="value alert" id="compliance-score">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="declaredCookies"></div>
                 <div class="value" id="declared-cookies">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="thirdParty"></div>
                 <div class="value" id="third-party">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="firstParty"></div>
                 <div class="value" id="first-party">
-                  <div class="loading" data-i18n="loading"></div>
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
             </div>
@@ -104,7 +104,7 @@
         <div class="policy-section">
           <div class="policy-header" data-i18n="cookiePolicyStatus"></div>
           <div id="policy-status">
-            <div class="loading" data-i18n="checkingPolicy"></div>
+            <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
           </div>
         </div>
 
@@ -113,7 +113,8 @@
           <div class="panel">
             <div class="panel-header" data-i18n="violationsBySeverity"></div>
             <div class="panel-content">
-              <div id="severity-chart-loading" class="loading" data-i18n="loadingChart">
+              <div id="severity-chart-loading" class="loading">
+                <i data-lucide="loader-2" size="24"></i>
               </div>
               <div class="chart-container">
                 <canvas id="severityChart" class="hidden"></canvas>
@@ -124,7 +125,9 @@
           <div class="panel">
             <div class="panel-header" data-i18n="violationsByType"></div>
             <div class="panel-content">
-              <div id="type-chart-loading" class="loading" data-i18n="loadingChart"></div>
+              <div id="type-chart-loading" class="loading">
+                <i data-lucide="loader-2" size="24"></i>
+              </div>
               <div class="chart-container">
                 <canvas id="typeChart" class="hidden"></canvas>
               </div>
@@ -134,7 +137,9 @@
           <div class="panel">
             <div class="panel-header" data-i18n="declaredCookiesByThirdParty"></div>
             <div class="panel-content">
-              <div id="third-party-declared-chart-loading" class="loading" data-i18n="loadingChart"></div>
+              <div id="third-party-declared-chart-loading" class="loading">
+                <i data-lucide="loader-2" size="24"></i>
+              </div>
               <div class="chart-container">
                 <canvas id="declaredCookiesByThirdPartyChart" class="hidden"></canvas>
               </div>
@@ -147,7 +152,7 @@
           <div class="panel-header" data-i18n="top5CriticalViolations"></div>
           <div class="panel-content">
             <div id="violations-list">
-              <div class="loading" data-i18n="loadingViolations"></div>
+              <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
             </div>
           </div>
           <div class="panel-footer">
@@ -203,12 +208,12 @@
           <button class="filter-button" data-filter="no-issues" data-i18n="filterNoIssues">No Issues</button>
           <button class="filter-button" data-filter="third-party" data-i18n="filterThirdParty">Third-party</button>
         </div>
-        <div id="cookie-items-container"></div>
+        <!-- <div id="cookie-items-container"></div> -->
         <!-- Cookie List -->
         <div class="panel">
           <div class="panel-header" data-i18n="cookies"></div>
           <div id="cookie-list-container" class="cookie-list-container">
-            <div class="loading" data-i18n="loadingCookies"></div>
+            <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
           </div>
         </div>
       </div>

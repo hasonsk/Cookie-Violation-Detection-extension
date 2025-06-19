@@ -68,14 +68,20 @@ body {
 
 /* Loading state */
 .loading {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--white);
-  border-radius: 50%;
-  border-top-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  color: var(--text-secondary);
+}
+
+.loading i {
   animation: spin 1s linear infinite;
-  margin-right: 6px;
+  color: var(--primary-blue);
+}
+
+.hidden {
+  display: none;
 }
 
 @keyframes spin {
@@ -467,30 +473,6 @@ body {
   background: var(--error-light);
 }
 
-/* Loading States */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-  color: var(--text-secondary);
-}
-
-.loading::after {
-  content: "";
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border-light);
-  border-top: 2px solid var(--primary-blue);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-left: 8px;
-}
-
-.hidden {
-  display: none;
-}
-
 /* Cookie screen */
 .screen-header {
   display: flex;
@@ -597,6 +579,11 @@ body {
   background-color: var(--bg-secondary);
   font-size: 0.875rem;
   border-top: 1px solid var(--border-light);
+  display: none;
+}
+
+.cookie-details.expanded {
+  display: block;
 }
 
 .details-grid {
@@ -1209,13 +1196,6 @@ input[type="range"] {
 
 .violation-list a:hover {
   text-decoration: underline;
-}
-
-/* Loading state */
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-secondary);
 }
 
 /* Improved details grid */

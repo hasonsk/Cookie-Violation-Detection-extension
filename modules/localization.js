@@ -1,5 +1,3 @@
-// modules/localization.js
-
 const DEFAULT_LANGUAGE = 'en';
 let currentMessages = {};
 

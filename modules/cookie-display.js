@@ -42,7 +42,7 @@ export class CookieDisplay {
   }
 
   renderFilteredCookies() {
-    const container = document.getElementById("cookie-items-container");
+    const container = document.getElementById("cookie-list-container");
     if (!container) return;
 
     container.innerHTML = "";
@@ -82,9 +82,9 @@ export class CookieDisplay {
       });
     }
 
-    // Process realtime cookies (undeclared cookies)
-    if (this.data.details?.undeclared_cookie_details) {
-      this.data.details.undeclared_cookie_details.forEach(cookie => {
+    // Process realtime cookies (realtime cookies)
+    if (this.data.details?.realtime_cookie_details) {
+      this.data.details.realtime_cookie_details.forEach(cookie => {
         const processedCookie = {
           ...cookie,
           type: "realtime",
@@ -171,13 +171,15 @@ export class CookieDisplay {
     if (!cookieDomain) return true;
 
     // Get current tab domain (you might need to pass this in the data)
-    const currentDomain = this.data.currentDomain || window.location.hostname;
+    const url = new URL(this.data.website_url);
+    const currentDomain = url.hostname;
 
     // Remove leading dots and compare
     const cleanCookieDomain = cookieDomain.replace(/^\./, '');
     const cleanCurrentDomain = currentDomain.replace(/^\./, '');
 
-    return cleanCookieDomain === cleanCurrentDomain ||
+    // alert(`Checking first-party for cookie domain: ${cleanCookieDomain}, current domain: ${this.data.website_url}`);
+    return cleanCurrentDomain ||
            cleanCurrentDomain.endsWith('.' + cleanCookieDomain) ||
            cleanCookieDomain.endsWith('.' + cleanCurrentDomain);
   }
@@ -207,7 +209,7 @@ export class CookieDisplay {
     const statusClass = hasViolations ? "violation" : "";
 
     const cookieName = cookie.cookie_name || cookie.name || 'N/A';
-    const cookieDomain = cookie.domain || 'N/A';
+    const cookieDomain = cookie.domain || cookie.declared_third_parties || 'N/A';
 
     // Build subtitle with tags
     let subtitle = `${cookieDomain}`;
@@ -229,7 +231,8 @@ export class CookieDisplay {
       }
     }
 
-    if (!cookie.isFirstParty) {
+    if (!cookie.isFirstParty || cookie.declared_third_parties != "First Party") {
+
       tags.push(`<span class="tag tag-third-party" data-i18n="tagThirdParty">3rd Party</span>`);
     }
 
@@ -261,12 +264,12 @@ export class CookieDisplay {
     const cookieItemHeader = itemDiv.querySelector(".cookie-item");
     cookieItemHeader.addEventListener("click", () => {
       const details = itemDiv.querySelector(".cookie-details");
-      details.classList.toggle("hidden");
+      details.classList.toggle("expanded");
       const chevron = cookieItemHeader.querySelector(".chevron");
-      if (details.classList.contains("hidden")) {
-        chevron.style.transform = "rotate(0deg)";
-      } else {
+      if (details.classList.contains("expanded")) {
         chevron.style.transform = "rotate(90deg)";
+      } else {
+        chevron.style.transform = "rotate(0deg)";
       }
       // Re-create Lucide icons for newly visible elements
       if (typeof lucide !== 'undefined') {
@@ -282,7 +285,7 @@ export class CookieDisplay {
       return cookie.declared_retention;
     }
     if (cookie.expirationDate) {
-      return new Date(cookie.expirationDate * 1000).toLocaleDateString();
+      return cookie.expirationDate;
     }
     return 'N/A';
   }
@@ -305,10 +308,6 @@ export class CookieDisplay {
         <div>
           <div class="detail-label" data-i18n="description">Description</div>
           <div>${cookie.declared_description || 'N/A'}</div>
-        </div>
-        <div>
-          <div class="detail-label" data-i18n="domain">Domain</div>
-          <div>${cookie.domain || 'N/A'}</div>
         </div>
       `;
     } else {
