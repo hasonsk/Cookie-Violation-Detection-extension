@@ -337,5 +337,8 @@
   },
   "tagThirdParty": {
     "message": "3rd Party"
+  },
+  "details": {
+    "message": "Details"
   }
 }

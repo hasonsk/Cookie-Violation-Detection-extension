@@ -10,6 +10,7 @@ export class Dashboard {
     this.exportReport();
     this.viewPolicy();
     this.checkAgain();
+    this.addDetailsLinkEvent();
   }
 
   init() {
@@ -338,6 +339,33 @@ export class Dashboard {
           window.open(this.data.website_url, "_blank");
         } else {
           alert("No cookie policy found for this website.");
+        }
+      });
+    }
+  }
+
+  addDetailsLinkEvent() {
+    const detailsLink = document.getElementById("detailsLink");
+    if (detailsLink) {
+      detailsLink.addEventListener("click", async (event) => {
+        event.preventDefault(); // Prevent default link behavior
+
+        try {
+          const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+          const currentTab = tabs[0];
+
+            if (currentTab && currentTab.url) {
+              const domain = new URL(currentTab.url).origin;
+              localStorage.setItem("currentTabDomain", domain);
+              const key = "currentTabDomain";
+              const value = domain;
+              chrome.storage.local.set({ [key]: value });
+              window.open("details.html?domain=" + encodeURIComponent(domain), "_blank");
+              alert("Error getting current tab URL. See console for details. " + error);
+            }
+
+        } catch (error) {
+          alert("Error getting current tab URL. See console for details.");
         }
       });
     }

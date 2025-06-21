@@ -8,7 +8,13 @@
     "activeTab",
     "scripting",
     "storage",
-    "cookies", "tabs", "activeTab", "webRequest", "declarativeNetRequest", "notifications", "alarms", "scripting"],
+    "cookies",
+    "tabs",
+    "webRequest",
+    "declarativeNetRequest",
+    "notifications",
+    "alarms"
+  ],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
@@ -16,6 +22,9 @@
         "modules/*",
         "main.js",
         "viewer/*",
+        "details.js",
+        "details.html",
+        "cookie-dashboard.html",
         "viewer/html/*.html",
         "viewer/styles/*.css",
         "viewer/javascript/*.js",

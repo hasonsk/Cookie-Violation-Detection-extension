@@ -8,6 +8,7 @@ const CONFIG = {
     COMPLIANCE_RESULT: "complianceResult",
     SETTINGS: "user_settings",
     BLOCKED_DOMAINS: "blocked_domains",
+    CURRENT_TAB_RESULT: "currentTabDomain"
   },
   DEFAULTS: {
     SETTINGS: {
@@ -307,50 +308,47 @@ class ExtensionController {
   }
 
   async handleMessage(request, sender, sendResponse) {
-    Utils.log("Received message:", request);
+    // Utils.log("Received message:", request);
     // Lấy thông tin tab hiện tại
-    const [activeTab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    });
-
-    if (!activeTab || !activeTab.url) {
-      return { success: false, error: "No active tab found" };
-    }
-
-    // Tạo root URL từ tab hiện tại
-    const url = new URL(activeTab.url);
-    const rootUrl = `${url.protocol}//${url.hostname}`;
-    Utils.log("Active tab URL:", rootUrl);
 
     try {
       switch (request.action) {
         case "GET_COMPLIANCE_RESULT":
+          const [activeTab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true
+          });
+
+          if (!activeTab || !activeTab.url) {
+            return { success: false, error: "No active tab found" };
+          }
+
+          const url = new URL(activeTab.url);
+          const rootUrl = `${url.protocol}//${url.hostname}`;
+          Utils.log("Active tab URL:", rootUrl);
+
           const allComplianceResults = await StorageManager.get(
-            CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
-          );
-          const currentTabResult = allComplianceResults?.[rootUrl] || null;
-          Utils.log("Compliance result for current tab:", currentTabResult);
+              CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+            );
+            const currentTabResult = allComplianceResults?.[rootUrl] || null;
+            Utils.log("Compliance result for current tab:", currentTabResult);
+
+            return {
+              success: true,
+              data: currentTabResult,
+            };
+
+        case "GET_RESULT_DETAILS":
+          const domain = await StorageManager.get(CONFIG.STORAGE_KEYS.CURRENT_TAB_RESULT);
+          console.log("Current tab domain:", domain);
+          const allResults = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT);
+          const resultDetails = allResults?.[domain] || null;
+          Utils.log("Result details for domain:", resultDetails);
 
           return {
             success: true,
-            data: currentTabResult,
-            // rootUrl: rootUrl // Có thể trả về rootUrl để debug
+            data: resultDetails,
           };
-          // const complianceResult = await StorageManager.get(
-          //   CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
-          // );
-          // return { success: true, data: complianceResult };
-
-        case "GET_COOKIES":
-          console.log("Request from popup: ", request);
-          const tabId = activeTabId;
-
-          const cookies = await getAllCookiesFromActiveTab(tabId);
-          console.log("Cookies for domain: ", cookies);
-          // const providerParty = await categorizeDomainsByParty(tabId);
-          // console.log("Categorized domains:", providerParty);
-          return { success: true, data: cookies };
 
         case "UPDATE_SETTINGS":
           await StorageManager.updateSettings(request.settings);
@@ -585,7 +583,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 
       // Xác định main URL của tab đang xem
       chrome.tabs.get(details.tabId, async function (tab) {
-        if (!tab) return;
+        if (!tab || !tab.url) return;
 
         const tabUrl = new URL(tab.url);
         const tabDomain = tabUrl.hostname;

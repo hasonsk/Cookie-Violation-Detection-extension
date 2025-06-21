@@ -337,5 +337,8 @@
   },
   "tagThirdParty": {
     "message": "Bên thứ ba"
+  },
+  "details": {
+    "message": "Chi tiết"
   }
 }
