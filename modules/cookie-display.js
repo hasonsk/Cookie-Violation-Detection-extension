@@ -1,4 +1,3 @@
-// modules/cookie-display.js
 export class CookieDisplay {
   constructor() {
     this.data = null;

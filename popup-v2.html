@@ -202,11 +202,11 @@
         </div>
         <div class="filters">
           <button class="filter-button active" data-filter="all" data-i18n="filterAll">All</button>
-          <button class="filter-button" data-filter="policy" data-i18n="filterPolicy">Policy Cookies</button>
-          <button class="filter-button" data-filter="realtime" data-i18n="filterRealtime">Realtime Cookies</button>
           <button class="filter-button" data-filter="violations" data-i18n="filterViolations">Violations</button>
           <button class="filter-button" data-filter="no-issues" data-i18n="filterNoIssues">No Issues</button>
           <button class="filter-button" data-filter="third-party" data-i18n="filterThirdParty">Third-party</button>
+          <button class="filter-button" data-filter="policy" data-i18n="filterPolicy">Policy Cookies</button>
+          <button class="filter-button" data-filter="realtime" data-i18n="filterRealtime">Realtime Cookies</button>
         </div>
         <!-- <div id="cookie-items-container"></div> -->
         <!-- Cookie List -->
@@ -274,17 +274,6 @@
                 </div>
 
                 <div class="setting-item">
-                    <div class="setting-header">
-                        <label class="setting-label" data-i18n="showNotifications"></label>
-                        <div class="toggle-switch on" data-setting="showViolationNotifications">
-                            <div class="toggle-handle"></div>
-                        </div>
-                    </div>
-                    <p class="setting-description" data-i18n="showDesktopNotifications">
-                    </p>
-                </div>
-
-                <div class="setting-item">
                     <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="scanFrequency">
                     </label>
                     <select data-setting="scanFrequency">
@@ -294,31 +283,12 @@
                         <option value="manual" data-i18n="manuallyOnly"></option>
                     </select>
                 </div>
-
-                <div class="setting-item">
-                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="notificationDuration">
-                    </label>
-                    <input type="range" min="1000" max="10000" step="500" value="3000"
-                           data-setting="notificationDuration">
-                    <div class="range-display" data-display="notificationDuration">3s</div>
-                </div>
             </div>
         </div>
 
         <div class="panel">
             <div class="panel-header" data-i18n="advanced"></div>
             <div style="padding: 1rem">
-                <div class="setting-item">
-                    <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="dataRetention">
-                    </label>
-                    <select data-setting="dataRetention">
-                        <option value="30" data-i18n="30Days"></option>
-                        <option value="90" data-i18n="90Days"></option>
-                        <option value="365" data-i18n="1Year"></option>
-                        <option value="forever" data-i18n="untilManuallyCleared"></option>
-                    </select>
-                </div>
-
                 <div class="setting-item">
                     <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="theme">
                     </label>
@@ -337,23 +307,15 @@
                         <option value="vi" data-i18n="vietnamese"></option>
                     </select>
                 </div>
-
-                <div class="setting-item">
-                    <button class="danger-button" id="clear-all-data" data-i18n="clearAllData"></button>
-                </div>
-
-                <div class="version">Version 1.0.0</div>
             </div>
 
             <!-- Save/Reset buttons -->
             <div class="button-container">
-                <button class="secondary-button" id="reset-settings" data-i18n="resetToDefaults"></button>
                 <button class="primary-button" id="save-settings" data-i18n="saveSettings"></button>
             </div>
         </div>
     </div>
 
-    <!-- <script src="popup-v2.js"></script> -->
     <script src="main.js" type="module"></script>
     <script src="./lib/chart.js-4.4.2/package/dist/chart.umd.js"></script>
     <script src="./lib/lucide-0.513.0-dist/umd/lucide.js"></script>

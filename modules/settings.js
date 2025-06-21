@@ -14,7 +14,6 @@ export class Settings {
 
           // Monitoring settings
           scanFrequency: 'pageload',
-          dataRetention: '30',
 
           // UI settings
           theme: 'light',
@@ -84,11 +83,6 @@ export class Settings {
       // Save button
       document.getElementById('save-settings').addEventListener('click', () => {
           this.saveSettings();
-      });
-
-      // Reset button
-      document.getElementById('reset-settings').addEventListener('click', () => {
-          this.resetToDefaults();
       });
 
       // Clear data button
@@ -179,15 +173,6 @@ export class Settings {
       this.markAsUnsaved();
   }
 
-  formatRangeValue(key, value) {
-      switch (key) {
-          case 'notificationDuration':
-              return `${value / 1000}s`;
-          default:
-              return value.toString();
-      }
-  }
-
   markAsUnsaved() {
       this.hasUnsavedChanges = true;
       this.updateSaveStatus(true);
@@ -207,15 +192,6 @@ export class Settings {
           text.textContent = 'Settings saved';
           saveButton.style.backgroundColor = '#2563eb';
       }
-  }
-
-  async resetToDefaults() {
-      if (!confirm('Are you sure you want to reset all settings to defaults?')) return;
-
-      this.settings = { ...this.defaultSettings };
-      this.renderSettingsUI();
-      this.markAsUnsaved();
-      this.showNotification('Settings reset to defaults', 'info');
   }
 
   async handleClearAllData() {
@@ -263,7 +239,7 @@ export class Settings {
           if (notification.parentNode) {
               notification.parentNode.removeChild(notification);
           }
-      }, this.settings.notificationDuration || 3000);
+      }, 3000);
   }
 
   escapeHtml(text) {

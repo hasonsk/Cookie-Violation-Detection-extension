@@ -1,4 +1,3 @@
-// modules/tab-manager.js
 export class TabManager {
   constructor() {
     this.currentTabId = null;

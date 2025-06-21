@@ -1,11 +1,9 @@
-// Định nghĩa enum cho các loại vi phạm
 const ViolationSeverity = {
   CRITICAL: 'critical',
   MODERATE: 'moderate',
   MINOR: 'minor'
 };
 
-// Định nghĩa các loại vi phạm cụ thể
 const ViolationType = {
   NO_COOKIE_POLICY: 'no_cookie_policy',
   MISSING_CONSENT: 'missing_consent',
@@ -17,7 +15,6 @@ const ViolationType = {
   THIRD_PARTY_TRACKING: 'third_party_tracking'
 };
 
-// Mapping vi phạm theo mức độ nghiêm trọng
 const violationSeverityMap = {
   [ViolationType.NO_COOKIE_POLICY]: ViolationSeverity.CRITICAL,
   [ViolationType.SENSITIVE_DATA_COLLECTION]: ViolationSeverity.CRITICAL,
