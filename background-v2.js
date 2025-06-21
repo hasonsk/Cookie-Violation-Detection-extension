@@ -307,13 +307,40 @@ class ExtensionController {
   }
 
   async handleMessage(request, sender, sendResponse) {
+    Utils.log("Received message:", request);
+    // Lấy thông tin tab hiện tại
+    const [activeTab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+
+    if (!activeTab || !activeTab.url) {
+      return { success: false, error: "No active tab found" };
+    }
+
+    // Tạo root URL từ tab hiện tại
+    const url = new URL(activeTab.url);
+    const rootUrl = `${url.protocol}//${url.hostname}`;
+    Utils.log("Active tab URL:", rootUrl);
+
     try {
       switch (request.action) {
         case "GET_COMPLIANCE_RESULT":
-          const complianceResult = await StorageManager.get(
+          const allComplianceResults = await StorageManager.get(
             CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
           );
-          return { success: true, data: complianceResult };
+          const currentTabResult = allComplianceResults?.[rootUrl] || null;
+          Utils.log("Compliance result for current tab:", currentTabResult);
+
+          return {
+            success: true,
+            data: currentTabResult,
+            // rootUrl: rootUrl // Có thể trả về rootUrl để debug
+          };
+          // const complianceResult = await StorageManager.get(
+          //   CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+          // );
+          // return { success: true, data: complianceResult };
 
         case "GET_COOKIES":
           console.log("Request from popup: ", request);
@@ -341,9 +368,31 @@ class ExtensionController {
           );
           return { success: cleared };
 
+        case "CHECK_AGAIN":
         case "MANUAL_SCAN":
-          await this.cookieManager.performManualScan(request.tabId);
-          return { success: true };
+          try {
+            const [activeTab] = await chrome.tabs.query({
+              active: true,
+              currentWindow: true
+            });
+
+            if (!activeTab) {
+              return { success: false, error: "No active tab found" };
+            }
+
+            Utils.log("Starting CHECK_AGAIN for tab:", activeTab.id);
+
+            const result = await performComplianceCheck(activeTab.id);
+
+            if (result) {
+              return { success: true, data: result, message: "Compliance check completed" };
+            } else {
+              return { success: false, error: "Unable to perform compliance check" };
+            }
+          } catch (error) {
+            Utils.log("Error in CHECK_AGAIN:", error);
+            return { success: false, error: error.message };
+          }
       }
     } catch (error) {
       Utils.log("Message handling error:", error);
@@ -372,38 +421,87 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 });
 
 // TODO: Xử lý khi tab được load xong --> GỬI URL --> SERVER -->
-// Lắng nghe khi tab được load xong
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && tabId === activeTabId) {
-    // Only process valid web URLs (http/https)
+// chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+//   if (changeInfo.status === "complete" && tabId === activeTabId) {
+//     if (
+//       !tab.url ||
+//       (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
+//     ) {
+//       Utils.log(`Skipping scan for non-web URL: ${tab.url}`);
+//       return;
+//     }
+
+//     const excludedDomains = ["chrome://newtab", "chrome://extensions"];
+//     if (excludedDomains.some((excluded) => tab.url.includes(excluded))) {
+//       Utils.log(`Skipping scan for excluded domain: ${tab.url}`);
+//       return;
+//     }
+
+//     await controller.cookieManager.updateBadgeForActiveTab();
+//     const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(
+//       activeTabId
+//     );
+//     const body = {
+//       website_url: tab.url,
+//       cookies: allCookiesFromDomainsList,
+//     };
+//     Utils.log("Sending cookies to server for analysis:", body);
+
+//     const response = await fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(body),
+//     });
+
+//     const result = await response.json();
+//     Utils.log("Compliance Result:", result);
+
+//     const url = new URL(tab.url);
+//     const rootUrl = `${url.protocol}//${url.hostname}`;
+
+//     const existingData = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT) || {};
+
+//     const updatedData = {
+//       ...existingData,
+//       [rootUrl]: result
+//     };
+
+//     await StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, updatedData);
+//     Utils.log("Compliance result saved to localStorage", updatedData);
+//   }
+// });
+
+// Hàm riêng để xử lý compliance check
+async function performComplianceCheck(tabId) {
+  try {
+    const tab = await chrome.tabs.get(tabId);
+
+    // Kiểm tra URL hợp lệ
     if (
       !tab.url ||
       (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
     ) {
       Utils.log(`Skipping scan for non-web URL: ${tab.url}`);
-      return;
+      return null;
     }
 
-    // Skip specific domains like chrome://newtab
     const excludedDomains = ["chrome://newtab", "chrome://extensions"];
     if (excludedDomains.some((excluded) => tab.url.includes(excluded))) {
       Utils.log(`Skipping scan for excluded domain: ${tab.url}`);
-      return;
+      return null;
     }
 
     await controller.cookieManager.updateBadgeForActiveTab();
-    const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(
-      activeTabId
-    );
+    const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(tabId);
+
     const body = {
       website_url: tab.url,
       cookies: allCookiesFromDomainsList,
     };
-    Utils.log("Sending cookies to server for analysis:", body);
-    // await chrome.tabs.create({
-    //   url: chrome.runtime.getURL("cookie-compliance-checker.html"),
-    // });
 
+    Utils.log("Sending cookies to server for analysis:", body);
 
     const response = await fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
       method: "POST",
@@ -415,47 +513,47 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     const result = await response.json();
     Utils.log("Compliance Result:", result);
-    StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, result);
-    chrome.tabs.sendMessage(activeTabId, {
-      action: "showCookieWarning",
-      analysisData: result,
-    });
-    Utils.log("Compliance result saved to localStorage");
+
+    // Lưu kết quả
+    await saveComplianceResult(tab.url, result);
+
+    return result;
+  } catch (error) {
+    Utils.log("Error in performComplianceCheck:", error);
+    throw error;
+  }
+}
+
+// Hàm riêng để lưu kết quả
+async function saveComplianceResult(tabUrl, result) {
+  // Lấy root URL (domain + protocol)
+  const url = new URL(tabUrl);
+  const rootUrl = `${url.protocol}//${url.hostname}`;
+
+  // Lấy dữ liệu hiện tại từ storage
+  const existingData = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT) || {};
+
+  // Cập nhật dữ liệu với format mới
+  const updatedData = {
+    ...existingData,
+    [rootUrl]: result
+  };
+
+  // Lưu dữ liệu đã cập nhật
+  await StorageManager.set(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT, updatedData);
+  Utils.log("Compliance result saved to localStorage", updatedData);
+}
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tabId === activeTabId) {
+    await performComplianceCheck(tabId);
   }
 });
 
 // setInterval(() => {
-//   if (isDetectedCookiesInPolicy) {
-//     // Object.entries(activeTabs).forEach(([tabId, url]) => {
-//       fetch(`http://localhost:8000/policy-status?url=${encodeURIComponent(url)}`)
-//         .then(res => res.json())
-//         .then(data => {
-//           if (data.status === "done") {
-//             isDetectedCookiesInPolicy = true;
-//           }
-//         });
-//     // });
-//   }
-//   else
-//   {
-//     console.log("TabID: ", activeTabId);
-//     getAllCookiesFromActiveTab(activeTabId)
-//     .then((cookies) => {
-//             console.log("Sent cookies to server: ", cookies);
-//             fetch(CONFIG.API_ENDPOINTS.COOKIES_ANALYZE, {
-//               method: "POST",
-//               headers: { "Content-Type": "application/json" },
-//               body: JSON.stringify(cookies)
-//             })
-//               .then(res => res.json())
-//               .then(data => console.log("Server response:", data));
-//           })
-//     .catch(err => console.error("Error getting cookies:", err));
-//   }
 // }, CONFIG.DEFAULTS.SCAN_INTERVAL || 600000);
 
 // Message handling
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   controller
     .handleMessage(request, sender, sendResponse)

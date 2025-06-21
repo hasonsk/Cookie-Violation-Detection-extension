@@ -9,18 +9,18 @@ export class Dashboard {
     this.clearAllCookies();
     this.exportReport();
     this.viewPolicy();
-    this.refreshCheck();
+    this.checkAgain();
   }
 
   init() {
     setTimeout(() => {
-      this.loadSampleData().then(() => {
+      this.loadData().then(() => {
         this.updateDashboard();
       });
     }, 1000);
   }
 
-  async loadSampleData() {
+  async loadData() {
     try {
       const response = await chrome.runtime.sendMessage({ action: "GET_COMPLIANCE_RESULT" });
       if (response && response.data) {
@@ -35,6 +35,7 @@ export class Dashboard {
   }
 
   updateDashboard() {
+    this.loadData();
     this.updateSummaryCards();
     this.updatePolicyStatus();
     this.updateCookieStatistics();
@@ -60,7 +61,7 @@ export class Dashboard {
     if (this.data.policy_url) {
       policyElement.innerHTML = `
               <a href="${this.data.policy_url}" class="policy-link" target="_blank">
-                  📄 Cookie Policy Found - Click to View
+                  Cookie Policy Found - Click to View
               </a>
           `;
     } else {
@@ -80,9 +81,12 @@ export class Dashboard {
 
   createCharts() {
     this.destroyExistingCharts();
-    this.createSeverityChart();
-    this.createTypeChart();
-    this.createDeclaredCookiesByThirdPartyChart();
+    if(this.data.statistics.by_severity)
+      this.createSeverityChart();
+    if(this.data.statistics.by_category)
+      this.createTypeChart();
+    if(this.data.statistics.declared_cookies_by_third_party)
+      this.createDeclaredCookiesByThirdPartyChart();
   }
 
   destroyExistingCharts() {
@@ -339,21 +343,49 @@ export class Dashboard {
     }
   }
 
-  refreshCheck() {
-    const refreshCheckBtn = document.getElementById("refresh-check-btn");
-    if (refreshCheckBtn) {
-      refreshCheckBtn.addEventListener("click", function () {
-        alert("Refreshing compliance check...");
-        // Reset loading states
-        document.querySelectorAll(".value").forEach((el) => {
-          el.innerHTML = '<div class="loading">Loading</div>';
-        });
+  // checkAgain() {
+  //   const checkAgainBtn = document.getElementById("check-again-btn");
+  //   if (checkAgainBtn) {
+  //     checkAgainBtn.addEventListener("click", function () {
+  //       alert("Refreshing compliance check...");
+  //       document.querySelectorAll(".value").forEach((el) => {
+  //         el.innerHTML = '<div class="loading">Loading</div>';
+  //       });
 
-        // Simulate refresh
-        setTimeout(() => {
-          this.updateDashboard();
-        }, 2000);
+  //       setTimeout(() => {
+  //         this.updateDashboard();
+  //       }, 2000);
+  //     });
+  //   }
+  // }
+  checkAgain() {
+    const checkAgainBtn = document.getElementById("check-again-btn");
+    if (checkAgainBtn) {
+      checkAgainBtn.addEventListener("click", async () => {
+        try {
+          // Hiển thị loading
+          document.querySelectorAll(".value").forEach((el) => {
+            el.innerHTML = '<div class="loading"><i data-lucide="loader-2"></i></div>';
+          });
+
+          // Gửi request CHECK_AGAIN
+          const response = await chrome.runtime.sendMessage({ action: "CHECK_AGAIN" });
+
+          if (response.success) {
+            // Cập nhật dashboard với dữ liệu mới
+            this.updateDashboard();
+            Utils.log("Compliance check refreshed successfully");
+          } else {
+            console.error("Check again failed:", response.error);
+            // Hiển thị lỗi cho user
+            this.showError(response.error || "Failed to refresh compliance check");
+          }
+        } catch (error) {
+          console.error("Error in check again:", error);
+          this.showError("Failed to refresh compliance check");
+        }
       });
     }
   }
+
 }

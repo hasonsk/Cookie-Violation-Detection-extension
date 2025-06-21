@@ -44,8 +44,8 @@
   "loading": {
     "message": "Đang tải"
   },
-  "cookiePolicyStatus": {
-    "message": "Trạng thái chính sách cookie"
+  "cookiePolicyLink": {
+    "message": "Chi tiết nội dung chính sách cookie"
   },
   "checkingPolicy": {
     "message": "Đang kiểm tra chính sách"

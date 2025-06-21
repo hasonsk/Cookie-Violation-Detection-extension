@@ -44,8 +44,8 @@
   "loading": {
     "message": "Loading"
   },
-  "cookiePolicyStatus": {
-    "message": "Cookie Policy Status"
+  "cookiePolicyLink": {
+    "message": "Cookie Policy Link"
   },
   "checkingPolicy": {
     "message": "Checking policy"
@@ -74,8 +74,8 @@
   "quickActions": {
     "message": "Quick Actions"
   },
-  "refreshCheck": {
-    "message": "Refresh Check"
+  "checkAgain": {
+    "message": "Check Again"
   },
   "blockDomain": {
     "message": "Block Domain"

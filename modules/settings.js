@@ -84,11 +84,6 @@ export class Settings {
       document.getElementById('save-settings').addEventListener('click', () => {
           this.saveSettings();
       });
-
-      // Clear data button
-      document.getElementById('clear-all-data').addEventListener('click', () => {
-          this.handleClearAllData();
-      });
   }
 
   renderSettingsUI() {
@@ -191,22 +186,6 @@ export class Settings {
           indicator.classList.remove('unsaved');
           text.textContent = 'Settings saved';
           saveButton.style.backgroundColor = '#2563eb';
-      }
-  }
-
-  async handleClearAllData() {
-      const confirmMessage = 'Are you sure you want to clear all data? This action cannot be undone.';
-      if (!confirm(confirmMessage)) return;
-
-      try {
-          localStorage.clear();
-          this.settings = { ...this.defaultSettings };
-          this.renderSettingsUI();
-          this.updateSaveStatus(false);
-          this.showNotification('All data cleared successfully', 'success');
-      } catch (error) {
-          console.error('Error clearing data:', error);
-          this.showNotification('Failed to clear data', 'error');
       }
   }
 

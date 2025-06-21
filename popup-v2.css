@@ -144,7 +144,7 @@ body {
   background-color: var(--primary-blue-hover);
 }
 
-.header .refresh-btn {
+.header .check-again-btn {
   position: absolute;
   right: 16px;
   top: 50%;
@@ -158,7 +158,7 @@ body {
   transition: all 0.2s;
 }
 
-.header .refresh-btn:hover {
+.header .check-again-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-50%) rotate(180deg);
 }
@@ -337,7 +337,7 @@ body {
 }
 
 .panel-content {
-  padding: 20px;
+  padding: 10px;
 }
 
 .panel-footer {

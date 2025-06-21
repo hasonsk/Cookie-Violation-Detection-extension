@@ -14,6 +14,22 @@ export class TabManager {
     }
   }
 
+  // async updateCurrentTabInfo(tabId) {
+  //   try {
+  //     const tab = await chrome.tabs.get(tabId);
+  //     const currentUrlElement = document.getElementById('current-url');
+  //     const currentTabInfoElement = document.getElementById('current-tab-info');
+
+  //     if (currentUrlElement && tab) {
+  //       currentUrlElement.textContent = tab.url;
+  //       if (currentTabInfoElement) {
+  //         currentTabInfoElement.style.display = 'block';
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error getting tab info:", error);
+  //   }
+  // }
   async updateCurrentTabInfo(tabId) {
     try {
       const tab = await chrome.tabs.get(tabId);
@@ -21,7 +37,17 @@ export class TabManager {
       const currentTabInfoElement = document.getElementById('current-tab-info');
 
       if (currentUrlElement && tab) {
-        currentUrlElement.textContent = tab.url;
+        // Lấy chỉ domain từ URL
+        let displayUrl = tab.url;
+        try {
+          const url = new URL(tab.url);
+          displayUrl = url.hostname; // Chỉ lấy domain, ví dụ: example.com
+        } catch (urlError) {
+          // Nếu URL không hợp lệ, giữ nguyên URL gốc
+          console.warn("Invalid URL format:", tab.url);
+        }
+
+        currentUrlElement.textContent = displayUrl;
         if (currentTabInfoElement) {
           currentTabInfoElement.style.display = 'block';
         }
@@ -30,7 +56,6 @@ export class TabManager {
       console.error("Error getting tab info:", error);
     }
   }
-
   showNoTabMessage() {
     const emptyMessage = document.getElementById('empty-message');
     if (emptyMessage) {
