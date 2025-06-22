@@ -1,4 +1,3 @@
-// modules/dashboard.js
 export class Dashboard {
   constructor() {
     this.data = null;
@@ -34,10 +33,11 @@ export class Dashboard {
   }
 
   updateDashboard() {
-    this.loadData();
-    this.updateSummaryCards();
-    this.updatePolicyStatus();
-    this.updateCookieStatistics();
+    this.loadData().then(() => {
+      this.updateSummaryCards();
+      this.updatePolicyStatus();
+      this.updateCookieStatistics();
+    });
   }
 
   updateSummaryCards() {

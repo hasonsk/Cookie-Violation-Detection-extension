@@ -244,7 +244,14 @@ class CookieDashboard {
         if (data.website_url) {
             try {
                 const url = new URL(data.website_url);
+                const policy_url = data.policy_url;
+                if (policy_url) {
+                    document.getElementById('policy-url').innerHTML = `<a href="${policy_url}" target="_blank">Click to View</a>`;
+                } else {
+                    document.getElementById('policy-url').textContent = 'Không có chính sách cookie được khai báo';
+                }
                 document.getElementById('website-domain').textContent = url.hostname;
+
             } catch (e) {
                 document.getElementById('website-domain').textContent = data.website_url || 'Unknown Domain';
             }

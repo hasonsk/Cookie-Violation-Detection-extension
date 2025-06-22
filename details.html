@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Compliance Dashboard</title>
+    <title>Cookie Compliance Monitor - Dashboard</title>
     <style>
 * {
     margin: 0;
@@ -547,14 +547,18 @@ body {
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Cookie Compliance Dashboard</h1>
+            <h1>Cookie Compliance Monitor - Dashboard</h1>
             <div class="header-info">
                 <div>
                     <span class="header-label">Website:</span>
                     <span class="header-value" id="website-domain">Loading...</span>
                 </div>
+                <div>
+                    <span class="header-label">Chính sách cookie:</span>
+                    <span class="header-value" id="policy-url">Loading...</span>
+                </div>
                 <div class="compliance-badge" id="compliance-badge">
-                    <span>🔍</span>
+                    <span></span>
                     <span id="compliance-score">Đang tải...</span>
                 </div>
                 <div>
