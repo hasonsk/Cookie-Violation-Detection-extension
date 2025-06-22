@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async function() {
-  // Initialize Lucide icons if the library is available
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function setupModuleCommunication(modules) {
-  // Create a simple event system for module communication
   const eventBus = {
     events: {},
 
@@ -114,7 +112,7 @@ function setupModuleCommunication(modules) {
         modules.cookieDisplay.init(modules.dashboard.data);
       } else {
         // If data is not yet loaded, wait for it
-        modules.dashboard.loadSampleData().then(() => {
+        modules.dashboard.loadData().then(() => {
           modules.cookieDisplay.init(modules.dashboard.data);
         });
       }
@@ -123,7 +121,6 @@ function setupModuleCommunication(modules) {
     }
   });
 
-  // Handle language change in settings
   const languageSelect = document.querySelector('select[data-setting="language"]');
   if (languageSelect) {
     languageSelect.addEventListener('change', async (event) => {
