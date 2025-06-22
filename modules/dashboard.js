@@ -386,7 +386,7 @@ export class Dashboard {
           if (response.success) {
             // Cập nhật dashboard với dữ liệu mới
             this.updateDashboard();
-            Utils.log("Compliance check refreshed successfully");
+            console.log("Compliance check refreshed successfully");
           } else {
             console.error("Check again failed:", response.error);
             // Hiển thị lỗi cho user

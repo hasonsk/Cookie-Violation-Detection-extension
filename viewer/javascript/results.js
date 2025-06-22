@@ -185,7 +185,7 @@ function renderCookies() {
                 <div>${cookie.declared ? cookie.declared.declared_third_parties.join(', ') : '-'}</div>
                 <div>${cookie.declared ? cookie.declared.declared_retention || '-' : formatExpiration(cookie.realtime)}</div>
                 <div class="violation-count ${cookie.violations.length > 0 ? 'has-violations' : 'no-violations'}">
-                    ${cookie.violations.length > 0 ? '⚠️ ' + cookie.violations.length + ' vi phạm' : '✅ Không vi phạm'}
+                    ${cookie.violations.length > 0 ? '⚠️ ' + cookie.violations.length + ' vi phạm' : '✅ Tuân thủ'}
                 </div>
                 <div class="expand-icon">▶</div>
             </div>
