@@ -14,6 +14,31 @@ export class TabManager {
     }
   }
 
+  isValidUrlForAnalysis(url) {
+    if (!url) return false;
+
+    const isHttpUrl = url.startsWith('http://') || url.startsWith('https://');
+
+    const invalidProtocols = [
+      'chrome://',
+      'chrome-extension://',
+      'moz-extension://',
+      'about:',
+      'file://',
+      'data:',
+      'javascript:',
+      'edge://',
+      'opera://',
+      'brave://'
+    ];
+
+    const hasInvalidProtocol = invalidProtocols.some(protocol =>
+      url.toLowerCase().startsWith(protocol)
+    );
+
+    return isHttpUrl && !hasInvalidProtocol;
+  }
+
   async updateCurrentTabInfo(tabId) {
     try {
       const tab = await chrome.tabs.get(tabId);

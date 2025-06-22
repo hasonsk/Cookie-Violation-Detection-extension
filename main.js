@@ -3,23 +3,40 @@ document.addEventListener('DOMContentLoaded', async function() {
     lucide.createIcons();
   }
 
+  const { initializeLocalization } = await import('./modules/localization.js');
+  await initializeLocalization();
+
   try {
     // Dynamic imports for all modules
-    const [
-      { TabManager },
-      { Navigation },
-      { Dashboard },
-      { DomainBlocking },
-      { Settings },
-      { initializeLocalization, changeLanguage }
-    ] = await Promise.all([
-      import('./modules/tab-manager.js'),
-      import('./modules/navigation.js'),
-      import('./modules/dashboard.js'),
-      import('./modules/domain-blocking.js'),
-      import('./modules/settings.js'),
-      import('./modules/localization.js')
-    ]);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      var currentTab = tabs[0];
+      var isValidUrl = currentTab.url.startsWith('http://') || currentTab.url.startsWith('https://');
+      var validUrlContent = document.getElementById('valid-url-content');
+      var invalidUrlContent = document.getElementById('invalid-url-content');
+
+      if (!isValidUrl) {
+        validUrlContent.style.display = 'none';
+        invalidUrlContent.style.display = 'block';
+      } else {
+        validUrlContent.style.display = 'block';
+        invalidUrlContent.style.display = 'none';
+
+        (async () => {
+          const [
+            { TabManager },
+            { Navigation },
+            { Dashboard },
+            { DomainBlocking },
+            { Settings },
+            { initializeLocalization, changeLanguage }
+          ] = await Promise.all([
+            import('./modules/tab-manager.js'),
+            import('./modules/navigation.js'),
+            import('./modules/dashboard.js'),
+            import('./modules/domain-blocking.js'),
+            import('./modules/settings.js'),
+            import('./modules/localization.js')
+          ]);
 
     // Initialize all modules
     const tabManager = new TabManager();
@@ -28,13 +45,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     const domainBlocking = new DomainBlocking();
     const settings = new Settings();
 
-    // Initialize navigation first
-    navigation.init();
-    dashboard.init();
-    // cookieManager.init();
-    domainBlocking.init();
-    settings.init();
-    initializeLocalization(); // Initialize localization after other modules
+          // Initialize all modules
+          navigation.init();
+          dashboard.init();
+          domainBlocking.init();
+          settings.init();
+          initializeLocalization();
 
     // Load current tab data
     const tabId = await tabManager.getCurrentTabId();
@@ -47,15 +63,18 @@ document.addEventListener('DOMContentLoaded', async function() {
       tabManager.showNoTabMessage();
     }
 
-    // Setup inter-module communication
-    setupModuleCommunication({
-      tabManager,
-      navigation,
-      dashboard,
-      domainBlocking,
-      settings,
-      initializeLocalization,
-      changeLanguage
+          // Setup full inter-module communication
+          setupModuleCommunication({
+            tabManager,
+            navigation,
+            dashboard,
+            domainBlocking,
+            settings,
+            initializeLocalization,
+            changeLanguage
+          });
+        })();
+      }
     });
 
   } catch (error) {
@@ -86,12 +105,21 @@ function setupModuleCommunication(modules) {
 
   // Setup cross-module event listeners
   eventBus.on('tabChange', async (tabId) => {
-    await modules.tabManager.updateCurrentTabInfo(tabId);
-    modules.dashboard.updateDashboard();
+    const tabInfo = await modules.tabManager.getCurrentTab();
+    const isValidUrl = modules.tabManager.isValidUrlForAnalysis(tabInfo?.url);
+
+    if (isValidUrl) {
+      await modules.tabManager.updateCurrentTabInfo(tabId);
+      modules.dashboard.updateDashboard();
+      modules.navigation.enableNavigation();
+    } else {
+      modules.tabManager.showInvalidUrlMessage(tabInfo?.url);
+      modules.navigation.disableNavigationForInvalidUrl();
+    }
   });
 
   eventBus.on('dataCleared', () => {
-      modules.dashboard.updateDashboard();
+    modules.dashboard.updateDashboard();
   });
 
   eventBus.on('navigationChange', (screen) => {
