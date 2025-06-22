@@ -8,7 +8,7 @@ const CONFIG = {
     COMPLIANCE_RESULT: "complianceResult",
     SETTINGS: "user_settings",
     BLOCKED_DOMAINS: "blocked_domains",
-    CURRENT_TAB_RESULT: "currentTabDomain"
+    CURRENT_TAB_RESULT: "currentTabDomain",
   },
   DEFAULTS: {
     SETTINGS: {
@@ -242,8 +242,7 @@ class CookieManager {
   }
 
   // Manual scan functionality
-  async performManualScan(tabId) {
-  }
+  async performManualScan(tabId) {}
 }
 
 // =====================================================
@@ -316,7 +315,7 @@ class ExtensionController {
         case "GET_COMPLIANCE_RESULT":
           const [activeTab] = await chrome.tabs.query({
             active: true,
-            currentWindow: true
+            currentWindow: true,
           });
 
           if (!activeTab || !activeTab.url) {
@@ -328,20 +327,24 @@ class ExtensionController {
           Utils.log("Active tab URL:", rootUrl);
 
           const allComplianceResults = await StorageManager.get(
-              CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
-            );
-            const currentTabResult = allComplianceResults?.[rootUrl] || null;
-            Utils.log("Compliance result for current tab:", currentTabResult);
+            CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+          );
+          const currentTabResult = allComplianceResults?.[rootUrl] || null;
+          Utils.log("Compliance result for current tab:", currentTabResult);
 
-            return {
-              success: true,
-              data: currentTabResult,
-            };
+          return {
+            success: true,
+            data: currentTabResult,
+          };
 
         case "GET_RESULT_DETAILS":
-          const domain = await StorageManager.get(CONFIG.STORAGE_KEYS.CURRENT_TAB_RESULT);
+          const domain = await StorageManager.get(
+            CONFIG.STORAGE_KEYS.CURRENT_TAB_RESULT
+          );
           console.log("Current tab domain:", domain);
-          const allResults = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT);
+          const allResults = await StorageManager.get(
+            CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+          );
           const resultDetails = allResults?.[domain] || null;
           Utils.log("Result details for domain:", resultDetails);
 
@@ -371,7 +374,7 @@ class ExtensionController {
           try {
             const [activeTab] = await chrome.tabs.query({
               active: true,
-              currentWindow: true
+              currentWindow: true,
             });
 
             if (!activeTab) {
@@ -383,9 +386,16 @@ class ExtensionController {
             const result = await performComplianceCheck(activeTab.id);
 
             if (result) {
-              return { success: true, data: result, message: "Compliance check completed" };
+              return {
+                success: true,
+                data: result,
+                message: "Compliance check completed",
+              };
             } else {
-              return { success: false, error: "Unable to perform compliance check" };
+              return {
+                success: false,
+                error: "Unable to perform compliance check",
+              };
             }
           } catch (error) {
             Utils.log("Error in CHECK_AGAIN:", error);
@@ -529,12 +539,13 @@ async function saveComplianceResult(tabUrl, result) {
   const rootUrl = `${url.protocol}//${url.hostname}`;
 
   // Lấy dữ liệu hiện tại từ storage
-  const existingData = await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT) || {};
+  const existingData =
+    (await StorageManager.get(CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT)) || {};
 
   // Cập nhật dữ liệu với format mới
   const updatedData = {
     ...existingData,
-    [rootUrl]: result
+    [rootUrl]: result,
   };
 
   // Lưu dữ liệu đã cập nhật
@@ -582,53 +593,58 @@ chrome.webRequest.onHeadersReceived.addListener(
       const mainDomain = Utils.extractMainDomain(domain);
 
       // Xác định main URL của tab đang xem
-      chrome.tabs.get(details.tabId, async function (tab) {
-        if (!tab || !tab.url) return;
+      if (details.tabId >= 0) {
+        chrome.tabs.get(details.tabId, async function (tab) {
+          if (!tab || !tab.url) return;
 
-        const tabUrl = new URL(tab.url);
-        const tabDomain = tabUrl.hostname;
-        const isThirdParty = !Utils.isDomainOrSubdomain(domain, tabDomain);
+          const tabUrl = new URL(tab.url);
+          const tabDomain = tabUrl.hostname;
+          const isThirdParty = !Utils.isDomainOrSubdomain(domain, tabDomain);
 
-        // Khởi tạo mảng cho tab này nếu chưa có
-        if (!detectedCookies[details.tabId]) {
-          detectedCookies[details.tabId] = [];
-        }
+          // Khởi tạo mảng cho tab này nếu chưa có
+          if (!detectedCookies[details.tabId]) {
+            detectedCookies[details.tabId] = [];
+          }
 
-        // Lưu thông tin về mỗi cookie được đặt
-        setCookieHeaders.forEach((header) => {
-          const cookieInfo = Utils.parseCookie(header.value);
-          if (!cookieInfo || !cookieInfo.name) return;
+          // Lưu thông tin về mỗi cookie được đặt
+          setCookieHeaders.forEach((header) => {
+            const cookieInfo = Utils.parseCookie(header.value);
+            if (!cookieInfo || !cookieInfo.name) return;
 
-          const timestamp = new Date().toISOString();
+            const timestamp = new Date().toISOString();
 
-          // Lưu thêm thông tin về nguồn gốc (first-party/third-party)
-          detectedCookies[details.tabId].push({
-            domain: domain,
-            mainDomain: mainDomain,
-            url: details.url,
-            cookieName: cookieInfo.name,
-            cookieValue: cookieInfo.value,
-            expires: cookieInfo.expires || "Session",
-            path: cookieInfo.path || "/",
-            httpOnly: cookieInfo.httpOnly || false,
-            secure: cookieInfo.secure || false,
-            sameSite: cookieInfo.sameSite || "None",
-            timestamp: timestamp,
-            isThirdParty: isThirdParty,
-            initiator: details.initiator || null,
-            tabUrl: tab.url,
-            source: "webRequest",
+            // Lưu thêm thông tin về nguồn gốc (first-party/third-party)
+            detectedCookies[details.tabId].push({
+              domain: domain,
+              mainDomain: mainDomain,
+              url: details.url,
+              cookieName: cookieInfo.name,
+              cookieValue: cookieInfo.value,
+              expires: cookieInfo.expires || "Session",
+              path: cookieInfo.path || "/",
+              httpOnly: cookieInfo.httpOnly || false,
+              secure: cookieInfo.secure || false,
+              sameSite: cookieInfo.sameSite || "None",
+              timestamp: timestamp,
+              isThirdParty: isThirdParty,
+              initiator: details.initiator || null,
+              tabUrl: tab.url,
+              source: "webRequest",
+            });
           });
+
+          // Lưu trữ vào chrome.storage
+          StorageManager.set(
+            CONFIG.STORAGE_KEYS.COOKIES_BY_TAB,
+            detectedCookies
+          );
+
+          // Cập nhật badge nếu đây là tab đang active
+          if (details.tabId === activeTabId) {
+            controller.cookieManager.updateBadgeForActiveTab();
+          }
         });
-
-        // Lưu trữ vào chrome.storage
-        StorageManager.set(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB, detectedCookies);
-
-        // Cập nhật badge nếu đây là tab đang active
-        if (details.tabId === activeTabId) {
-          controller.cookieManager.updateBadgeForActiveTab();
-        }
-      });
+      }
     }
   },
   { urls: ["<all_urls>"] },

@@ -163,23 +163,27 @@ class CookieDashboard {
         row.className = 'cookie-row';
 
         row.innerHTML = `
-            <div class="cookie-main" onclick="cookieDashboard.toggleDetails(${index})">
-                <div class="cookie-name">
-                    ${this.escapeHtml(cookie.name)}
-                    <span class="cookie-type-badge ${cookie.type}">${this.getTypeLabel(cookie.type)}</span>
-                </div>
-                <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_purpose || '-') : '-'}</div>
-                <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_third_parties?.join(', ') || '-') : '-'}</div>
-                <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_retention || '-') : this.formatExpiration(cookie.realtime)}</div>
-                <div class="violation-count ${cookie.violations.length > 0 ? 'has-violations' : 'no-violations'}">
-                    ${cookie.violations.length > 0 ? '⚠️ ' + cookie.violations.length + ' vi phạm' : '✅ Không vi phạm'}
-                </div>
-                <div class="expand-icon">▶</div>
+            <div class="cookie-main">
+            <div class="cookie-name">
+                ${this.escapeHtml(cookie.name)}
+                <span class="cookie-type-badge ${cookie.type}">${this.getTypeLabel(cookie.type)}</span>
+            </div>
+            <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_purpose || '-') : '-'}</div>
+            <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_third_parties?.join(', ') || '-') : '-'}</div>
+            <div>${cookie.declared ? this.escapeHtml(cookie.declared.declared_retention || '-') : this.formatExpiration(cookie.realtime)}</div>
+            <div class="violation-count ${cookie.violations.length > 0 ? 'has-violations' : 'no-violations'}">
+                ${cookie.violations.length > 0 ? '⚠️ ' + cookie.violations.length + ' vi phạm' : '✅ Không vi phạm'}
+            </div>
+            <div class="expand-icon">▶</div>
             </div>
             <div class="cookie-details">
-                ${this.createDetailsContent(cookie)}
+            ${this.createDetailsContent(cookie)}
             </div>
         `;
+
+        row.querySelector('.cookie-main').addEventListener('click', () => {
+            this.toggleDetails(index);
+        });
 
         return row;
     }
@@ -376,3 +380,4 @@ class CookieDashboard {
 
 // Initialize the dashboard
 const cookieDashboard = new CookieDashboard();
+console.log(cookieDashboard.processedCookies)

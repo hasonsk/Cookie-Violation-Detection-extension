@@ -361,7 +361,6 @@ export class Dashboard {
               const value = domain;
               chrome.storage.local.set({ [key]: value });
               window.open("details.html?domain=" + encodeURIComponent(domain), "_blank");
-              alert("Error getting current tab URL. See console for details. " + error);
             }
 
         } catch (error) {
@@ -371,21 +370,6 @@ export class Dashboard {
     }
   }
 
-  // checkAgain() {
-  //   const checkAgainBtn = document.getElementById("check-again-btn");
-  //   if (checkAgainBtn) {
-  //     checkAgainBtn.addEventListener("click", function () {
-  //       alert("Refreshing compliance check...");
-  //       document.querySelectorAll(".value").forEach((el) => {
-  //         el.innerHTML = '<div class="loading">Loading</div>';
-  //       });
-
-  //       setTimeout(() => {
-  //         this.updateDashboard();
-  //       }, 2000);
-  //     });
-  //   }
-  // }
   checkAgain() {
     const checkAgainBtn = document.getElementById("check-again-btn");
     if (checkAgainBtn) {
