@@ -57,16 +57,10 @@
             <div class="panel-header">
         <span data-i18n="summaryStatistics" style="display: inline-block; vertical-align: middle;"></span>
         <!-- <a href="details.html" target="_blank" style="display: inline-block; padding: 0.5rem 1rem; background-color: #1e40af; color: #fff; text-decoration: none; border-radius: 4px; text-align: center; vertical-align: middle;">Details</a> -->
-        <button id="detailsLink" data-i18n="details">Details</button>
+        <!-- <button id="detailsLink" data-i18n="details">Details</button> -->
       </div>
           <div class="panel-content">
             <div class="summary-cards" style="margin-bottom: 0">
-              <div class="card">
-                <div class="label" data-i18n="cookiesMonitored"></div>
-                <div class="value" id="cookies-monitored">
-                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
-                </div>
-              </div>
               <div class="card">
                 <div class="label" data-i18n="violationsDetected"></div>
                 <div class="value alert" id="violations-detected">
@@ -76,6 +70,12 @@
               <div class="card">
                 <div class="label" data-i18n="complianceScore"></div>
                 <div class="value alert" id="compliance-score">
+                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="label" data-i18n="cookiesMonitored"></div>
+                <div class="value" id="cookies-monitored">
                   <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
                 </div>
               </div>
@@ -111,10 +111,11 @@
                 id="check-again-btn" data-i18n="checkAgain"
                 >
               </button>
-              <button class="action-btn primary"
-              id="export-report-btn" data-i18n="exportReport"
+              <!-- <button class="action-btn primary"
+              id="detailsLink-btn" data-i18n="exportReport"
               >
-              </button>
+              </button> -->
+              <button class="action-btn primary" id="detailsLink-btn" data-i18n="details">View Details</button>
               <button
                 class="action-btn danger"
                 id="block-domain-btn" data-i18n="blockDomain"
@@ -137,62 +138,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Recent Violations -->
-        <div class="panel">
-          <div class="panel-header" data-i18n="top5CriticalViolations"></div>
-          <div class="panel-content">
-            <div id="violations-list">
-              <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
-            </div>
-          </div>
-          <div class="panel-footer">
-            <button
-              class="action-btn primary" id="view-all-violations-btn" data-i18n="viewAllViolations">
-            </button>
-          </div>
-        </div>
-
-
-        <!-- Violation Charts -->
-        <div class="charts-grid">
-          <div class="panel">
-            <div class="panel-header" data-i18n="violationsBySeverity"></div>
-            <div class="panel-content">
-              <div id="severity-chart-loading" class="loading">
-                <i data-lucide="loader-2" size="24"></i>
-              </div>
-              <div class="chart-container">
-                <canvas id="severityChart" class="hidden"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header" data-i18n="violationsByType"></div>
-            <div class="panel-content">
-              <div id="type-chart-loading" class="loading">
-                <i data-lucide="loader-2" size="24"></i>
-              </div>
-              <div class="chart-container">
-                <canvas id="typeChart" class="hidden"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header" data-i18n="declaredCookiesByThirdParty"></div>
-            <div class="panel-content">
-              <div id="third-party-declared-chart-loading" class="loading">
-                <i data-lucide="loader-2" size="24"></i>
-              </div>
-              <div class="chart-container">
-                <canvas id="declaredCookiesByThirdPartyChart" class="hidden"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Cookies Screen -->
       <div id="cookies-screen">

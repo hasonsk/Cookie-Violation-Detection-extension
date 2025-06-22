@@ -4,10 +4,8 @@ export class Dashboard {
     this.data = null;
     this.charts = {};
     this.init();
-    this.viewAllViolations();
     this.blockDomain();
     this.clearAllCookies();
-    this.exportReport();
     this.viewPolicy();
     this.checkAgain();
     this.addDetailsLinkEvent();
@@ -40,8 +38,6 @@ export class Dashboard {
     this.updateSummaryCards();
     this.updatePolicyStatus();
     this.updateCookieStatistics();
-    this.createCharts();
-    this.updateViolationsList();
   }
 
   updateSummaryCards() {
@@ -80,218 +76,11 @@ export class Dashboard {
     this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
   }
 
-  createCharts() {
-    this.destroyExistingCharts();
-    if(this.data.statistics.by_severity)
-      this.createSeverityChart();
-    if(this.data.statistics.by_category)
-      this.createTypeChart();
-    if(this.data.statistics.declared_cookies_by_third_party)
-      this.createDeclaredCookiesByThirdPartyChart();
-  }
-
-  destroyExistingCharts() {
-    // Destroy existing charts if they exist
-    if (this.charts.severity) {
-      this.charts.severity.destroy();
-      this.charts.severity = null;
-    }
-    if (this.charts.type) {
-      this.charts.type.destroy();
-      this.charts.type = null;
-    }
-    if (this.charts.declaredCookiesByThirdParty) {
-      this.charts.declaredCookiesByThirdParty.destroy();
-      this.charts.declaredCookiesByThirdParty = null;
-    }
-  }
-
-  createSeverityChart() {
-    const ctx = document.getElementById("severityChart").getContext("2d");
-    const data = this.data.statistics.by_severity;
-
-    document.getElementById("severity-chart-loading").classList.add("hidden");
-    document.getElementById("severityChart").classList.remove("hidden");
-
-    this.charts.severity = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: Object.keys(data),
-        datasets: [
-          {
-            label: "Violations",
-            data: Object.values(data),
-            backgroundColor: [
-              "#e74c3c", // Critical - Red
-              "#f39c12", // High - Orange
-              "#f1c40f", // Medium - Yellow
-              "#27ae60", // Low - Green
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1,
-            },
-          },
-        },
-      },
-    });
-  }
-
-  createTypeChart() {
-    const ctx = document.getElementById("typeChart").getContext("2d");
-    const data = this.data.statistics.by_category;
-
-    document.getElementById("type-chart-loading").classList.add("hidden");
-    document.getElementById("typeChart").classList.remove("hidden");
-
-    this.charts.type = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: Object.keys(data),
-        datasets: [
-          {
-            label: "Violations",
-            data: Object.values(data),
-            backgroundColor: [
-              "#3498db", // Specific - Blue
-              "#9b59b6", // General - Purple
-              "#e67e22", // Undefined - Orange
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1,
-            },
-          },
-        },
-      },
-    });
-  }
-
-  createDeclaredCookiesByThirdPartyChart() {
-    const ctx = document.getElementById("declaredCookiesByThirdPartyChart").getContext("2d");
-    const declaredByThirdParty = this.data.details.declared_by_third_party;
-
-    const labels = Object.keys(declaredByThirdParty);
-    const data = labels.map(thirdParty => declaredByThirdParty[thirdParty].length);
-
-    document.getElementById("third-party-declared-chart-loading").classList.add("hidden");
-    document.getElementById("declaredCookiesByThirdPartyChart").classList.remove("hidden");
-
-    this.charts.declaredCookiesByThirdParty = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Declared Cookies",
-            data: data,
-            backgroundColor: "#2ecc71", // Green
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1,
-            },
-          },
-        },
-      },
-    });
-  }
-
-  updateViolationsList() {
-    const listElement = document.getElementById("violations-list");
-
-    const severityOrder = {
-      "Critical": 4,
-      "High": 3,
-      "Medium": 2,
-      "Low": 1
-    };
-
-    // Sort issues by severity in descending order
-    const sortedViolations = [...this.data.issues].sort((a, b) => {
-      return severityOrder[b.severity] - severityOrder[a.severity];
-    });
-
-    const topViolations = sortedViolations.slice(0, 5);
-
-    const html = topViolations
-      .map(
-        (violation) => `
-          <div class="violation-item">
-              <div class="violation-icon ${violation.severity.toLowerCase()}">
-                  !
-              </div>
-              <div class="violation-content">
-                  <div class="violation-title">${violation.cookie_name}</div>
-                  <div class="violation-subtitle">${violation.description}</div>
-              </div>
-              <div class="violation-severity ${violation.severity.toLowerCase()}">
-                  ${violation.severity}
-              </div>
-          </div>
-      `
-      )
-      .join("");
-
-    listElement.innerHTML = html;
-  }
-
   updateElement(id, value) {
     const element = document.getElementById(id);
     if (element) {
       element.textContent = value;
     }
-  }
-
-  // Action Methods
-  viewAllViolations() {
-    const viewAllBtn = document.getElementById("view-all-violations-btn");
-    if (viewAllBtn) {
-      viewAllBtn.addEventListener("click", function () {
-      });
-    }
-    // Implement navigation to detailed violations page
   }
 
   blockDomain() {
@@ -321,16 +110,6 @@ export class Dashboard {
     }
   }
 
-  exportReport() {
-    const exportReportBtn = document.getElementById("export-report-btn");
-    if (exportReportBtn) {
-      exportReportBtn.addEventListener("click", function () {
-        alert("Exporting compliance report...");
-        // Implement report export functionality
-      });
-    }
-  }
-
   viewPolicy() {
     const viewPolicyBtn = document.getElementById("view-policy-btn");
     if (viewPolicyBtn) {
@@ -345,7 +124,7 @@ export class Dashboard {
   }
 
   addDetailsLinkEvent() {
-    const detailsLink = document.getElementById("detailsLink");
+    const detailsLink = document.getElementById("detailsLink-btn");
     if (detailsLink) {
       detailsLink.addEventListener("click", async (event) => {
         event.preventDefault(); // Prevent default link behavior
