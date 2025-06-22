@@ -41,9 +41,9 @@ export class Dashboard {
   }
 
   updateSummaryCards() {
-    const totalCookies = this.data.actual_cookies_count;
-    const totalViolations = this.data.total_issues;
-    const thirdPartyCount = this.data.summary.third_party_cookies?.length || 0;
+    const totalCookies = this.data?.actual_cookies_count || 0;
+    const totalViolations = this.data?.total_issues || 0;
+    const thirdPartyCount = this.data?.summary.third_party_cookies?.length || 0;
     const firstPartyCount = totalCookies - thirdPartyCount;
 
     this.updateElement("cookies-monitored", totalCookies);

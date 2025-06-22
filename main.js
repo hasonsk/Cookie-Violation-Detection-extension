@@ -9,19 +9,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       { TabManager },
       { Navigation },
       { Dashboard },
-      // { CookieManager },
       { DomainBlocking },
       { Settings },
-      { CookieDisplay },
       { initializeLocalization, changeLanguage }
     ] = await Promise.all([
       import('./modules/tab-manager.js'),
       import('./modules/navigation.js'),
       import('./modules/dashboard.js'),
-      // import('./modules/cookie-manager.js'),
       import('./modules/domain-blocking.js'),
       import('./modules/settings.js'),
-      import('./modules/cookie-display.js'),
       import('./modules/localization.js')
     ]);
 
@@ -29,10 +25,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     const tabManager = new TabManager();
     const navigation = new Navigation();
     const dashboard = new Dashboard();
-    // const cookieManager = new CookieManager();
     const domainBlocking = new DomainBlocking();
     const settings = new Settings();
-    const cookieDisplay = new CookieDisplay(); // Instantiate CookieDisplay
 
     // Initialize navigation first
     navigation.init();
@@ -58,10 +52,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       tabManager,
       navigation,
       dashboard,
-      // cookieManager,
       domainBlocking,
       settings,
-      cookieDisplay, // Add cookieDisplay
       initializeLocalization,
       changeLanguage
     });
@@ -94,7 +86,6 @@ function setupModuleCommunication(modules) {
 
   // Setup cross-module event listeners
   eventBus.on('tabChange', async (tabId) => {
-    await modules.cookieManager.loadCookieDataForTab(tabId);
     await modules.tabManager.updateCurrentTabInfo(tabId);
     modules.dashboard.updateDashboard();
   });
@@ -106,16 +97,6 @@ function setupModuleCommunication(modules) {
   eventBus.on('navigationChange', (screen) => {
     if (screen === 'dashboard') {
       modules.dashboard.updateDashboard();
-    } else if (screen === 'cookies') {
-      // Ensure dashboard data is loaded before initializing cookie display
-      if (modules.dashboard.data) {
-        modules.cookieDisplay.init(modules.dashboard.data);
-      } else {
-        // If data is not yet loaded, wait for it
-        modules.dashboard.loadData().then(() => {
-          modules.cookieDisplay.init(modules.dashboard.data);
-        });
-      }
     } else if (screen === 'domains') {
       modules.domainBlocking.loadBlockedDomains();
     }
@@ -125,7 +106,7 @@ function setupModuleCommunication(modules) {
   if (languageSelect) {
     languageSelect.addEventListener('change', async (event) => {
       await modules.changeLanguage(event.target.value);
-      modules.initializeLocalization(); // Re-initialize localization to update all data-i18n elements
+      modules.initializeLocalization();
     });
   }
 }
