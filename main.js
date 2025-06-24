@@ -26,27 +26,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         (async () => {
           const [
             { TabManager },
-            // { Navigation },
             { Dashboard },
             { Settings },
             { initializeLocalization, changeLanguage },
           ] = await Promise.all([
             import("./modules/tab-manager.js"),
-            // import("./modules/navigation.js"),
             import("./modules/dashboard.js"),
-            // import("./modules/domain-blocking.js"),
             import("./modules/settings.js"),
             import("./modules/localization.js"),
           ]);
 
           // Initialize all modules
           const tabManager = new TabManager();
-          // const navigation = new Navigation();
           const dashboard = new Dashboard();
           const settings = new Settings();
 
           // Initialize all modules
-          // navigation.init();
           dashboard.init();
           settings.init();
           initializeLocalization();

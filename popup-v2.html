@@ -7,8 +7,6 @@
   <title data-i18n="extensionName"></title>
   <link rel="stylesheet" href="popup-v2.css">
 </head>
-<style>
-</style>
 
 <body>
   <div class="header">
@@ -18,11 +16,10 @@
         <i id="settings-icon" data-lucide="settings" size="16"></i>
         <i id="close-icon" data-lucide="square-x" size="16" style="display: none;"></i>
       </button>
-      </div>
+    </div>
   </div>
 
   <div id="valid-url-content">
-
     <div class="main-content">
       <div id="dashboard-screen" style="display: block;">
 
@@ -34,10 +31,10 @@
         <!-- Cookie Statistics -->
         <div class="panel">
           <div class="panel-header">
-            <span data-i18n="summaryStatistics" style="display: inline-block; vertical-align: middle;"></span>
+            <span data-i18n="summaryStatistics"></span>
           </div>
           <div class="panel-content">
-            <div class="summary-cards" style="margin-bottom: 0">
+            <div class="summary-cards">
               <div class="card">
                 <div class="label" data-i18n="violationsDetected"></div>
                 <div class="value alert" id="violations-detected">
@@ -65,13 +62,10 @@
           <div class="panel-header" data-i18n="quickActions"></div>
           <div class="panel-content">
             <div class="actions-grid">
-              <button class="action-btn primary" id="check-again-btn" data-i18n="checkAgain">
-              </button>
+              <button class="action-btn primary" id="check-again-btn" data-i18n="checkAgain"></button>
               <button class="action-btn primary" id="detailsLink-btn" data-i18n="details">Details</button>
-              <button class="action-btn danger" id="block-domain-btn" data-i18n="blockDomain">
-              </button>
-              <button class="action-btn danger" id="clear-all-cookies-btn" data-i18n="clearAllCookies">
-              </button>
+              <button class="action-btn danger" id="block-domain-btn" data-i18n="blockDomain"></button>
+              <button class="action-btn danger" id="clear-all-cookies-btn" data-i18n="clearAllCookies"></button>
             </div>
           </div>
         </div>
@@ -88,10 +82,9 @@
 
       <!-- Settings Screen -->
       <div id="settings-screen">
-
-        <div class="panel mb-4">
+        <div class="panel">
           <div class="panel-header" data-i18n="monitoringOptions"></div>
-          <div style="padding: 1rem">
+          <div class="panel-content">
             <div class="setting-item">
               <div class="setting-header">
                 <label class="setting-label" data-i18n="autoScanWebsites"></label>
@@ -99,18 +92,16 @@
                   <div class="toggle-handle"></div>
                 </div>
               </div>
-              <p class="setting-description" data-i18n="automaticallyScanCookies">
-              </p>
+              <p class="setting-description" data-i18n="automaticallyScanCookies"></p>
             </div>
           </div>
         </div>
 
         <div class="panel">
           <div class="panel-header" data-i18n="advanced"></div>
-          <div style="padding: 1rem">
+          <div class="panel-content">
             <div class="setting-item">
-              <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="theme">
-              </label>
+              <label class="setting-label" data-i18n="theme"></label>
               <select data-setting="theme">
                 <option value="light" data-i18n="light"></option>
                 <option value="dark" data-i18n="dark"></option>
@@ -119,8 +110,7 @@
             </div>
 
             <div class="setting-item">
-              <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="language">
-              </label>
+              <label class="setting-label" data-i18n="language"></label>
               <select data-setting="language">
                 <option value="en" data-i18n="english"></option>
                 <option value="vi" data-i18n="vietnamese"></option>
@@ -129,10 +119,6 @@
           </div>
         </div>
       </div>
-
-      <script src="main.js" type="module"></script>
-      <script src="./lib/chart.js-4.4.2/package/dist/chart.umd.js"></script>
-      <script src="./lib/lucide-0.513.0-dist/umd/lucide.js"></script>
     </div>
   </div>
 
@@ -141,5 +127,8 @@
     <p class="message">Nothing to check here!</p>
     <p class="sub-message">Navigate to a website to start monitoring cookie compliance</p>
   </div>
+
+  <script src="main.js" type="module"></script>
+  <script src="./lib/lucide-0.513.0-dist/umd/lucide.js"></script>
 </body>
 </html>
