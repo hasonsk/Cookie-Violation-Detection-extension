@@ -23,6 +23,9 @@
   "summaryStatistics": {
     "message": "Thống kê tổng quan"
   },
+  "checkAgain": {
+    "message": "Kiểm tra lại"
+  },
   "cookiesMonitored": {
     "message": "Cookie được giám sát"
   },
