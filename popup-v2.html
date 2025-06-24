@@ -8,56 +8,33 @@
   <link rel="stylesheet" href="popup-v2.css">
 </head>
 <style>
-  .hidden {
-    display: none;
-  }
 </style>
 
 <body>
-  <!-- Header -->
   <div class="header">
     <div class="title" data-i18n="extensionName"></div>
-    <!-- <div class="actions">
-        <button id="header-settings">
-          <i data-lucide="settings" size="16"></i>
-        </button>
-      </div> -->
+    <div class="actions">
+      <button id="header-settings" class="header-button">
+        <i id="settings-icon" data-lucide="settings" size="16"></i>
+        <i id="close-icon" data-lucide="square-x" size="16" style="display: none;"></i>
+      </button>
+      </div>
   </div>
 
   <div id="valid-url-content">
-    <div class="navigation">
-      <button class="nav-button active" id="nav-dashboard">
-        <i data-lucide="bar-chart" size="20"></i>
-        <span data-i18n="dashboard"></span>
-      </button>
-      <button class="nav-button" id="nav-domains">
-        <i data-lucide="file-text" size="20"></i>
-        <span data-i18n="domains"></span>
-      </button>
-      <button class="nav-button" id="nav-settings">
-        <i data-lucide="settings" size="20"></i>
-        <span data-i18n="settings"></span>
-      </button>
-    </div>
 
-    <div id="current-tab-info" class="current-tab">
-      <span class="url-label" data-i18n="currentWebsite"></span>
-      <span id="current-url"></span>
-    </div>
+    <div class="main-content">
+      <div id="dashboard-screen" style="display: block;">
 
-    <!-- Main Content -->
-
-    <body class="main-content">
-      <!-- Dashboard Screen -->
-      <div id="dashboard-screen">
-        <!-- <h2 class="screen-title" data-i18n="dashboard"></h2> -->
+        <div id="current-tab-info" class="current-tab">
+          <span class="url-label" data-i18n="currentWebsite"></span>
+          <span id="current-url"></span>
+        </div>
 
         <!-- Cookie Statistics -->
         <div class="panel">
           <div class="panel-header">
             <span data-i18n="summaryStatistics" style="display: inline-block; vertical-align: middle;"></span>
-            <!-- <a href="details.html" target="_blank" style="display: inline-block; padding: 0.5rem 1rem; background-color: #1e40af; color: #fff; text-decoration: none; border-radius: 4px; text-align: center; vertical-align: middle;">Details</a> -->
-            <!-- <button id="detailsLink" data-i18n="details">Details</button> -->
           </div>
           <div class="panel-content">
             <div class="summary-cards" style="margin-bottom: 0">
@@ -109,41 +86,8 @@
         </div>
       </div>
 
-      <div id="domain-screen" class="tab-content">
-        <h3 data-i18n="blockCookiesFromDomain"></h3>
-
-        <div class="blocked-domains">
-          <div class="input-container">
-            <input type="text" id="domain-to-block" data-i18n-placeholder="enterDomainExample" autocomplete="off" />
-            <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
-          </div>
-          <button id="add-block-domain">
-            <span data-i18n="addDomain"></span>
-          </button>
-        </div>
-
-        <h4 data-i18n="blockedDomainsList"></h4>
-        <ul id="blocked-domains-list">
-        </ul>
-
-        <div id="stats-tab" class="tab-content">
-          <div id="stats-content">
-            <div id="domain-stats">
-              <h4 data-i18n="domainsSettingCookies"></h4>
-              <ul id="top-domains"></ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Settings Screen -->
       <div id="settings-screen">
-        <!-- <h2 class="screen-title" data-i18n="settings"></h2> -->
-
-        <div class="settings-status">
-          <div class="status-indicator" id="save-status"></div>
-          <span id="save-status-text" data-i18n="settingsSaved"></span>
-        </div>
 
         <div class="panel mb-4">
           <div class="panel-header" data-i18n="monitoringOptions"></div>
@@ -158,17 +102,6 @@
               <p class="setting-description" data-i18n="automaticallyScanCookies">
               </p>
             </div>
-
-            <!-- <div class="setting-item">
-              <label class="setting-label" style="display: block; margin-bottom: 0.5rem" data-i18n="scanFrequency">
-              </label>
-              <select data-setting="scanFrequency">
-                <option value="pageload" data-i18n="everyPageLoad"></option>
-                <option value="1hour" data-i18n="every1Hour"></option>
-                <option value="24hours" data-i18n="every24Hours"></option>
-                <option value="manual" data-i18n="manuallyOnly"></option>
-              </select>
-            </div> -->
           </div>
         </div>
 
@@ -194,18 +127,13 @@
               </select>
             </div>
           </div>
-
-          <!-- Save/Reset buttons -->
-          <div class="button-container">
-            <button class="primary-button" id="save-settings" data-i18n="saveSettings"></button>
-          </div>
         </div>
       </div>
 
       <script src="main.js" type="module"></script>
       <script src="./lib/chart.js-4.4.2/package/dist/chart.umd.js"></script>
       <script src="./lib/lucide-0.513.0-dist/umd/lucide.js"></script>
-    </body>
+    </div>
   </div>
 
   <div id="invalid-url-content">
@@ -214,5 +142,4 @@
     <p class="sub-message">Navigate to a website to start monitoring cookie compliance</p>
   </div>
 </body>
-
 </html>

@@ -80,10 +80,6 @@ body {
   color: var(--primary-blue);
 }
 
-.hidden {
-  display: none;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -863,13 +859,6 @@ input[type="range"] {
   text-align: right;
 }
 
-/* Hide all screens except dashboard initially */
-#cookies-screen,
-#domain-screen,
-#settings-screen {
-  display: none;
-}
-
 /* Hidden state for details sections */
 .cookie-details,
 .rule-details {
@@ -1281,4 +1270,12 @@ input[type="range"] {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.main-content > div {
+  display: none;
+}
+
+.main-content > div.active {
+  display: block;
 }

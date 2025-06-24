@@ -5,12 +5,6 @@ export class Settings {
           // Privacy settings
           enableCookieBlocking: true,
           enableThirdPartyBlocking: false,
-          enableAnalyticsBlocking: true,
-
-          // Notification settings
-          showViolationNotifications: true,
-          showBlockingNotifications: false,
-          notificationDuration: 3000,
 
           // Monitoring settings
           scanFrequency: 'pageload',
@@ -28,7 +22,6 @@ export class Settings {
       await this.loadSettings();
       this.setupEventListeners();
       this.renderSettingsUI();
-      this.updateSaveStatus(false);
   }
 
   async loadSettings() {
@@ -49,21 +42,6 @@ export class Settings {
       }
   }
 
-  async saveSettings() {
-      try {
-          localStorage.setItem('cookieMonitorSettings', JSON.stringify(this.settings));
-          this.hasUnsavedChanges = false;
-          this.updateSaveStatus(false);
-          this.showNotification('Settings saved successfully', 'success');
-
-          // Apply settings across the application
-          this.applyGlobalSettings();
-      } catch (error) {
-          console.error('Error saving settings:', error);
-          this.showNotification('Failed to save settings', 'error');
-      }
-  }
-
   setupEventListeners() {
       // Toggle switches
       document.querySelectorAll('.toggle-switch').forEach(toggle => {
@@ -80,10 +58,6 @@ export class Settings {
           range.addEventListener('input', (e) => this.handleRangeChange(e));
       });
 
-      // Save button
-      document.getElementById('save-settings').addEventListener('click', () => {
-          this.saveSettings();
-      });
   }
 
   renderSettingsUI() {
@@ -138,8 +112,6 @@ export class Settings {
           toggle.classList.add('off');
           toggle.classList.remove('on');
       }
-
-      this.markAsUnsaved();
   }
 
   handleSelectChange(event) {
@@ -148,7 +120,6 @@ export class Settings {
       if (!settingKey) return;
 
       this.settings[settingKey] = select.value;
-      this.markAsUnsaved();
   }
 
   handleRangeChange(event) {
@@ -163,29 +134,6 @@ export class Settings {
       const display = document.querySelector(`[data-display="${settingKey}"]`);
       if (display) {
           display.textContent = this.formatRangeValue(settingKey, value);
-      }
-
-      this.markAsUnsaved();
-  }
-
-  markAsUnsaved() {
-      this.hasUnsavedChanges = true;
-      this.updateSaveStatus(true);
-  }
-
-  updateSaveStatus(hasUnsaved) {
-      const indicator = document.getElementById('save-status');
-      const text = document.getElementById('save-status-text');
-      const saveButton = document.getElementById('save-settings');
-
-      if (hasUnsaved) {
-          indicator.classList.add('unsaved');
-          text.textContent = 'Unsaved changes';
-          // saveButton.style.backgroundColor = '#dc2626';
-      } else {
-          indicator.classList.remove('unsaved');
-          text.textContent = 'Settings saved';
-          saveButton.style.backgroundColor = '#2563eb';
       }
   }
 
@@ -203,28 +151,6 @@ export class Settings {
       document.dispatchEvent(event);
 
       console.log('Global settings applied:', this.settings);
-  }
-
-  showNotification(message, type = 'info') {
-      const notification = document.createElement('div');
-      notification.className = `notification notification-${type}`;
-      notification.innerHTML = `
-          <span>${this.escapeHtml(message)}</span>
-      `;
-
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-          if (notification.parentNode) {
-              notification.parentNode.removeChild(notification);
-          }
-      }, 3000);
-  }
-
-  escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
   }
 
   // Public API for other modules

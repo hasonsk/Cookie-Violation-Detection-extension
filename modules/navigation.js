@@ -1,66 +1,54 @@
-// modules/navigation.js
 export class Navigation {
-  constructor() {
-    this.screens = {
-      'dashboard': document.getElementById('dashboard-screen'),
-      'domains': document.getElementById('domain-screen'),
-      'settings': document.getElementById('settings-screen'),
-    };
-
-    this.navButtons = {
-      'dashboard': document.getElementById('nav-dashboard'),
-      'domains': document.getElementById('nav-domains'),
-      'settings': document.getElementById('nav-settings'),
-    };
-
-    this.currentScreen = 'dashboard';
-  }
-
-  init() {
-    this.setupNavigationHandlers();
-    this.showScreen('dashboard');
-  }
-
-  setupNavigationHandlers() {
-    // Add click handlers to nav buttons
-    Object.entries(this.navButtons).forEach(([screenName, button]) => {
-      if (button) {
-        button.addEventListener('click', () => this.showScreen(screenName));
-      }
-    });
-  }
-
-  showScreen(screenName) {
-    // Hide all screens
-    Object.values(this.screens).forEach(screen => {
-      if (screen) screen.style.display = 'none';
-    });
-
-    // Show the selected screen
-    const targetScreen = this.screens[screenName];
-    if (targetScreen) {
-      targetScreen.style.display = 'block';
-      this.currentScreen = screenName;
+    constructor() {
+      this.currentScreen = "dashboard";
+      this.headerButton = document.getElementById("header-settings");
+      this.settingsIcon = document.getElementById("settings-icon");
+      this.closeIcon = document.getElementById("close-icon");
+      this.dashboardScreen = document.getElementById("dashboard-screen");
+      this.settingsScreen = document.getElementById("settings-screen");
+        // Debug: Kiểm tra xem các element có tồn tại không
+      alert(`Header button: ${this.headerButton}`);
+      alert(`Settings icon: ${this.settingsIcon}`);
+      alert(`Close icon: ${this.closeIcon}`);
+      alert(`Dashboard screen: ${this.dashboardScreen}`);
+      alert(`Settings screen: ${this.settingsScreen}`);
+      this.init();
     }
 
-    // Update nav buttons
-    Object.entries(this.navButtons).forEach(([name, button]) => {
-      if (button) {
-        if (name === screenName) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
-      }
-    });
-
-    // Emit navigation change event
-    if (window.appEventBus) {
-      window.appEventBus.emit('navigationChange', screenName);
+    init() {
+      this.setupEventListeners();
+      this.showDashboard();
     }
-  }
 
-  getCurrentScreen() {
-    return this.currentScreen;
-  }
+    setupEventListeners() {
+      this.headerButton.addEventListener("click", () => {
+        this.toggleScreen();
+      });
+    }
+
+    toggleScreen() {
+      if (this.currentScreen === "dashboard") {
+        this.showSettings();
+      } else {
+        this.showDashboard();
+      }
+    }
+
+    showSettings() {
+      this.currentScreen = "settings";
+      this.dashboardScreen.classList.remove('active');
+      this.settingsScreen.classList.add('active');
+
+      this.settingsIcon.style.display = "none";
+      this.closeIcon.style.display = "block";
+    }
+
+    showDashboard() {
+      this.currentScreen = "dashboard";
+      this.settingsScreen.classList.remove('active');
+      this.dashboardScreen.classList.add('active');
+
+      this.closeIcon.style.display = "none";
+      this.settingsIcon.style.display = "block";
+    }
 }

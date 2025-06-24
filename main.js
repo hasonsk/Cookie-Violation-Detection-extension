@@ -26,39 +26,34 @@ document.addEventListener("DOMContentLoaded", async function () {
         (async () => {
           const [
             { TabManager },
-            { Navigation },
+            // { Navigation },
             { Dashboard },
-            { DomainBlocking },
             { Settings },
             { initializeLocalization, changeLanguage },
           ] = await Promise.all([
             import("./modules/tab-manager.js"),
-            import("./modules/navigation.js"),
+            // import("./modules/navigation.js"),
             import("./modules/dashboard.js"),
-            import("./modules/domain-blocking.js"),
+            // import("./modules/domain-blocking.js"),
             import("./modules/settings.js"),
             import("./modules/localization.js"),
           ]);
 
           // Initialize all modules
           const tabManager = new TabManager();
-          const navigation = new Navigation();
+          // const navigation = new Navigation();
           const dashboard = new Dashboard();
-          const domainBlocking = new DomainBlocking();
           const settings = new Settings();
 
           // Initialize all modules
-          navigation.init();
+          // navigation.init();
           dashboard.init();
-          domainBlocking.init();
           settings.init();
           initializeLocalization();
 
           // Load current tab data
           const tabId = await tabManager.getCurrentTabId();
           if (tabId) {
-            // await cookieManager.loadCookieDataForTab(tabId);
-            await domainBlocking.loadBlockedDomains();
             await tabManager.updateCurrentTabInfo(tabId);
             // dashboard.updateDashboard();
           } else {
@@ -68,9 +63,8 @@ document.addEventListener("DOMContentLoaded", async function () {
           // Setup full inter-module communication
           setupModuleCommunication({
             tabManager,
-            navigation,
+            // navigation,
             dashboard,
-            domainBlocking,
             settings,
             initializeLocalization,
             changeLanguage,
@@ -112,23 +106,13 @@ function setupModuleCommunication(modules) {
     if (isValidUrl) {
       await modules.tabManager.updateCurrentTabInfo(tabId);
       modules.dashboard.updateDashboard();
-      modules.navigation.enableNavigation();
     } else {
       modules.tabManager.showInvalidUrlMessage(tabInfo?.url);
-      modules.navigation.disableNavigationForInvalidUrl();
     }
   });
 
   eventBus.on("dataCleared", () => {
     modules.dashboard.updateDashboard();
-  });
-
-  eventBus.on("navigationChange", (screen) => {
-    if (screen === "dashboard") {
-      modules.dashboard.updateDashboard();
-    } else if (screen === "domains") {
-      modules.domainBlocking.loadBlockedDomains();
-    }
   });
 
   const languageSelect = document.querySelector(
@@ -141,3 +125,23 @@ function setupModuleCommunication(modules) {
     });
   }
 }
+
+document.getElementById('header-settings').addEventListener('click', function() {
+  const dashboard = document.getElementById('dashboard-screen');
+  const settings = document.getElementById('settings-screen');
+  const settingsIcon = document.getElementById("settings-icon");
+  const closeIcon = document.getElementById("close-icon");
+
+  if (dashboard.style.display !== 'none') {
+    dashboard.style.display = 'none';
+    settings.style.display = 'block';
+
+    closeIcon.style.display = "block";
+    settingsIcon.style.display = "none";
+  } else {
+    dashboard.style.display = 'block';
+    settings.style.display = 'none';
+    closeIcon.style.display = "none";
+    settingsIcon.style.display = "block";
+  }
+});
