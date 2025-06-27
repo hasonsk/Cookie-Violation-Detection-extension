@@ -42,11 +42,11 @@ export class Dashboard {
   }
 
   updateSummaryCards() {
-      this.updateElement("cookies-monitored", this.data.actual_cookies_count);
-      this.updateElement("violations-detected", this.data.total_issues);
-      this.updateElement("declared-cookies", this.data.policy_cookies_count);
-      this.updateElement("actual-cookies", this.data.actual_cookies_count);
-      this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
+    this.updateElement("cookies-monitored", this.data.actual_cookies_count);
+    this.updateElement("violations-detected", this.data.total_issues);
+    this.updateElement("declared-cookies", this.data.policy_cookies_count);
+    this.updateElement("actual-cookies", this.data.actual_cookies_count);
+    this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
   }
 
   updatePolicyStatus() {
@@ -86,21 +86,6 @@ export class Dashboard {
     }
   }
 
-  // clearAllCookies() {
-  //   const clearAllCookiesBtn = document.getElementById("clear-all-cookies-btn");
-  //   if (clearAllCookiesBtn) {
-  //     clearAllCookiesBtn.addEventListener("click", function () {
-  //       if (
-  //         confirm(
-  //           "Are you sure you want to clear all cookies? This action cannot be undone."
-  //         )
-  //       ) {
-  //         alert("All cookies have been cleared.");
-  //       }
-  //     });
-  //   }
-  // }
-
   clearAllCookies() {
     const clearAllCookiesBtn = document.getElementById("clear-all-cookies-btn");
 
@@ -131,7 +116,7 @@ export class Dashboard {
                   alert("An error occurred while clearing cookies.");
                 } else if (response?.status === "done") {
                   alert("All cookies have been cleared.");
-                  this.updateDashboard();
+                  () => this.updateDashboard();
                 } else {
                   alert("Failed to clear cookies.");
                 }
@@ -189,9 +174,12 @@ export class Dashboard {
       checkAgainBtn.addEventListener("click", async () => {
         try {
           document.querySelectorAll(".value").forEach((el) => {
-            el.innerHTML = '<div class="loading"><i data-lucide="loader-2"></i></div>';
+            if (el.id === 'policy-status') {
+              el.innerHTML = '<div class="skeleton skeleton-text"></div>';
+            } else {
+              el.innerHTML = '<div class="skeleton skeleton-number"></div>';
+            }
           });
-
           const response = await chrome.runtime.sendMessage({ action: "CHECK_AGAIN" });
 
           if (response.success) {

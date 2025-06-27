@@ -38,26 +38,35 @@
               <div class="card">
                 <div class="label" data-i18n="violationsDetected"></div>
                 <div class="value alert" id="violations-detected">
-                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
+                  <!-- <div class="loading"><i data-lucide="loader-2" size="24"></i></div> -->
+                  <div class="skeleton skeleton-number"></div>
+
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="complianceScore"></div>
                 <div class="value alert" id="compliance-score">
-                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
+                  <!-- <div class="loading"><i data-lucide="loader-2" size="24"></i></div> -->
+                  <div class="skeleton skeleton-number"></div>
                 </div>
               </div>
               <div class="card">
                 <div class="label" data-i18n="cookiesMonitored"></div>
                 <div class="value" id="cookies-monitored">
-                  <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
+                  <div class="skeleton skeleton-number"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Quick Actions -->
+        <div class="panel">
+          <div class="panel-header" data-i18n="cookiePolicyLink"></div>
+          <div class="panel-content">
+            <div class="value" id="policy-status">
+              <div class="skeleton skeleton-text"></div>
+            </div>
+          </div>
+        </div>
         <div class="panel">
           <div class="panel-header" data-i18n="quickActions"></div>
           <div class="panel-content">
@@ -66,15 +75,6 @@
               <button class="action-btn primary" id="detailsLink-btn" data-i18n="details">Details</button>
               <button class="action-btn danger" id="block-domain-btn" data-i18n="blockDomain"></button>
               <button class="action-btn danger" id="clear-all-cookies-btn" data-i18n="clearAllCookies"></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header" data-i18n="cookiePolicyLink"></div>
-          <div class="panel-content">
-            <div class="value" id="policy-status">
-              <div class="loading"><i data-lucide="loader-2" size="24"></i></div>
             </div>
           </div>
         </div>
