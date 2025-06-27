@@ -1,11 +1,6 @@
 const DEFAULT_LANGUAGE = 'en';
 let currentMessages = {};
 
-/**
- * Loads messages for the specified language.
- * @param {string} lang - The language code (e.g., 'en', 'vi').
- * @returns {Promise<object>} A promise that resolves with the messages object.
- */
 async function loadMessages(lang) {
   try {
     const response = await fetch(chrome.runtime.getURL(`_locales/${lang}/messages.json`));
@@ -24,10 +19,6 @@ async function loadMessages(lang) {
   }
 }
 
-/**
- * Applies translations to elements with data-i18n attributes.
- * @param {HTMLElement} [root=document] - The root element to apply translations to.
- */
 function applyTranslations(root = document) {
   root.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
@@ -48,10 +39,6 @@ function applyTranslations(root = document) {
   });
 }
 
-/**
- * Initializes the localization system.
- * Loads the user's preferred language or the default, then applies translations.
- */
 async function initializeLocalization() {
   const settings = await chrome.storage.sync.get('language');
   const userLang = settings.language || DEFAULT_LANGUAGE;
@@ -65,10 +52,6 @@ async function initializeLocalization() {
   }
 }
 
-/**
- * Changes the current language and re-applies translations.
- * @param {string} lang - The new language code.
- */
 async function changeLanguage(lang) {
   await chrome.storage.sync.set({ language: lang });
   currentMessages = await loadMessages(lang);

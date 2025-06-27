@@ -36,20 +36,17 @@ export class Dashboard {
     this.loadData().then(() => {
       this.updateSummaryCards();
       this.updatePolicyStatus();
-      this.updateCookieStatistics();
     });
   }
 
   updateSummaryCards() {
-    const totalCookies = this.data?.actual_cookies_count || 0;
-    const totalViolations = this.data?.total_issues || 0;
-    const thirdPartyCount = this.data?.summary.third_party_cookies?.length || 0;
-    const firstPartyCount = totalCookies - thirdPartyCount;
-
-    this.updateElement("cookies-monitored", totalCookies);
-    this.updateElement("violations-detected", totalViolations);
-    this.updateElement("third-party", thirdPartyCount);
-    this.updateElement("first-party", firstPartyCount);
+      if(this.data) {
+      this.updateElement("cookies-monitored", this.data.actual_cookies_count);
+      this.updateElement("violations-detected", this.data.total_issues);
+      this.updateElement("declared-cookies", this.data.policy_cookies_count);
+      this.updateElement("actual-cookies", this.data.actual_cookies_count);
+      this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
+    }
   }
 
   updatePolicyStatus() {
@@ -68,12 +65,6 @@ export class Dashboard {
               </div>
           `;
     }
-  }
-
-  updateCookieStatistics() {
-    this.updateElement("declared-cookies", this.data.policy_cookies_count);
-    this.updateElement("actual-cookies", this.data.actual_cookies_count);
-    this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
   }
 
   updateElement(id, value) {
@@ -154,21 +145,17 @@ export class Dashboard {
     if (checkAgainBtn) {
       checkAgainBtn.addEventListener("click", async () => {
         try {
-          // Hiển thị loading
           document.querySelectorAll(".value").forEach((el) => {
             el.innerHTML = '<div class="loading"><i data-lucide="loader-2"></i></div>';
           });
 
-          // Gửi request CHECK_AGAIN
           const response = await chrome.runtime.sendMessage({ action: "CHECK_AGAIN" });
 
           if (response.success) {
-            // Cập nhật dashboard với dữ liệu mới
             this.updateDashboard();
             console.log("Compliance check refreshed successfully");
           } else {
             console.error("Check again failed:", response.error);
-            // Hiển thị lỗi cho user
             this.showError(response.error || "Failed to refresh compliance check");
           }
         } catch (error) {

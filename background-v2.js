@@ -3,11 +3,9 @@
 // =====================================================
 const CONFIG = {
   STORAGE_KEYS: {
-    COOKIES: "collected_cookies",
     COOKIES_BY_TAB: "cookiesByTab",
     COMPLIANCE_RESULT: "complianceResult",
     SETTINGS: "user_settings",
-    BLOCKED_DOMAINS: "blocked_domains",
     CURRENT_TAB_RESULT: "currentTabDomain",
   },
   DEFAULTS: {
@@ -16,7 +14,6 @@ const CONFIG = {
       scanFrequency: "pageload",
       notifications: true,
     },
-    SCAN_INTERVAL: 1 * 1000 * 6,
   },
   API_ENDPOINTS: {
     COOKIES_ANALYZE: "http://127.0.0.1:8000/violations/analyze",
@@ -28,16 +25,6 @@ let detectedCookies = {};
 let activeTabId = null;
 let isDetectedCookiesInPolicy = false;
 let blockedDomains = []; // Danh sách domain bị chặn
-
-// Load blocked domains from storage at startup
-chrome.storage.local.get(['cookiesByTab', 'blocked_domains'], function(result) {
-  if (result.cookiesByTab) {
-    detectedCookies = result.cookiesByTab;
-  }
-  if (result.blocked_domains) {
-    blockedDomains = result.blocked_domains;
-  }
-});
 
 // =====================================================
 // 2. UTILITY FUNCTIONS
@@ -172,6 +159,7 @@ class StorageManager {
 class CookieManager {
   constructor() {
     this.scanInProgress = new Set();
+    this.tabBadgeCache = new Map(); // Cache badge data for each tab
   }
 
   // Get cookies for specific tab
@@ -233,156 +221,143 @@ class CookieManager {
     }
   }
 
-  // Update badge for active tab
+  // Get compliance result for specific tab
+  async getComplianceResultForTab(tabId) {
+    try {
+      const tab = await chrome.tabs.get(tabId);
+      if (!tab || !tab.url) {
+        return null;
+      }
+
+      // Kiểm tra URL hợp lệ
+      if (!tab.url.startsWith("http://") && !tab.url.startsWith("https://")) {
+        return null;
+      }
+
+      const url = new URL(tab.url);
+      const rootUrl = `${url.protocol}//${url.hostname}`;
+
+      const allComplianceResults = await StorageManager.get(
+        CONFIG.STORAGE_KEYS.COMPLIANCE_RESULT
+      );
+
+      return allComplianceResults?.[rootUrl] || null;
+    } catch (error) {
+      Utils.log("Error getting compliance result for tab:", error);
+      return null;
+    }
+  }
+
+  // Update badge for specific tab
+  async updateBadgeForTab(tabId) {
+    try {
+      if (!tabId || tabId < 0) {
+        return;
+      }
+
+      const complianceResult = await this.getComplianceResultForTab(tabId);
+
+      let badgeText = "";
+      let badgeColor = "#4ECDC4"; // Default green for no issues
+
+      if (complianceResult && complianceResult.total_issues !== undefined) {
+        const issueCount = complianceResult.total_issues || 0;
+
+        if (issueCount > 0) {
+          badgeText = issueCount.toString();
+          badgeColor = "#FF6B6B"; // Red for issues
+        }
+
+        // Cache the badge data for this tab
+        this.tabBadgeCache.set(tabId, {
+          text: badgeText,
+          color: badgeColor,
+          timestamp: Date.now()
+        });
+
+        Utils.log(`Updated badge for tab ${tabId}: ${badgeText} issues`);
+      } else {
+        // No compliance result yet, check if we have cached data
+        const cachedBadge = this.tabBadgeCache.get(tabId);
+        if (cachedBadge) {
+          badgeText = cachedBadge.text;
+          badgeColor = cachedBadge.color;
+        }
+      }
+
+      // Update badge display
+      await chrome.action.setBadgeText({
+        text: badgeText,
+        tabId: tabId,
+      });
+
+      await chrome.action.setBadgeBackgroundColor({
+        color: badgeColor,
+        tabId: tabId,
+      });
+
+    } catch (error) {
+      Utils.log("Error updating badge for tab:", error);
+    }
+  }
+
+  // Update badge for currently active tab
   async updateBadgeForActiveTab() {
-    if (!activeTabId) return;
+    if (!activeTabId || activeTabId < 0) {
+      // Try to get active tab if activeTabId is not set
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab) {
+          activeTabId = tab.id;
+        } else {
+          return;
+        }
+      } catch (error) {
+        Utils.log("Error getting active tab:", error);
+        return;
+      }
+    }
 
-    const cookies = await this.getCookiesForTab(activeTabId);
-    const count = cookies.length;
+    await this.updateBadgeForTab(activeTabId);
+  }
 
-    await chrome.action.setBadgeText({
-      text: count > 0 ? count.toString() : "",
-      tabId: activeTabId,
-    });
+  // Update badges for all tabs (useful for bulk updates)
+  async updateBadgeForAllTabs() {
+    try {
+      const tabs = await chrome.tabs.query({});
 
-    await chrome.action.setBadgeBackgroundColor({
-      color: count > 0 ? "#FF6B6B" : "#4ECDC4",
+      for (const tab of tabs) {
+        if (tab.id && tab.id >= 0) {
+          await this.updateBadgeForTab(tab.id);
+        }
+      }
+    } catch (error) {
+      Utils.log("Error updating badges for all tabs:", error);
+    }
+  }
+
+  // Clear badge cache for specific tab
+  clearBadgeCacheForTab(tabId) {
+    this.tabBadgeCache.delete(tabId);
+  }
+
+  // Clear badge cache for closed tabs
+  cleanupBadgeCache() {
+    chrome.tabs.query({}, (tabs) => {
+      const activeTabIds = new Set(tabs.map(tab => tab.id));
+
+      // Remove cache entries for tabs that no longer exist
+      for (const [tabId] of this.tabBadgeCache) {
+        if (!activeTabIds.has(tabId)) {
+          this.tabBadgeCache.delete(tabId);
+        }
+      }
     });
   }
 
   // Manual scan functionality
-  async performManualScan(tabId) {}
-}
-
-// =====================================================
-// 5. ENHANCED BLOCKING MANAGER
-// =====================================================
-class BlockingManager {
-  constructor() {
-    this.ruleIdOffset = 100; // Starting ID for dynamic rules
-  }
-
-  async blockDomain(domain) {
-    try {
-      const blockedDomains =
-        (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
-
-      if (!blockedDomains.includes(domain)) {
-        blockedDomains.push(domain);
-        await StorageManager.set(
-          CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS,
-          blockedDomains
-        );
-
-        // Update global variable
-        this.blockedDomains = blockedDomains;
-      }
-
-      await this.updateBlockingRules(blockedDomains);
-      return true;
-    } catch (error) {
-      Utils.log("Block domain error:", error);
-      return false;
-    }
-  }
-
-  async unblockDomain(domain) {
-    try {
-      const blockedDomains =
-        (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
-      const updated = blockedDomains.filter((d) => d !== domain);
-
-      await StorageManager.set(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS, updated);
-
-      // Update global variable
-      this.blockedDomains = updated;
-
-      await this.updateBlockingRules(updated);
-      return true;
-    } catch (error) {
-      Utils.log("Unblock domain error:", error);
-      return false;
-    }
-  }
-
-  async updateBlockingRules(domains = null) {
-    try {
-      const blockedDomains = domains ||
-        (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
-
-      // Get current dynamic rules
-      const currentRules = await chrome.declarativeNetRequest.getDynamicRules();
-      const ruleIds = currentRules.map(rule => rule.id);
-
-      // Create new blocking rules
-      const newRules = blockedDomains.map((domain, index) => ({
-        id: this.ruleIdOffset + index,
-        priority: 2, // Higher priority to override default rules
-        action: {
-          type: "block"
-        },
-        condition: {
-          requestDomains: [domain],
-          resourceTypes: [
-            "main_frame",
-            "sub_frame",
-            "stylesheet",
-            "script",
-            "image",
-            "font",
-            "object",
-            "xmlhttprequest",
-            "ping",
-            "csp_report",
-            "media",
-            "websocket",
-            "other"
-          ]
-        }
-      }));
-
-      // Update rules only if there are changes
-      if (ruleIds.length > 0 || newRules.length > 0) {
-        await chrome.declarativeNetRequest.updateDynamicRules({
-          removeRuleIds: ruleIds,
-          addRules: newRules
-        });
-
-        Utils.log("Blocking rules updated successfully", {
-          blocked: blockedDomains,
-          rulesCount: newRules.length
-        });
-      }
-
-      return true;
-    } catch (error) {
-      Utils.log("Error updating blocking rules:", error);
-      return false;
-    }
-  }
-
-  // Get list of blocked domains
-  async getBlockedDomains() {
-    return (await StorageManager.get(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS)) || [];
-  }
-
-  // Check if domain is blocked
-  async isDomainBlocked(domain) {
-    const blockedDomains = await this.getBlockedDomains();
-    return blockedDomains.includes(domain);
-  }
-
-  // Clear all blocked domains
-  async clearAllBlockedDomains() {
-    try {
-      await StorageManager.set(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS, []);
-      await this.updateBlockingRules([]);
-      this.blockedDomains = [];
-      return true;
-    } catch (error) {
-      Utils.log("Error clearing blocked domains:", error);
-      return false;
-    }
+  async performManualScan(tabId) {
+    // Implementation for manual scan if needed
   }
 }
 
@@ -392,7 +367,6 @@ class BlockingManager {
 class ExtensionController {
   constructor() {
     this.cookieManager = new CookieManager();
-    this.blockingManager = new BlockingManager();
   }
 
   async handleInstallation() {
@@ -401,9 +375,6 @@ class ExtensionController {
       CONFIG.STORAGE_KEYS.SETTINGS,
       CONFIG.DEFAULTS.SETTINGS
     );
-
-    // Initialize blocking rules
-    await this.blockingManager.updateBlockingRules();
 
     await chrome.tabs.create({
       url: chrome.runtime.getURL("cookie-compliance-checker.html"),
@@ -456,39 +427,6 @@ class ExtensionController {
 
         case "UPDATE_SETTINGS":
           await StorageManager.updateSettings(request.settings);
-          return { success: true };
-
-        case "BLOCK_DOMAIN":
-          const blocked = await this.blockingManager.blockDomain(
-            request.domain
-          );
-          return { success: blocked };
-
-        case "UNBLOCK_DOMAIN":
-          const unblocked = await this.blockingManager.unblockDomain(
-            request.domain
-          );
-          return { success: unblocked };
-
-        case "GET_BLOCKED_DOMAINS":
-          const blockedDomains = await this.blockingManager.getBlockedDomains();
-          return { success: true, data: blockedDomains };
-
-        case "IS_DOMAIN_BLOCKED":
-          const isBlocked = await this.blockingManager.isDomainBlocked(
-            request.domain
-          );
-          return { success: true, data: isBlocked };
-
-        case "CLEAR_ALL_BLOCKED_DOMAINS":
-          const cleared = await this.blockingManager.clearAllBlockedDomains();
-          return { success: cleared };
-
-        case "UPDATE_BLOCKED_DOMAINS":
-          // For compatibility with popup
-          await StorageManager.set(CONFIG.STORAGE_KEYS.BLOCKED_DOMAINS, request.domains);
-          await this.blockingManager.updateBlockingRules(request.domains);
-          blockedDomains = request.domains; // Update global variable
           return { success: true };
 
         case "CLEAR_COOKIES":
@@ -573,24 +511,32 @@ chrome.runtime.onInstalled.addListener((details) => {
 // Track active tab
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   activeTabId = activeInfo.tabId;
+  Utils.log(`Tab activated: ${activeTabId}`);
+
+  // Update badge for the newly active tab
   await controller.cookieManager.updateBadgeForActiveTab();
 });
 
-// Tab updated listener
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+// Tab updated listener - enhanced
+chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete') {
     // Save current tabId if it's the active tab
     if (tab.active) {
       activeTabId = tabId;
     }
-    // Update badge
-    if (tabId === activeTabId) {
-      controller.cookieManager.updateBadgeForActiveTab();
-    }
 
-    // Perform compliance check
+    // Always update badge for completed tab loads
+    await controller.cookieManager.updateBadgeForTab(tabId);
+
+    // Perform compliance check for active tab
     if (tabId === activeTabId) {
-      performComplianceCheck(tabId);
+      try {
+        await performComplianceCheck(tabId);
+        // Update badge again after compliance check
+        await controller.cookieManager.updateBadgeForTab(tabId);
+      } catch (error) {
+        Utils.log("Error in compliance check:", error);
+      }
     }
   }
 });
@@ -615,7 +561,6 @@ async function performComplianceCheck(tabId) {
       return null;
     }
 
-    await controller.cookieManager.updateBadgeForActiveTab();
     const allCookiesFromDomainsList = await getAllCookiesFromActiveTab(tabId);
 
     const body = {
@@ -638,6 +583,9 @@ async function performComplianceCheck(tabId) {
 
     // Lưu kết quả
     await saveComplianceResult(tab.url, result);
+
+    // Update badge for this specific tab
+    await controller.cookieManager.updateBadgeForTab(tabId);
 
     return result;
   } catch (error) {
@@ -757,24 +705,22 @@ chrome.webRequest.onHeadersReceived.addListener(
   ["responseHeaders", "extraHeaders"]
 );
 
-// Clean up data when tab is closed
 chrome.tabs.onRemoved.addListener((tabId) => {
+  // Clean up detected cookies
   if (detectedCookies[tabId]) {
     delete detectedCookies[tabId];
     StorageManager.set(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB, detectedCookies);
   }
+
+  controller.cookieManager.clearBadgeCacheForTab(tabId);
+
+  Utils.log(`Cleaned up data for closed tab: ${tabId}`);
 });
 
-// Notification click handling
-chrome.notifications.onClicked.addListener((notificationId) => {
-  chrome.action.openPopup();
-});
 
 // =====================================================
 // 9. PERIODIC CLEANUP
 // =====================================================
-chrome.alarms.create("cleanup", { periodInMinutes: 60 });
-
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "cleanup") {
     Utils.log("Running periodic cleanup");
@@ -800,18 +746,15 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     });
 
     await StorageManager.set(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB, cookiesByTab);
+
+    // Clean up badge cache
+    controller.cookieManager.cleanupBadgeCache();
   }
 });
 
 // =====================================================
 // 10. DOMAIN PROCESSING & COOKIE COLLECTION FUNCTIONS
 // =====================================================
-
-/**
- * Lấy danh sách tất cả domains từ cookies đã thu thập
- * @param {number|null} tabId - ID của tab cụ thể (null để lấy tất cả)
- * @returns {Array} Mảng các domain unique
- */
 async function getAllDomainsFromCookies(tabId = null) {
   try {
     const cookiesByTab =
@@ -839,109 +782,6 @@ async function getAllDomainsFromCookies(tabId = null) {
   } catch (error) {
     Utils.log("Error getting domains from cookies:", error);
     return [];
-  }
-}
-
-// Phân loại domains thành first-party và third-party
-async function categorizeDomainsByParty(tabId) {
-  try {
-    const cookiesByTab =
-      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
-    const tabCookies = cookiesByTab[tabId] || [];
-
-    const firstPartyDomains = new Set();
-    const thirdPartyDomains = new Set();
-
-    tabCookies.forEach((cookie) => {
-      if (cookie.isThirdParty) {
-        thirdPartyDomains.add(cookie.domain);
-        thirdPartyDomains.add(cookie.mainDomain);
-      } else {
-        firstPartyDomains.add(cookie.domain);
-        firstPartyDomains.add(cookie.mainDomain);
-      }
-    });
-
-    return {
-      firstParty: Array.from(firstPartyDomains).filter((domain) => domain),
-      thirdParty: Array.from(thirdPartyDomains).filter((domain) => domain),
-    };
-  } catch (error) {
-    Utils.log("Error categorizing domains:", error);
-    return { firstParty: [], thirdParty: [] };
-  }
-}
-
-// Lấy thống kê chi tiết về cookies theo domain
-async function getDomainCookieStats(domain) {
-  try {
-    const cookiesByTab =
-      (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
-    const stats = {
-      domain: domain,
-      totalCookies: 0,
-      sessionCookies: 0,
-      persistentCookies: 0,
-      secureCookies: 0,
-      httpOnlyCookies: 0,
-      sameSiteNone: 0,
-      sameSiteStrict: 0,
-      sameSiteLax: 0,
-      tabsWithCookies: 0,
-      cookieNames: new Set(),
-      lastSeen: null,
-    };
-
-    Object.values(cookiesByTab).forEach((tabCookies) => {
-      let hasThisDomain = false;
-
-      tabCookies.forEach((cookie) => {
-        if (cookie.domain === domain || cookie.mainDomain === domain) {
-          if (!hasThisDomain) {
-            stats.tabsWithCookies++;
-            hasThisDomain = true;
-          }
-
-          stats.totalCookies++;
-          stats.cookieNames.add(cookie.cookieName);
-
-          // Phân loại theo loại cookie
-          if (cookie.expires === "Session") {
-            stats.sessionCookies++;
-          } else {
-            stats.persistentCookies++;
-          }
-
-          if (cookie.secure) stats.secureCookies++;
-          if (cookie.httpOnly) stats.httpOnlyCookies++;
-
-          // Phân loại theo SameSite
-          switch (cookie.sameSite?.toLowerCase()) {
-            case "none":
-              stats.sameSiteNone++;
-              break;
-            case "strict":
-              stats.sameSiteStrict++;
-              break;
-            case "lax":
-              stats.sameSiteLax++;
-              break;
-          }
-
-          // Cập nhật thời gian cuối cùng nhìn thấy
-          const cookieTime = new Date(cookie.timestamp);
-          if (!stats.lastSeen || cookieTime > stats.lastSeen) {
-            stats.lastSeen = cookieTime;
-          }
-        }
-      });
-    });
-
-    stats.cookieNames = Array.from(stats.cookieNames);
-    return stats;
-  } catch (error) {
-    Utils.log("Error getting domain cookie stats:", error);
-    return null;
   }
 }
 
@@ -973,6 +813,10 @@ async function getAllCookiesFromDomainsList(domains, url) {
     return [];
   }
 }
+
+chrome.runtime.onStartup.addListener(() => {
+  chrome.alarms.create("cleanup", { delayInMinutes: 60, periodInMinutes: 60 });
+});
 
 async function getAllCookiesFromActiveTab(activeTabId) {
   const url = await chrome.tabs.get(activeTabId).then((tab) => tab.url);
