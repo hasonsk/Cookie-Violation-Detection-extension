@@ -34,19 +34,19 @@ export class Dashboard {
 
   updateDashboard() {
     this.loadData().then(() => {
-      this.updateSummaryCards();
+      if(this.data) {
+        this.updateSummaryCards();
+      }
       this.updatePolicyStatus();
     });
   }
 
   updateSummaryCards() {
-      if(this.data) {
       this.updateElement("cookies-monitored", this.data.actual_cookies_count);
       this.updateElement("violations-detected", this.data.total_issues);
       this.updateElement("declared-cookies", this.data.policy_cookies_count);
       this.updateElement("actual-cookies", this.data.actual_cookies_count);
       this.updateElement("compliance-score", `${this.data.compliance_score}/100`);
-    }
   }
 
   updatePolicyStatus() {
@@ -86,20 +86,63 @@ export class Dashboard {
     }
   }
 
+  // clearAllCookies() {
+  //   const clearAllCookiesBtn = document.getElementById("clear-all-cookies-btn");
+  //   if (clearAllCookiesBtn) {
+  //     clearAllCookiesBtn.addEventListener("click", function () {
+  //       if (
+  //         confirm(
+  //           "Are you sure you want to clear all cookies? This action cannot be undone."
+  //         )
+  //       ) {
+  //         alert("All cookies have been cleared.");
+  //       }
+  //     });
+  //   }
+  // }
+
   clearAllCookies() {
     const clearAllCookiesBtn = document.getElementById("clear-all-cookies-btn");
+
     if (clearAllCookiesBtn) {
-      clearAllCookiesBtn.addEventListener("click", function () {
+      clearAllCookiesBtn.addEventListener("click", async function () {
         if (
           confirm(
             "Are you sure you want to clear all cookies? This action cannot be undone."
           )
         ) {
-          alert("All cookies have been cleared.");
+          // Lấy domain hiện tại từ tab
+          chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if (tabs.length === 0) return;
+
+            const url = new URL(tabs[0].url);
+            const domain = url.hostname;
+
+            // Gửi message đến background để xóa cookie
+            chrome.runtime.sendMessage(
+              {
+                action: "DELETE_COOKIES",
+                // domain: domain,
+                currentTabId: tabs[0].id
+              },
+              function (response) {
+                if (chrome.runtime.lastError) {
+                  console.error("Lỗi gửi message:", chrome.runtime.lastError.message);
+                  alert("An error occurred while clearing cookies.");
+                } else if (response?.status === "done") {
+                  alert("All cookies have been cleared.");
+                  this.updateDashboard();
+                } else {
+                  alert("Failed to clear cookies.");
+                }
+              }
+            );
+          });
         }
       });
     }
   }
+
 
   viewPolicy() {
     const viewPolicyBtn = document.getElementById("view-policy-btn");

@@ -435,9 +435,35 @@ class ExtensionController {
           );
           return { success: cookiesCleared };
 
+        // case "DELETE_COOKIES":
+        //   async function deleteAllCookiesForDomain(domain) {
+        //     const cookies = await chrome.cookies.getAll({ domain: domain });
+        //     for (let cookie of cookies) {
+        //       const url = (cookie.secure ? "https://" : "http://") + cookie.domain + cookie.path;
+        //       await chrome.cookies.remove({
+        //         url: url,
+        //         name: cookie.name,
+        //         storeId: cookie.storeId
+        //       });
+        //     }
+        //   }
+
+        //   console.log("Request from: ", request)
+        //   if (request.domain) {
+        //     await deleteAllCookiesForDomain(request.domain);
+        //     sendResponse({ status: "done" });
+        //     return true;
+        //   } else {
+        //     sendResponse({ success: false, error: "Domain is required" });
+        //     return false;
+        //   }
+
         case "DELETE_COOKIES":
-          async function deleteAllCookiesForDomain(domain) {
-            const cookies = await chrome.cookies.getAll({ domain: domain });
+          async function deleteAllCookiesForDomain(currentTabId) {
+            // const cookies = await chrome.cookies.getAll({ domain: domain });
+            const cookies = await getAllCookiesFromActiveTab(currentTabId);
+            console.log("Current tab:", currentTabId)
+            console.log("All cookies: --> ", cookies);
             for (let cookie of cookies) {
               const url = (cookie.secure ? "https://" : "http://") + cookie.domain + cookie.path;
               await chrome.cookies.remove({
@@ -448,12 +474,12 @@ class ExtensionController {
             }
           }
 
-          if (request.domain) {
-            await deleteAllCookiesForDomain(request.domain);
-            sendResponse({ status: "started" });
-            return true;
+          console.log("Request from: ", request)
+          if (request.currentTabId) {
+            await deleteAllCookiesForDomain(request.currentTabId);
+            sendResponse({ status: "done" });
           } else {
-            return { success: false, error: "Domain is required" };
+            sendResponse({ success: false, error: "Domain is required" });
           }
 
         case "CHECK_AGAIN":
@@ -513,11 +539,9 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   activeTabId = activeInfo.tabId;
   Utils.log(`Tab activated: ${activeTabId}`);
 
-  // Update badge for the newly active tab
   await controller.cookieManager.updateBadgeForActiveTab();
 });
 
-// Tab updated listener - enhanced
 chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete') {
     // Save current tabId if it's the active tab
@@ -525,14 +549,12 @@ chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
       activeTabId = tabId;
     }
 
-    // Always update badge for completed tab loads
     await controller.cookieManager.updateBadgeForTab(tabId);
 
     // Perform compliance check for active tab
     if (tabId === activeTabId) {
       try {
         await performComplianceCheck(tabId);
-        // Update badge again after compliance check
         await controller.cookieManager.updateBadgeForTab(tabId);
       } catch (error) {
         Utils.log("Error in compliance check:", error);
@@ -725,7 +747,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "cleanup") {
     Utils.log("Running periodic cleanup");
 
-    // Clean up old cookie data (older than 7 days)
     const cookiesByTab =
       (await StorageManager.get(CONFIG.STORAGE_KEYS.COOKIES_BY_TAB)) || {};
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -821,7 +842,11 @@ chrome.runtime.onStartup.addListener(() => {
 async function getAllCookiesFromActiveTab(activeTabId) {
   const url = await chrome.tabs.get(activeTabId).then((tab) => tab.url);
   const domain = new URL(url).hostname;
-  const domains = (await getAllDomainsFromCookies(activeTabId)) || [domain];
+  let domains = await getAllDomainsFromCookies(activeTabId);
+  if (!domains || domains.length === 0) {
+    domains = [domain];
+  }
+  console.log("---> ", domains);
   const allCookies = await getAllCookiesFromDomainsList(domains, url);
   return allCookies;
 }
