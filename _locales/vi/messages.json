@@ -343,5 +343,14 @@
   },
   "details": {
     "message": "Chi tiết"
+  },
+  "complianceTooltipTitle": {
+    "message": "Đánh giá tuân thủ Cookie"
+  },
+  "complianceTooltipBody": {
+    "message": "Điểm bị trừ cho các vi phạm: Critical (-20), High (-10), và Medium (-5)."
+  },
+  "complianceTooltipFooter": {
+    "message": "Điểm cuối cùng cho biết mức độ tuân thủ thu thập dữ liệu của trang web."
   }
 }

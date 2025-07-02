@@ -340,5 +340,14 @@
   },
   "details": {
     "message": "View Details"
+  },
+  "complianceTooltipTitle": {
+    "message": "Cookie Compliance Assessment"
+  },
+  "complianceTooltipBody": {
+    "message": "Points are deducted for violations: Critical (-20), High (-10), and Medium (-5)."
+  },
+  "complianceTooltipFooter": {
+    "message": "The final score indicates the website's data collection compliance level."
   }
 }

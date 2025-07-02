@@ -488,3 +488,66 @@ body {
 .setting-header {
   margin-bottom: 8px; /* tăng từ 0.25rem */
 }
+
+/* Info Icon and Tooltip */
+.label-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.info-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.info-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--gray-400);
+  cursor: pointer;
+}
+
+.info-icon-container .tooltip {
+  visibility: hidden;
+  width: 220px;
+  background-color: var(--gray-900);
+  color: var(--white);
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -110px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.info-icon-container:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: bold;
+  color: var(--primary-blue-light);
+  font-size: 12px;
+}
+
+.tooltip p {
+  font-size: 11px;
+  color: var(--white);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tooltip p + p {
+  margin-top: 4px;
+  color: var(--gray-300);
+}
